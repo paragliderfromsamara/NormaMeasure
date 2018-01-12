@@ -1,0 +1,51 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TERA_2016" GeneratedClassName="dbSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="dbName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">db_tera</Value>
+    </Setting>
+    <Setting Name="selectRoles" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT roles.id, roles.name FROM roles
+  ORDER BY roles.id ASC</Value>
+    </Setting>
+    <Setting Name="selectActiveUsersJoinedRoles" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">  select users.id, users.last_name, users.name, users.third_name, users.employee_number, users.password, roles.name as role_name from users LEFT JOIN roles ON (users.role_id = roles.id) WHERE users.is_active = 1 AND users.role_id &gt; 1 
+  ORDER BY users.last_name ASC</Value>
+    </Setting>
+    <Setting Name="insertUser" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">INSERT INTO users (users.last_name, users.name, users.third_name, users.password, users.employee_number, users.role_id, users.is_active) VALUES("{0}","{1}","{2}","{3}",{4},{5}, 1)</Value>
+    </Setting>
+    <Setting Name="hideUsers" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UPDATE users SET users.is_active = 0 
+	WHERE users.id IN({0})</Value>
+    </Setting>
+    <Setting Name="updateUserWithPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UPDATE users SET users.name = "{1}", users.last_name = "{2}", users.third_name = "{3}", users.employee_number = {4}, users.role_id = {5}, users.password = "{6}" WHERE users.id IN({0})</Value>
+    </Setting>
+    <Setting Name="updateUserWithoutPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UPDATE users SET users.name = "{1}", users.last_name = "{2}", users.third_name = "{3}", users.employee_number = {4}, users.role_id = {5} WHERE users.id IN({0})</Value>
+    </Setting>
+    <Setting Name="selectMaterials" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT * FROM isolation_materials</Value>
+    </Setting>
+    <Setting Name="selectCameraTypes" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT * FROM camera_types</Value>
+    </Setting>
+    <Setting Name="selectBringingTypes" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT * FROM bringing_types</Value>
+    </Setting>
+    <Setting Name="selectDeviceBySerial" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT * FROM devices WHERE serial_number = "{0}"</Value>
+    </Setting>
+    <Setting Name="insertDevice" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">INSERT INTO devices (serial_number) VALUES ("{0}")</Value>
+    </Setting>
+    <Setting Name="updateRangeAndVoltageCoeffs" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">UPDATE devices SET devices.zero_range_coeff = {1}, devices.first_range_coeff = {2}, devices.second_range_coeff = {3}, devices.third_range_coeff = {4}, devices.third_range_additional_coeff = {5}, devices.one_hundred_volts_coeff = {6}, devices.five_hundred_volts_coeff = {7}, devices.thousand_volts_coeff = {8}, devices.coeffs_check_sum = {9} WHERE devices.serial_number IN("{0}")</Value>
+    </Setting>
+    <Setting Name="selectIsolationMaterialCoeffs" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SELECT * FROM isolation_material_tcoeffs WHERE isolation_material_id IN ({0}) ORDER BY isolation_material_id ASC</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
