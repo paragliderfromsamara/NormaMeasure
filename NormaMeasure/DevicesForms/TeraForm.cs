@@ -28,8 +28,6 @@ namespace NormaMeasure.DevicesForms
         protected delegate void updateResultFieldTextDelegate(string text);
         protected delegate void updateMeasureStatusDelegate(string text);
 
-
-
         Teraohmmeter teraDevice;
         TeraMeasure handMeasure;
         public TeraForm(Teraohmmeter tera_device)
