@@ -5,22 +5,98 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.Data;
 using NormaMeasure.Utils;
 
 
 namespace NormaMeasure.DevicesClasses
-{
+{             
+    public enum DEVICE_TYPE
+    {
+        TERA = 1,
+        SAK = 2,
+        MICRO = 3
+    }                                                                                                                          
     public abstract class Device
     {
+        public string DevicePortName
+        {
+            get { return devPortName; }
+            set
+            {
+                this.devPortName = value;
+                renamePort(value);
+            }
+        }
+        /// <summary>
+        /// Существует ли такое устройство
+        /// </summary>
         public bool IsExists = false;
+        /// <summary>
+        /// Флаг подключения устройства
+        /// </summary>
         public bool IsConnected = false;
+        /// <summary>
+        /// Серийный номер в формате 2014-01
+        /// </summary>
         public string SerialNumber;
+        /// <summary>
+        /// Номер прибора в рамках года выпуска
+        /// </summary>
         public int Number;
+        /// <summary>
+        /// Год выпуска
+        /// </summary>
         public int ProductionYear;
+        /// <summary>
+        /// Название типа устройства
+        /// </summary>
         public string DeviceName;
-        protected System.ComponentModel.IContainer components = null;
+        /// <summary>
+        /// COM Порт устройства через который происходит обмен данными
+        /// </summary>
         public System.IO.Ports.SerialPort DevicePort;
-        protected bool isTestApp;
+        /// <summary>
+        /// Код типа устройства
+        /// </summary>
+        protected DEVICE_TYPE deviceType
+        {
+            get
+            {
+                return deviceType;
+            }
+            set
+            {
+                switch(value)
+                {
+                    case DEVICE_TYPE.TERA:
+                        this.DeviceName = "Тераомметр";
+                        break;
+                    case DEVICE_TYPE.MICRO:
+                        this.DeviceName = "Микроомметр";
+                        break;
+                    case DEVICE_TYPE.SAK:
+                        this.DeviceName = "САК-ТВЧ";
+                        break;
+                }
+            }
+        }
+
+        protected System.ComponentModel.IContainer components = null;
+        
+        protected bool isTestApp = Properties.Settings.Default.IsTestApp;
+        protected bool isLoadedFromDB = false;
+        protected string devPortName = "COM1";
+        protected DataRow deviceDataRow
+        {
+            set
+            {
+                this.isLoadedFromDB = true;
+                fillFromDataRow(value);
+            }
+        }
+
+        protected abstract void fillFromDataRow(DataRow dataRow);
 
         protected byte[] serialCmd;
         protected byte[] connectCmd;
@@ -28,7 +104,6 @@ namespace NormaMeasure.DevicesClasses
         protected string typeName;
 
         protected abstract void setVariables();
-        protected abstract void configurePort();
         public abstract bool ConnectToDevice(MainForm form);
 
         public void Dispose()
@@ -36,12 +111,10 @@ namespace NormaMeasure.DevicesClasses
             if (components != null) components.Dispose();
         }
 
-        protected void baseInit()
+        protected virtual void InitDevice()
         {
-            this.isTestApp = Properties.Settings.Default.IsTestApp;
             this.components = new System.ComponentModel.Container();
             this.DevicePort = new System.IO.Ports.SerialPort(components);
-            configurePort();
             setVariables();
         }
 
@@ -101,8 +174,9 @@ namespace NormaMeasure.DevicesClasses
             return arr;
         }
 
-        protected void RenamePort(string name)
+        protected void renamePort(string name)
         {
+            if (isTestApp) return;
             this.ClosePort();
             this.DevicePort.PortName = name;
         }
@@ -116,8 +190,8 @@ namespace NormaMeasure.DevicesClasses
             byte[] arr;
             this.ClosePort();
             writePort(this.serialCmd);
-            arr = receiveByteArray(2, true);
-            if (arr[0] <= 255 && arr[0] >= 0) //Проверка валидности номера прибора
+            arr = isTestApp ? DemoModeEntities.DemoTera.FakeDevList[Convert.ToInt16(DevicePortName)] : receiveByteArray(2, true);
+            if (isValidSerial(arr)) //Проверка валидности номера прибора
             {
                 this.Number = arr[1];
                 this.ProductionYear = 2000 + arr[0];
@@ -135,8 +209,8 @@ namespace NormaMeasure.DevicesClasses
             byte[] arr;
             this.ClosePort();
             writePort(this.connectCmd);
-            arr = receiveByteArray(2, true);
-            if (arr[0] <= 80 && arr[0] >= 10) //Проверка валидности номера прибора
+            arr = isTestApp ? DemoModeEntities.DemoTera.FakeDevList[Convert.ToInt16(this.DevicePortName)] : receiveByteArray(2, true);
+            if (isValidSerial(arr)) //Проверка валидности номера прибора
             {
                 this.IsExists = this.IsConnected = makeSerial(arr[0], arr[1]) == this.SerialNumber;
                 Thread.Sleep(200);
@@ -195,6 +269,10 @@ namespace NormaMeasure.DevicesClasses
             return String.Format("{0}_{1}_{2}", this.DeviceName, this.ProductionYear, this.Number);
         }
 
-
+        private bool isValidSerial(byte[] arr)
+        {
+            if (arr.Length == 0) return false;
+            return (arr[0] <= 255 && arr[0] >= 0);
+        }
     }
 }

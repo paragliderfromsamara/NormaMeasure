@@ -10,6 +10,7 @@ using NormaMeasure.Utils;
 using NormaMeasure.DevicesSettings;
 using NormaMeasure.DevicesForms;
 using NormaMeasure.MeasureClasses;
+using NormaMeasure.DemoModeEntities;
 
 
 namespace NormaMeasure.DevicesClasses
@@ -17,7 +18,26 @@ namespace NormaMeasure.DevicesClasses
     public class Teraohmmeter : Device
     {
         public NormaMeasure.DevicesForms.TeraForm DeviceForm;
-        private DataRow TeraDataRow = null;
+        private DataRow teraDataRow
+        { set
+            {
+                this.rangeCoeffs = new float[] {
+                                                ServiceFunctions.convertToFloat(value["zero_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(value["first_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(value["second_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(value["third_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(value["third_range_additional_coeff"])
+                                            };
+                this.voltageCoeffs = new float[]
+                                                {
+                                                ServiceFunctions.convertToFloat(value["one_hundred_volts_coeff"]),
+                                                ServiceFunctions.convertToFloat(value["five_hundred_volts_coeff"]),
+                                                ServiceFunctions.convertToFloat(value["thousand_volts_coeff"])
+                                                };
+                this.checkSumFromDB = (uint)value["coeffs_check_sum"];
+            }
+        }
+
         public uint checkSumFromDevice = 0; //проверочная сумма для коэффициентов коррекции из прибора
         public uint checkSumFromDB = 0; //Проверочная сумма из БД
         public float[] rangeCoeffs = new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }; //коэффициенты коррекции по диапазону
@@ -39,14 +59,49 @@ namespace NormaMeasure.DevicesClasses
 
         public Teraohmmeter()
         {
-            baseInit();
+            InitDevice();
         }
         public Teraohmmeter(string port_name)
         {
-            baseInit();
-            //RenamePort(port_name);
-            DevicePort.PortName = port_name;
+            InitDevice();
+            this.DevicePortName = port_name;
             getSerial();
+        }
+
+        protected override void InitDevice()
+        {
+            base.InitDevice();
+            this.DevicePort.BaudRate = 9600;
+            this.DevicePort.Parity = System.IO.Ports.Parity.None;
+            this.DevicePort.ParityReplace = 63;
+            this.DevicePort.DataBits = 8;
+            this.DevicePort.ReadTimeout = 200;
+            this.DevicePort.WriteTimeout = 200;
+            this.DevicePort.WriteBufferSize = 2048;
+            this.DevicePort.ReadBufferSize = 4096;
+            this.DevicePort.ReceivedBytesThreshold = 1;
+            this.DevicePort.DiscardNull = false;
+
+            
+            //this.devicePort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(DevicePort_DataReceived);
+        }
+
+        protected override void fillFromDataRow(DataRow dataRow)
+        {
+            this.rangeCoeffs = new float[] {
+                                                ServiceFunctions.convertToFloat(dataRow["zero_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(dataRow["first_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(dataRow["second_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(dataRow["third_range_coeff"]),
+                                                ServiceFunctions.convertToFloat(dataRow["third_range_additional_coeff"])
+                                            };
+            this.voltageCoeffs = new float[]
+                                            {
+                                                ServiceFunctions.convertToFloat(dataRow["one_hundred_volts_coeff"]),
+                                                ServiceFunctions.convertToFloat(dataRow["five_hundred_volts_coeff"]),
+                                                ServiceFunctions.convertToFloat(dataRow["thousand_volts_coeff"])
+                                            };
+            this.checkSumFromDB = (uint)dataRow["coeffs_check_sum"];
         }
         protected override void setVariables()
         {
@@ -54,7 +109,7 @@ namespace NormaMeasure.DevicesClasses
             byte voltageControlCmdHeader = 0x20;
             byte measureCmdHeader = 0x30;
 
-            this.DeviceName = "Тераомметр";
+            this.deviceType = DEVICE_TYPE.TERA;
 
             this.serialCmd = new byte[] { serviceCmdHeader, 0x00 }; //Запрос серийного номера
             this.connectCmd = new byte[] { serviceCmdHeader, 0x01}; //Установка соединения
@@ -66,21 +121,6 @@ namespace NormaMeasure.DevicesClasses
             this.retentionVoltageCmd = new byte[] { measureCmdHeader, 0x00 }; //удержание напряжения при установленном времени поляризации, иначе при установленном времени поляризации через 4 секунды произойдёт отключение источника напряжения
             this.setVoltageCmd = new byte[] { voltageControlCmdHeader, 0xC0 }; //запуск источника напряжения, в зависимости от выставляемого напряжения второй байт будет принимать значения для 10В - 0, 100 - 1, 500 - 2, 1000 - 3 
             this.turnOffVoltage = new byte[] { voltageControlCmdHeader, 0x00 }; 
-        }
-
-        protected override void configurePort()
-        {
-            this.DevicePort.BaudRate = 9600;
-            this.DevicePort.Parity = System.IO.Ports.Parity.None;
-            this.DevicePort.ParityReplace = 63;
-            this.DevicePort.DataBits = 8;
-            this.DevicePort.ReadTimeout = 200;
-            this.DevicePort.WriteTimeout = 200;
-            this.DevicePort.WriteBufferSize = 2048;
-            this.DevicePort.ReadBufferSize = 4096;
-            this.DevicePort.ReceivedBytesThreshold = 1;
-            this.DevicePort.DiscardNull = false;
-            //this.devicePort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(DevicePort_DataReceived);
         }
 
         /// <summary>
@@ -96,12 +136,10 @@ namespace NormaMeasure.DevicesClasses
                     DeviceForm.MdiParent = form;
                     DeviceForm.FormClosing += new System.Windows.Forms.FormClosingEventHandler(deviceFormClosedEvent);
                     getCheckSumFromDevice(); //запрос проверочной суммы с прибора
-                    if (TeraDataRow == null)
+                    loadOrCreateFromDB(); 
+                    if (checkSumFromDevice != checkSumFromDB)
                     {
-                        if (!checkExistingInDB() || (checkSumFromDevice != checkSumFromDB))
-                        {
-                            syncCoeffs(true);
-                        }
+                        syncCoeffs(true);
                     }
                     DeviceForm.Show();
                 }
@@ -180,7 +218,7 @@ namespace NormaMeasure.DevicesClasses
         /// <summary>
         /// Ищет устройство в базе, если есть заполняет переменные класса. Если нет, создаёт добавляет в базу устройство
         /// </summary>
-        private bool checkExistingInDB()
+        private void loadOrCreateFromDB()
         {
             string query = String.Format(TeraSettings.Default.selectDeviceBySerial, this.SerialNumber);
             DataSet data_set = new DataSet();
@@ -188,14 +226,7 @@ namespace NormaMeasure.DevicesClasses
             MySqlDataAdapter da = new MySqlDataAdapter(query, dc.MyConn);
 
             da.Fill(data_set);
-
-            if (data_set.Tables[0].Rows.Count > 0)
-            {
-                this.TeraDataRow = data_set.Tables[0].Rows[0];
-                fillFromDB();
-                //MessageBox.Show("Тераомметр найден в БД");
-                return true;
-            }
+            if (data_set.Tables[0].Rows.Count > 0) this.deviceDataRow = data_set.Tables[0].Rows[0];
             else
             {
                 query = String.Format(TeraSettings.Default.insertDevice, this.SerialNumber);
@@ -204,35 +235,23 @@ namespace NormaMeasure.DevicesClasses
                 cmd.ExecuteNonQuery();
                 dc.MyConn.Close();
                 this.checkSumFromDB = this.checkSumFromDevice;
-                return false;
+                this.isLoadedFromDB = true;
             }
-        }
-        /// <summary>
-        /// Заполняет свойства класса из БД
-        /// </summary>
-        private void fillFromDB()
-        {
-            this.rangeCoeffs = new float[] {
-                                                ServiceFunctions.convertToFloat(TeraDataRow["zero_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(TeraDataRow["first_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(TeraDataRow["second_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(TeraDataRow["third_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(TeraDataRow["third_range_additional_coeff"])
-                                            };
-            this.voltageCoeffs = new float[]
-                                            {
-                                                ServiceFunctions.convertToFloat(TeraDataRow["one_hundred_volts_coeff"]),
-                                                ServiceFunctions.convertToFloat(TeraDataRow["five_hundred_volts_coeff"]),
-                                                ServiceFunctions.convertToFloat(TeraDataRow["thousand_volts_coeff"])
-                                            };
-            this.checkSumFromDB = (uint)TeraDataRow["coeffs_check_sum"];
         }
 
         private void getCheckSumFromDevice()
         {
             byte[] arr;
-            writePort(getCheckSumCmd);
-            arr = receiveByteArray(2, true);
+            if (isTestApp)
+            {
+                int idx = Convert.ToInt16(DevicePortName);
+                arr = new byte[] { DemoTera.FakeDevList[idx][2], DemoTera.FakeDevList[idx][3] };
+            }else
+            {
+                writePort(getCheckSumCmd);
+                arr = receiveByteArray(2, true);
+            }
+
             this.checkSumFromDevice = (uint)arr[0] + (uint)arr[1] * 256;
         }
 

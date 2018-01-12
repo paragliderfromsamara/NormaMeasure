@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="IsTestApp" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="DeviceSettingsFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">NormaDeviceSettings.ini</Value>
