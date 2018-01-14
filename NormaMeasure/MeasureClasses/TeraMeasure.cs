@@ -397,7 +397,7 @@ namespace NormaMeasure.MeasureClasses
                     this.voltageId = 0x04;
                     break;
                 default:
-                    this.voltageId = 0x03;
+                    this.voltageId = 0x00;
                     break;
             }
         }

@@ -130,19 +130,27 @@ namespace NormaMeasure.DevicesClasses
         /// <returns></returns>
         public override bool ConnectToDevice(MainForm form)
         {
+            if (DeviceForm == null)
+            {
                 if (connect())
                 {
                     DeviceForm = new DevicesForms.TeraForm(this);
                     DeviceForm.MdiParent = form;
                     DeviceForm.FormClosing += new System.Windows.Forms.FormClosingEventHandler(deviceFormClosedEvent);
                     getCheckSumFromDevice(); //запрос проверочной суммы с прибора
-                    loadOrCreateFromDB(); 
-                    if (checkSumFromDevice != checkSumFromDB)
+                    //loadOrCreateFromDB();
+                    if (!loadOrCreateFromDB() || (checkSumFromDevice != checkSumFromDB))
                     {
                         syncCoeffs(true);
                     }
                     DeviceForm.Show();
                 }
+            }else
+            {
+                DeviceForm.WindowState = System.Windows.Forms.FormWindowState.Normal; //Разворачиваем окно, если оно свёрнуто
+                DeviceForm.Activate(); //Делаем активным
+            }
+
                 
             return IsConnected;
 
@@ -181,7 +189,7 @@ namespace NormaMeasure.DevicesClasses
                 stsForm.completeStatus(3);
                 Thread.Sleep(1000);
                 stsForm.Close();
-                
+
             }
             else
             {
@@ -218,7 +226,7 @@ namespace NormaMeasure.DevicesClasses
         /// <summary>
         /// Ищет устройство в базе, если есть заполняет переменные класса. Если нет, создаёт добавляет в базу устройство
         /// </summary>
-        private void loadOrCreateFromDB()
+        private bool loadOrCreateFromDB()
         {
             string query = String.Format(TeraSettings.Default.selectDeviceBySerial, this.SerialNumber);
             DataSet data_set = new DataSet();
@@ -226,7 +234,11 @@ namespace NormaMeasure.DevicesClasses
             MySqlDataAdapter da = new MySqlDataAdapter(query, dc.MyConn);
 
             da.Fill(data_set);
-            if (data_set.Tables[0].Rows.Count > 0) this.deviceDataRow = data_set.Tables[0].Rows[0];
+            if (data_set.Tables[0].Rows.Count > 0)
+            {
+                this.deviceDataRow = data_set.Tables[0].Rows[0];
+                return true;
+            }
             else
             {
                 query = String.Format(TeraSettings.Default.insertDevice, this.SerialNumber);
@@ -236,22 +248,23 @@ namespace NormaMeasure.DevicesClasses
                 dc.MyConn.Close();
                 this.checkSumFromDB = this.checkSumFromDevice;
                 this.isLoadedFromDB = true;
+                return false;
             }
         }
 
         private void getCheckSumFromDevice()
         {
             byte[] arr;
-            if (isTestApp)
+            if (Properties.Settings.Default.IsTestApp)
             {
                 int idx = Convert.ToInt16(DevicePortName);
                 arr = new byte[] { DemoTera.FakeDevList[idx][2], DemoTera.FakeDevList[idx][3] };
-            }else
+            }
+            else
             {
                 writePort(getCheckSumCmd);
                 arr = receiveByteArray(2, true);
             }
-
             this.checkSumFromDevice = (uint)arr[0] + (uint)arr[1] * 256;
         }
 
@@ -311,8 +324,11 @@ namespace NormaMeasure.DevicesClasses
                 result.Status = 0;
                 result.Range = 2;
                 result.MeasureTime = r.Next(130, 133);
+                Thread.Sleep(50);
                 result.FirstMeasure = r.Next(46, 48);
+                Thread.Sleep(50);
                 result.LastMeasure = r.Next(500, 510);
+                Thread.Sleep(50);
                 result.IsReceived = true;
             }
             return result;

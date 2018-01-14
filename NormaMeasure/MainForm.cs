@@ -72,7 +72,6 @@ namespace NormaMeasure
         private void searchConnectedDevices()
         {
             string[] ports = isTestApp ? DemoModeEntities.DemoTera.FakePortNumbers() : System.IO.Ports.SerialPort.GetPortNames();
-            string v = "";
             if (ports.Length > 0)
             {
                 foreach (string pName in ports)
@@ -81,7 +80,6 @@ namespace NormaMeasure
                     {
                         Teraohmmeter t;
                         t = new Teraohmmeter(pName);
-                        v += t.NameWithSerial() + "; ";
                         if (t.IsExists)
                         {
                             ConnectedDevices.Add(t);
@@ -95,7 +93,6 @@ namespace NormaMeasure
                     }
                 }
             } else MessageBox.Show("Нет портов");
-            MessageBox.Show(v);
         }
 
     }
