@@ -344,6 +344,7 @@ namespace NormaMeasure.Teraohmmeter
             else
             {
                 this.measureStatus.Text = TeraMeasure.StatusString(status);
+                this.startHandMeasureBut.Enabled = !(status == MEASURE_STATUS.DISCHARGE);
             }
         }
 

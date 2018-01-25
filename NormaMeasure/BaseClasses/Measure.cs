@@ -84,7 +84,7 @@ namespace NormaMeasure.BaseClasses
 
         private void initTimer()
         {
-            MeasureTimer = new System.Timers.Timer(100);
+            MeasureTimer = new System.Timers.Timer(1000);
             MeasureTimer.AutoReset = true;
             MeasureTimer.Elapsed += MeasureTimer_Elapsed;
             resetTime();
