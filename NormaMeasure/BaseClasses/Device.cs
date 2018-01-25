@@ -7,9 +7,10 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Data;
 using NormaMeasure.Utils;
+using NormaMeasure.Teraohmmeter;
 
 
-namespace NormaMeasure.DevicesClasses
+namespace NormaMeasure.BaseClasses
 {             
     public enum DEVICE_TYPE
     {
@@ -52,6 +53,8 @@ namespace NormaMeasure.DevicesClasses
         /// Название типа устройства
         /// </summary>
         public string DeviceName;
+
+        public DEVICE_TYPE deviceType;
         /// <summary>
         /// COM Порт устройства через который происходит обмен данными
         /// </summary>
@@ -59,7 +62,7 @@ namespace NormaMeasure.DevicesClasses
         /// <summary>
         /// Код типа устройства
         /// </summary>
-        protected DEVICE_TYPE deviceType
+        public DEVICE_TYPE DeviceType
         {
             get
             {
@@ -67,7 +70,8 @@ namespace NormaMeasure.DevicesClasses
             }
             set
             {
-                switch(value)
+                deviceType = value;
+                switch (value)
                 {
                     case DEVICE_TYPE.TERA:
                         this.DeviceName = "Тераомметр";
@@ -79,6 +83,7 @@ namespace NormaMeasure.DevicesClasses
                         this.DeviceName = "САК-ТВЧ";
                         break;
                 }
+                
             }
         }
 
@@ -190,7 +195,7 @@ namespace NormaMeasure.DevicesClasses
             byte[] arr;
             this.ClosePort();
             writePort(this.serialCmd);
-            arr = isTestApp ? DemoModeEntities.DemoTera.FakeDevList[Convert.ToInt16(DevicePortName)] : receiveByteArray(2, true);
+            arr = isTestApp ? DemoTera.FakeDevList[Convert.ToInt16(DevicePortName)] : receiveByteArray(2, true);
             if (isValidSerial(arr)) //Проверка валидности номера прибора
             {
                 this.Number = arr[1];
@@ -209,7 +214,7 @@ namespace NormaMeasure.DevicesClasses
             byte[] arr;
             this.ClosePort();
             writePort(this.connectCmd);
-            arr = isTestApp ? DemoModeEntities.DemoTera.FakeDevList[Convert.ToInt16(this.DevicePortName)] : receiveByteArray(2, true);
+            arr = isTestApp ? getFakeDevice() : receiveByteArray(2, true);
             if (isValidSerial(arr)) //Проверка валидности номера прибора
             {
                 this.IsExists = this.IsConnected = makeSerial(arr[0], arr[1]) == this.SerialNumber;
@@ -273,6 +278,19 @@ namespace NormaMeasure.DevicesClasses
         {
             if (arr.Length == 0) return false;
             return (arr[0] <= 255 && arr[0] >= 0);
+        }
+
+
+        private byte[] getFakeDevice()
+        {
+            switch(this.DeviceType)
+            {
+                case DEVICE_TYPE.TERA:
+                    return DemoTera.FakeDevList[Convert.ToInt16(this.DevicePortName)];
+                default:
+                    return new byte[] { 0x00, 0x00 };
+            }
+           
         }
     }
 }

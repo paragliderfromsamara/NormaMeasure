@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace NormaMeasure.DevicesForms
+namespace NormaMeasure.Teraohmmeter
 {
     public partial class coeffsSynchronyzeStatus : Form
     {

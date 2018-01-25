@@ -108,6 +108,15 @@ namespace NormaMeasure.Utils
             catch (FormatException) { return 0; }
         }
 
+        public static int convertToInt32(object text)
+        {
+            try
+            {
+                string t = text.ToString();
+                return Convert.ToInt32(t);
+            }
+            catch (FormatException) { return 0; }
+        }
         /// <summary>
         /// Пытается конвертировать в целое число. Если получается возвращает число, если нет то 0
         /// </summary>
@@ -165,6 +174,15 @@ namespace NormaMeasure.Utils
             if (m < 10) _m = "0" + _m;
             if (s < 10) _s = "0" + _s;
             return _m + ":" + _s;
+
+        }
+
+        public static string TimerTime(int s)
+        {
+            int min = s / 60;
+            int sec = s;
+            if (min != 0) sec %= (min * 60);
+            return TimerTime(min, sec);
 
         }
     }

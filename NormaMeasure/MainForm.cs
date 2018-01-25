@@ -9,8 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Globalization;
-using NormaMeasure.DevicesClasses;
-using NormaMeasure.DataBaseClasses;
+
+using NormaMeasure.BaseClasses;
+using NormaMeasure.Teraohmmeter;
+
 namespace NormaMeasure
 {
     public partial class MainForm : Form
@@ -71,15 +73,15 @@ namespace NormaMeasure
 
         private void searchConnectedDevices()
         {
-            string[] ports = isTestApp ? DemoModeEntities.DemoTera.FakePortNumbers() : System.IO.Ports.SerialPort.GetPortNames();
+            string[] ports = isTestApp ? DemoTera.FakePortNumbers() : System.IO.Ports.SerialPort.GetPortNames();
             if (ports.Length > 0)
             {
                 foreach (string pName in ports)
                 {
                     try
                     {
-                        Teraohmmeter t;
-                        t = new Teraohmmeter(pName);
+                        TeraDevice t;
+                        t = new TeraDevice(pName);
                         if (t.IsExists)
                         {
                             ConnectedDevices.Add(t);

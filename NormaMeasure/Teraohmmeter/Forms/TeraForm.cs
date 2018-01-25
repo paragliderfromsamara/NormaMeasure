@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Threading;
-using NormaMeasure.DevicesClasses;
-using NormaMeasure.MeasureClasses;
+using NormaMeasure.BaseClasses;
 using NormaMeasure.Utils;
 
-namespace NormaMeasure.DevicesForms
+namespace NormaMeasure.Teraohmmeter
 {
     public partial class TeraForm : Form
     {
+
         double[][] isolationMaterialCoeffsArr;
 
         protected delegate void updateServiceFieldDelegate(string serviceInfo);
-        protected delegate void updateResultFieldDelegate(TeraMeasureResult result);
+        protected delegate void updateResultFieldDelegate(MeasureResultTera result);
         protected delegate void updateCycleNumberFieldDelegate(string cycleNumb);
         protected delegate void updateStatMeasInfoDelegate(string[] statMeasInfo);
-        protected delegate void refreshMeasureTimerDelegate(int[] time);
+        protected delegate void refreshMeasureTimerDelegate(int seconds);
         protected delegate void switchFieldsMeasureOnOffDelegate(bool flag);
         protected delegate void updateResultFieldTextDelegate(string text);
-        protected delegate void updateMeasureStatusDelegate(string text);
+        protected delegate void updateMeasureStatusDelegate(MEASURE_STATUS status);
 
-        Teraohmmeter teraDevice;
+        TeraDevice teraDevice;
         TeraMeasure handMeasure;
-        public TeraForm(Teraohmmeter tera_device)
+        public TeraForm(TeraDevice tera_device)
         {
             InitializeComponent();
             this.teraDevice = tera_device;
@@ -41,13 +41,13 @@ namespace NormaMeasure.DevicesForms
 
         private void fillTeraDS()
         {
-            DBControl dc = new DBControl(NormaMeasure.DevicesSettings.TeraSettings.Default.dbName);
+            DBControl dc = new DBControl(TeraSettings.Default.dbName);
             MySqlDataAdapter da = new MySqlDataAdapter();
-            da = new MySqlDataAdapter(NormaMeasure.DevicesSettings.TeraSettings.Default.selectMaterials, dc.MyConn);
+            da = new MySqlDataAdapter(TeraSettings.Default.selectMaterials, dc.MyConn);
             da.Fill(isolation_materials);
-            da = new MySqlDataAdapter(NormaMeasure.DevicesSettings.TeraSettings.Default.selectCameraTypes, dc.MyConn);
+            da = new MySqlDataAdapter(TeraSettings.Default.selectCameraTypes, dc.MyConn);
             da.Fill(camera_types);
-            da = new MySqlDataAdapter(NormaMeasure.DevicesSettings.TeraSettings.Default.selectBringingTypes, dc.MyConn);
+            da = new MySqlDataAdapter(TeraSettings.Default.selectBringingTypes, dc.MyConn);
             da.Fill(bringing_types);
             dc.Dispose();
             da.Dispose();
@@ -99,11 +99,11 @@ namespace NormaMeasure.DevicesForms
         {
             int materialsNumb = this.materialTypes.Items.Count;
             double[][] resultArr = new double[materialsNumb][];
-            DBControl dc = new DBControl(NormaMeasure.DevicesSettings.TeraSettings.Default.dbName);
+            DBControl dc = new DBControl(TeraSettings.Default.dbName);
             MySqlDataAdapter da = new MySqlDataAdapter();
             for (int i = 0; i < materialsNumb; i++)
             {
-                string q = String.Format(NormaMeasure.DevicesSettings.TeraSettings.Default.selectIsolationMaterialCoeffs, i + 1);
+                string q = String.Format(TeraSettings.Default.selectIsolationMaterialCoeffs, i + 1);
                 DataSet ds = new DataSet();
                 da = new MySqlDataAdapter(q, dc.MyConn);
                 da.Fill(ds);
@@ -194,6 +194,7 @@ namespace NormaMeasure.DevicesForms
 
         private void cleanHandMeasInfo()
         {
+            this.measureStatus.Text = TeraMeasure.StatusString(MEASURE_STATUS.NOT_STARTED);
             this.measTimeLbl.Text = this.normaLbl.Text = this.cycleCounterLbl.Text = this.statMeasNumbOfLbl.Text = this.midStatMeasValLbl.Text = this.measTimeLbl.Text = "";
             this.measureResultLbl.Text = "0.0 МОм";
         }
@@ -229,15 +230,16 @@ namespace NormaMeasure.DevicesForms
                      if (!Properties.Settings.Default.IsTestApp)
                      {
                          this.teraDevice.DevicePort.DiscardInBuffer();
-                         handMeasure.Stop();
-                        switchFieldsMeasureOnOff(true);
-                    }
-                    else switchFieldsMeasureOnOff(true);
-                 }
+                        // handMeasure.Stop();
+                         switchFieldsMeasureOnOff(true);
+                     }
+                     else switchFieldsMeasureOnOff(true);
+                     updateMeasureStatus(MEASURE_STATUS.STOPED);
+            }
                 //else { this.mForm.currentDevice.stopMeasure();}//this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
                 //this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
             }
-        public void updateResultField(TeraMeasureResult result) //Для обновления поля результата из другого потока в котором проходит испытание
+        public void updateResultField(MeasureResultTera result) //Для обновления поля результата из другого потока в котором проходит испытание
         {
             if (InvokeRequired)
             {
@@ -246,14 +248,7 @@ namespace NormaMeasure.DevicesForms
             }
             else
             {
-                //this.teraMeas.bringingCoeff = calculateBringingCoeff();
-               // switch (measType)
-                //{
-                //    case MEASURE_TYPE.HAND:
-                        fillHandMeasureResultFields(result);
-               //         break;
-              //  }
-
+                fillHandMeasureResultFields(result);
             }
         }
 
@@ -284,6 +279,7 @@ namespace NormaMeasure.DevicesForms
                 if (flag)
                 {
                     this.teraDevice.ClosePort();
+                    this.handMeasure.Stop();
                 }
                 else
                 {
@@ -338,7 +334,7 @@ namespace NormaMeasure.DevicesForms
             }
         }
 
-        public void updateMeasureStatus(string status) //Для обновления поля результата из другого потока в котором проходит испытание
+        public void updateMeasureStatus(MEASURE_STATUS status) //Для обновления поля результата из другого потока в котором проходит испытание
         {
             if (InvokeRequired)
             {
@@ -347,12 +343,24 @@ namespace NormaMeasure.DevicesForms
             }
             else
             {
-                this.measureStatus.Text = status;
-
+                this.measureStatus.Text = TeraMeasure.StatusString(status);
             }
         }
 
-        private void fillHandMeasureResultFields(TeraMeasureResult result)
+        public void RefreshMeasureTimer(int seconds) //Для обновления поля результата из другого потока в котором проходит испытание
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new refreshMeasureTimerDelegate(RefreshMeasureTimer), new object[] { seconds });
+                return;
+            }
+            else
+            {
+                this.measTimeLbl.Text = ServiceFunctions.TimerTime(seconds);
+            }
+        }
+
+        private void fillHandMeasureResultFields(MeasureResultTera result)
         {
             if (isDegreeViewCheckBox.Checked)
             {
@@ -415,6 +423,7 @@ namespace NormaMeasure.DevicesForms
                     return "";
             }
         }
+
 
     }
 }

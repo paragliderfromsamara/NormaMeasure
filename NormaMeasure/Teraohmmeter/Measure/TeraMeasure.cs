@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using NormaMeasure.DevicesClasses;
+//using System.Windows.Forms;
 using NormaMeasure.Utils;
+using NormaMeasure.BaseClasses;
 
-namespace NormaMeasure.MeasureClasses
+namespace NormaMeasure.Teraohmmeter
 {
     public enum TERA_RESULT_STATUS : byte
     {
@@ -16,49 +17,32 @@ namespace NormaMeasure.MeasureClasses
         SHORT_CIRCUIT = 2 //2-короткое замыкание
     }
 
-    public enum TERA_MEASURE_STAGE_STATUS : byte
-    {
-        POLAR = 0,
-        DEPOLAR = 1,
-        IN_AVERAGING_CYCLE = 2,
-        FINISHED = 3
-
-    }
 
 
-    public struct TeraMeasureResult
-    {
-        public bool IsReceived; // статус принято или нет
-        public int Range; //Диапазон
-        public int Status; //Статус
-        public int MeasureTime; //Время измерения
-        public int FirstMeasure; //Начальное состояние интегратора
-        public int LastMeasure; //Конечное состояние интегратора
-        public double AbsoluteResult; //Абсолютные результат
-        public double BringingResult; //Приведенный результат
-    }
+
     public class TeraMeasure : MeasureBase
     {
-        Teraohmmeter teraDevice;
-        private List<TeraMeasureResult> ResultList;
+        TeraDevice teraDevice;
         private int temperature = 20;
         private int voltage = 10;
         private int dischargeDelay = 0;
         private int polarizationDelay = 0;
         private bool isCyclicMeasure = true;
         private int cycleTimes = 100;
-        private int averagingTimes = 10;
+        private int averagingTimes = 1;
         private int externalCamDiam = 54;
         private int internalCamDiam = 50;
         private string bringingTypeId = "1";
         private int materialHeight = 1000;
         private bool isDegreeViewMode = false;
         private int minTimeToNorm = 1;
-        private int normaValue = 1000;
+        private int normaValue = 0;
         private string materialId = "1";
         private int bringingLength = 1000;
         private int bringingLengthMeasureId = 0;
         private byte voltageId = 0;
+        public double EtalonVal = 10000;
+        public double MaxDeviationPercent = 5;
         /// <summary>
         /// Температура испытаний
         /// </summary>
@@ -79,7 +63,7 @@ namespace NormaMeasure.MeasureClasses
             }
         }
 
-        
+
         /// <summary>
         /// Испытательное напряжение, Вольт
         /// </summary>
@@ -198,7 +182,7 @@ namespace NormaMeasure.MeasureClasses
             get
             {
                 return externalCamDiam;
-            }set
+            } set
             {
                 if (externalCamDiam != value)
                 {
@@ -243,7 +227,7 @@ namespace NormaMeasure.MeasureClasses
                     bringingTypeId = value;
                 }
             }
-        } 
+        }
         /// <summary>
         /// Толщина материала, мкм
         /// </summary>
@@ -409,21 +393,20 @@ namespace NormaMeasure.MeasureClasses
             file.Write(key, val, sect);
         }
 
-        public TeraMeasure()
+        public TeraMeasure() : base()
         {
-            this.MeasureType = MEASURE_TYPE.AUTO;
+            
         }
 
-        public TeraMeasure(Teraohmmeter tera, MEASURE_TYPE t)
+        public TeraMeasure(TeraDevice tera, MEASURE_TYPE t) : base(t)
         {
             this.teraDevice = tera;
-            this.MeasureType = t;
-            initByMeasureType();
         }
 
-        private void initByMeasureType()
+        protected override void initByMeasureType()
         {
-           switch(MeasureType)
+            base.initByMeasureType();
+            switch (MeasureType)
             {
                 case MEASURE_TYPE.HAND:
                     fillDataFromIniFile();
@@ -452,44 +435,46 @@ namespace NormaMeasure.MeasureClasses
             this.materialHeight = ServiceFunctions.convertToInt16(file.ReadOrWrite("MaterialHeight", sect, this.MaterialHeight.ToString()));
             this.isDegreeViewMode = file.ReadOrWrite("IsDegreeViewMode", sect, this.IsDegreeViewMode.ToString()).ToLower() == "true";
             this.minTimeToNorm = ServiceFunctions.convertToInt16(file.ReadOrWrite("MinTimeToNorm", sect, this.MinTimeToNorm.ToString()));
-            this.normaValue = ServiceFunctions.convertToInt16(file.ReadOrWrite("NormaValue", sect, this.NormaValue.ToString()));
+            this.normaValue = ServiceFunctions.convertToInt32(file.ReadOrWrite("NormaValue", sect, this.NormaValue.ToString()));
             this.materialId = file.ReadOrWrite("MaterialId", sect, this.materialId.ToString());
             this.bringingLength = ServiceFunctions.convertToInt16(file.ReadOrWrite("BringingLength", sect, this.bringingLength.ToString()));
             this.bringingLengthMeasureId = ServiceFunctions.convertToInt16(file.ReadOrWrite("BringingLengthMeasureId", sect, this.bringingLengthMeasureId.ToString()));
-        
+
         }
 
-        protected override void handMeasureThreadFunction()
+        private void polarisation()
+        {
+            this.MeasureStatus = MEASURE_STATUS.POLAR;
+            int delay = this.PolarizationDelay * 60;
+            resetTime();
+            do
+            {
+                this.teraDevice.RetentionVoltage();
+                Thread.Sleep(750);
+            } while (delay > measSeconds);
+        }
+
+        private void discharge()
+        {
+            resetTime();
+            MEASURE_STATUS was = MeasureStatus;
+            this.MeasureStatus = MEASURE_STATUS.DISCHARGE;
+            while (DischargeDelay > measSeconds);
+            resetTime();
+            if (was == MEASURE_STATUS.STOPED) this.MeasureStatus = MEASURE_STATUS.STOPED;
+            
+        }
+
+        private void measure()
         {
             int cycleCount = 0;
             int mCountLimit = this.AveragingTimes;
             int cycleCountLimit = this.CycleTimes;
-            this.teraDevice.setVoltage(this.voltageId);
-            Thread.Sleep(500);
-            TeraMeasureResult result = new TeraMeasureResult();
-            List<TeraMeasureResult> resultList = new List<TeraMeasureResult>();
-            if (this.PolarizationDelay > 0)
-            {
-                this.teraDevice.DeviceForm.updateMeasureStatus("Поляризация...");
-                int minute = this.PolarizationDelay;
-                int sec = 1;
-                do
-                {
-                    this.teraDevice.RetentionVoltage();
-                    sec--;
-                    if (sec == 0 && minute > 0)
-                    {
-                        sec = 59;
-                        minute--;
-                    }
-                    this.teraDevice.DeviceForm.updateResultFieldText(ServiceFunctions.TimerTime(minute, sec));
-                    Thread.Sleep(1000);
-                    this.teraDevice.DeviceForm.updateResultFieldText(ServiceFunctions.TimerTime(minute, sec));
-                } while (minute != 0 || sec != 0);
-            }
-            this.teraDevice.DeviceForm.updateResultFieldText("Измерение...");
-            //int[] cmd = uTest.makeCmd;
-            //uTest.setDiaps();
+            MeasureResultTera result = new MeasureResultTera();
+            List<MeasureResultTera> resultList = new List<MeasureResultTera>();
+            resetTime();
+            this.MeasureStatus = MEASURE_STATUS.IS_GOING;
+            this.updateResultFieldText("подождите...");
             do
             {
                 this.teraDevice.DeviceForm.updateCycleNumberField((cycleCount + 1).ToString());
@@ -500,7 +485,7 @@ namespace NormaMeasure.MeasureClasses
                 if (Properties.Settings.Default.IsTestApp) Thread.Sleep(2000);
                 resultList.Add(result);
 
-                if (this.IsStatistic) this.teraDevice.DeviceForm.updateStatMeasInfo(new string[] { String.Format("{0} из {1}", resultList.Count, mCountLimit), this.teraDevice.DeviceForm.absoluteResultView(result.AbsoluteResult) });
+                if (this.IsStatistic) this.updateStatMeasInfo(new string[] { String.Format("{0} из {1}", resultList.Count, mCountLimit), this.teraDevice.DeviceForm.absoluteResultView(result.AbsoluteResult) });
 
                 if (resultList.Count < mCountLimit) continue;
                 result = calcAverage(resultList);
@@ -508,24 +493,58 @@ namespace NormaMeasure.MeasureClasses
                 resultList.Clear();
                 cycleCount++;
                 if (!this.IsCyclicMeasure && cycleCount == this.CycleTimes) break;
-
                 //счетчик циклов
                 this.teraDevice.DeviceForm.updateResultField(result);
                 //this.pause();
             } while (true);
-            this.teraDevice.DeviceForm.updateMeasureStatus("Измерение не начато.");
-            this.teraDevice.DeviceForm.switchFieldsMeasureOnOff(true);
-            //this.teraMeasure.measTestForm.switchButtons(false);
         }
 
-        private TeraMeasureResult calcAverage(List<TeraMeasureResult> resultList)
+        protected override void handMeasureThreadFunction()
         {
-            TeraMeasureResult result = resultList.Last();
+            this.teraDevice.setVoltage(this.voltageId);
+            Thread.Sleep(500);
+            if (this.PolarizationDelay > 0) polarisation();
+            measure();
+            if (this.DischargeDelay > 0) discharge();
+            this.MeasureStatus = MEASURE_STATUS.FINISHED;
+        }
+
+        /// <summary>
+        /// Обновляет поле статуса испытания
+        /// </summary>
+        /// <param name="stat"></param>
+        protected override void updatedMeasureStatusHandle()
+        {
+            base.updatedMeasureStatusHandle();
+            if (this.MeasureStatus != MEASURE_STATUS.NOT_STARTED) this.teraDevice.DeviceForm.updateMeasureStatus(this.MeasureStatus);
+        }
+
+        /// <summary>
+        /// Обновляет поле результата в текстовом формате
+        /// </summary>
+        /// <param name="txt"></param>
+        private void updateResultFieldText(string txt)
+        {
+            if (this.MeasureType == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateResultFieldText(txt);
+        }
+
+        /// <summary>
+        /// Обновляет поля статистических испытаний
+        /// </summary>
+        /// <param name="txt"></param>
+        private void updateStatMeasInfo(string[] txt)
+        {
+            if (this.MeasureType == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateStatMeasInfo(txt);
+        }
+
+        private MeasureResultTera calcAverage(List<MeasureResultTera> resultList)
+        {
+            MeasureResultTera result = resultList.Last();
             double absRes = 0;
             double brRes = 0;
             if (resultList.Count > 1)
             {
-                foreach(TeraMeasureResult tmr in resultList)
+                foreach (MeasureResultTera tmr in resultList)
                 {
                     absRes += tmr.AbsoluteResult;
                     brRes += tmr.BringingResult;
@@ -536,10 +555,10 @@ namespace NormaMeasure.MeasureClasses
             return result;
         }
 
-        private TeraMeasureResult getMeasureResult()
+        private MeasureResultTera getMeasureResult()
         {
             this.teraDevice.StartIntegrator();
-            TeraMeasureResult r;
+            MeasureResultTera r;
             int maxMeasTime = 400;
             int time = 0;
             do
@@ -553,7 +572,7 @@ namespace NormaMeasure.MeasureClasses
                 Thread.Sleep(100);
                 time++;
             } while (time < maxMeasTime);
-           
+
             return r;
         }
 
@@ -563,7 +582,7 @@ namespace NormaMeasure.MeasureClasses
         }
 
 
-        private TeraMeasureResult convertAdcResult(TeraMeasureResult result)
+        private MeasureResultTera convertAdcResult(MeasureResultTera result)
         {
             double _R = 0;
             double integratorDifference = (result.LastMeasure > result.FirstMeasure) ? ((double)result.LastMeasure - (double)result.FirstMeasure) : 0;
@@ -589,8 +608,60 @@ namespace NormaMeasure.MeasureClasses
             if (_R > 0.0004) _R -= this.teraDevice.zeroResistance;                                     // Вычитаем 300кОм последовательно включён
             if (_R < 0.005 && _R > 0) _R += 0.00013; // Если меньше 5МОм то добавляем 170 кОм
             result.AbsoluteResult = _R; // * this.bringingCoeff;
-            result.BringingResult = _R; 
+            result.BringingResult = _R;
             return result;
         }
+
+        public static string StatusString(MEASURE_STATUS sts)
+        {
+            switch (sts)
+            {
+                case MEASURE_STATUS.POLAR:
+                    return "Поляризация";
+                case MEASURE_STATUS.DISCHARGE:
+                    return "Деполяризация";
+                case MEASURE_STATUS.FINISHED:
+                    return "Измерение завершено";
+                case MEASURE_STATUS.IS_GOING:
+                    return "Идёт измерение";
+                case MEASURE_STATUS.STOPED:
+                    return "Остановлено";
+                case MEASURE_STATUS.NOT_STARTED:
+                default:
+                    return "Не начато";
+
+            }
+        }
+
+        protected override void measureTimerHandler()
+        {
+            int sec;
+            switch(measureStatus)
+            {
+                case MEASURE_STATUS.POLAR:
+                    sec = (this.PolarizationDelay * 60) - measSeconds;
+                    break;
+                case MEASURE_STATUS.DISCHARGE:
+                    sec = this.DischargeDelay - measSeconds;
+                    break;
+                default:
+                    sec = measSeconds;
+                    break;
+            }
+            this.teraDevice.DeviceForm.RefreshMeasureTimer(sec);
+        }
+
+        public override void Stop()
+        {
+            base.Stop();
+            if (DischargeDelay > 0)
+            {
+                this.measureThread = new Thread(discharge);
+                this.measureThread.Start();
+                MeasureTimer.Start();
+            } 
+        }
+        
+
     }
 }

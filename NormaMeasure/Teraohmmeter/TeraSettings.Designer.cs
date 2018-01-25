@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NormaMeasure.DevicesSettings {
+namespace NormaMeasure.Teraohmmeter {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

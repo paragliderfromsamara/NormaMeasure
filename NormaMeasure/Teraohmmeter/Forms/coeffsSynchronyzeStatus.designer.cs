@@ -1,4 +1,4 @@
-﻿namespace NormaMeasure.DevicesForms
+﻿namespace NormaMeasure.Teraohmmeter
 {
     partial class coeffsSynchronyzeStatus
     {

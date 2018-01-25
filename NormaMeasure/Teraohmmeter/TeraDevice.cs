@@ -7,36 +7,14 @@ using System.Threading;
 using System.Data;
 using MySql.Data.MySqlClient;
 using NormaMeasure.Utils;
-using NormaMeasure.DevicesSettings;
-using NormaMeasure.DevicesForms;
-using NormaMeasure.MeasureClasses;
-using NormaMeasure.DemoModeEntities;
+using NormaMeasure.BaseClasses;
 
 
-namespace NormaMeasure.DevicesClasses
+namespace NormaMeasure.Teraohmmeter
 {
-    public class Teraohmmeter : Device
+    public class TeraDevice : Device
     {
-        public NormaMeasure.DevicesForms.TeraForm DeviceForm;
-        private DataRow teraDataRow
-        { set
-            {
-                this.rangeCoeffs = new float[] {
-                                                ServiceFunctions.convertToFloat(value["zero_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(value["first_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(value["second_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(value["third_range_coeff"]),
-                                                ServiceFunctions.convertToFloat(value["third_range_additional_coeff"])
-                                            };
-                this.voltageCoeffs = new float[]
-                                                {
-                                                ServiceFunctions.convertToFloat(value["one_hundred_volts_coeff"]),
-                                                ServiceFunctions.convertToFloat(value["five_hundred_volts_coeff"]),
-                                                ServiceFunctions.convertToFloat(value["thousand_volts_coeff"])
-                                                };
-                this.checkSumFromDB = (uint)value["coeffs_check_sum"];
-            }
-        }
+        public TeraForm DeviceForm;
 
         public uint checkSumFromDevice = 0; //проверочная сумма для коэффициентов коррекции из прибора
         public uint checkSumFromDB = 0; //Проверочная сумма из БД
@@ -57,11 +35,11 @@ namespace NormaMeasure.DevicesClasses
         byte[] setVoltageCmd; //запуск источника напряжения, в зависимости от выставляемого напряжения второй байт будет принимать значения для 10В - 0 
         byte[] turnOffVoltage; //Выключает напряжение
 
-        public Teraohmmeter()
+        public TeraDevice()
         {
             InitDevice();
         }
-        public Teraohmmeter(string port_name)
+        public TeraDevice(string port_name)
         {
             InitDevice();
             this.DevicePortName = port_name;
@@ -109,7 +87,7 @@ namespace NormaMeasure.DevicesClasses
             byte voltageControlCmdHeader = 0x20;
             byte measureCmdHeader = 0x30;
 
-            this.deviceType = DEVICE_TYPE.TERA;
+            this.DeviceType = DEVICE_TYPE.TERA;
 
             this.serialCmd = new byte[] { serviceCmdHeader, 0x00 }; //Запрос серийного номера
             this.connectCmd = new byte[] { serviceCmdHeader, 0x01}; //Установка соединения
@@ -134,7 +112,7 @@ namespace NormaMeasure.DevicesClasses
             {
                 if (connect())
                 {
-                    DeviceForm = new DevicesForms.TeraForm(this);
+                    DeviceForm = new TeraForm(this);
                     DeviceForm.MdiParent = form;
                     DeviceForm.FormClosing += new System.Windows.Forms.FormClosingEventHandler(deviceFormClosedEvent);
                     getCheckSumFromDevice(); //запрос проверочной суммы с прибора
@@ -150,8 +128,6 @@ namespace NormaMeasure.DevicesClasses
                 DeviceForm.WindowState = System.Windows.Forms.FormWindowState.Normal; //Разворачиваем окно, если оно свёрнуто
                 DeviceForm.Activate(); //Делаем активным
             }
-
-                
             return IsConnected;
 
         }
@@ -189,7 +165,6 @@ namespace NormaMeasure.DevicesClasses
                 stsForm.completeStatus(3);
                 Thread.Sleep(1000);
                 stsForm.Close();
-
             }
             else
             {
@@ -203,8 +178,8 @@ namespace NormaMeasure.DevicesClasses
             float[] voltage_coeffs = new float[this.voltageCoeffs.Length];
             if (Properties.Settings.Default.IsTestApp)
             {
-                this.rangeCoeffs = DemoModeEntities.DemoTera.rangeCoeffs();
-                this.voltageCoeffs = DemoModeEntities.DemoTera.voltageCoeffs();
+                this.rangeCoeffs = DemoTera.rangeCoeffs();
+                this.voltageCoeffs = DemoTera.voltageCoeffs();
                 Thread.Sleep(100);
             }else
             {
@@ -303,9 +278,9 @@ namespace NormaMeasure.DevicesClasses
             this.setVoltage(0);
         }
 
-        public TeraMeasureResult CheckResult()
+        public MeasureResultTera CheckResult()
         {
-            TeraMeasureResult result = new TeraMeasureResult();
+            MeasureResultTera result = new MeasureResultTera();
             result.IsReceived = false;
             if (!Properties.Settings.Default.IsTestApp)
             {

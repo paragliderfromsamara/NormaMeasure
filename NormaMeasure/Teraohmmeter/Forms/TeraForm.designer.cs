@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace NormaMeasure.DevicesForms
+namespace NormaMeasure.Teraohmmeter
 {
     partial class TeraForm
     {
@@ -31,6 +31,7 @@ namespace NormaMeasure.DevicesForms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.voltageComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.startHandMeasureBut = new System.Windows.Forms.Button();
@@ -87,6 +88,7 @@ namespace NormaMeasure.DevicesForms
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.handMeasureTabPage = new System.Windows.Forms.TabPage();
             this.calibrationTabPage = new System.Windows.Forms.TabPage();
+            this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.minTimeToNorm)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
@@ -730,6 +732,10 @@ namespace NormaMeasure.DevicesForms
             this.calibrationTabPage.Text = "Калибровка";
             this.calibrationTabPage.UseVisualStyleBackColor = true;
             // 
+            // MeasureTimer
+            // 
+            this.MeasureTimer.Interval = 1000;
+            // 
             // TeraForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -822,5 +828,6 @@ namespace NormaMeasure.DevicesForms
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage handMeasureTabPage;
         private System.Windows.Forms.TabPage calibrationTabPage;
+        private Timer MeasureTimer;
     }
 }

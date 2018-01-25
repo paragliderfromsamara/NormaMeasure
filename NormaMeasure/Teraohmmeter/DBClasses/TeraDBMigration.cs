@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
-using NormaMeasure.DevicesSettings;
 
-namespace NormaMeasure.DataBaseClasses
+
+namespace NormaMeasure.Teraohmmeter
 {
     class TeraDBMigration
     {
