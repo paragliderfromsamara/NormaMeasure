@@ -44,6 +44,29 @@ namespace NormaMeasure.Teraohmmeter
             createIsolationMaterialTCoeffsTable(); //Добавляет таблицу с температурными коэффициентами для материалов изоляции
             createBringingTypesTable(); //Добавляет таблицу типов приведения
             createDevicesTable(); // createDevicesTable(); //Добавляет таблицу с приборами
+            createEtalonMapsTable(); // создаёт таблицу с эталонами
+        }
+
+        private void createEtalonMapsTable()
+        {
+            string tableName = "etalon_maps";
+            string[] colsArray = {
+                                    //INSERT INTO devices (serial_number) VALUES {0}
+                                    //UPDATE devices SET devices.zero_range_coeff = {1}, devices.first_range_coeff = {2}, devices.second_range_coeff = {3}, devices.third_range_coeff = {4}, devices.third_range_additional_coeff = {5}, devices.one_hundred_volts_coeff = {6}, devices.five_hundred_volts_coeff = {7}, devices.thousand_volts_coeff = {8}, devices.coeffs_check_sum = {9} WHERE devices.serial_number IN("{0}")
+                                    //при добавлении столбцов необходимо исправить строки запроса 
+                                    "id INT UNSIGNED AUTO_INCREMENT NOT NULL", //0
+                                    "name TINYTEXT",                  //1
+                                    "one_mom FLOAT Default 1.0",      //2
+                                    "ten_mom FLOAT Default 10.0",
+                                    "one_hundred_mom FLOAT Default 100.0",     //3
+                                    "one_gom FLOAT Default 1000.0",    //4
+                                    "ten_gom FLOAT Default 10000.0",     //5
+                                    "one_hundred_gom FLOAT Default 100000.0", //6
+                                    "one_tom FLOAT Default 1000000.0",      //7
+                                    "ten_tom FLOAT Default 10000000.0",     //8
+                                    "PRIMARY KEY (id)"
+                                 };
+            checkAndAddTable(tableName, colsArray);
         }
 
         private void createDevicesTable()

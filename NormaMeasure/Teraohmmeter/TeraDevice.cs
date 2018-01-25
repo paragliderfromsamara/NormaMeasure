@@ -114,7 +114,8 @@ namespace NormaMeasure.Teraohmmeter
                 {
                     DeviceForm = new TeraForm(this);
                     DeviceForm.MdiParent = form;
-                    DeviceForm.FormClosing += new System.Windows.Forms.FormClosingEventHandler(deviceFormClosedEvent);
+                    DeviceForm.FormClosed += new System.Windows.Forms.FormClosedEventHandler(deviceFormClosedEvent);
+                    //DeviceForm.FormClosing += new System.Windows.Forms.FormClosingEventHandler(deviceFormClosedEvent);
                     getCheckSumFromDevice(); //запрос проверочной суммы с прибора
                     //loadOrCreateFromDB();
                     if (!loadOrCreateFromDB() || (checkSumFromDevice != checkSumFromDB))
@@ -132,7 +133,15 @@ namespace NormaMeasure.Teraohmmeter
 
         }
 
-        private void deviceFormClosedEvent(object sender, System.Windows.Forms.FormClosingEventArgs arg)
+        protected override void disconnect()
+        {
+            base.disconnect();
+            this.DeviceForm.Dispose();
+            this.DeviceForm = null;
+        }
+
+
+        private void deviceFormClosedEvent(object sender, System.Windows.Forms.FormClosedEventArgs arg)
         {
             if (IsConnected) this.disconnect();
         }

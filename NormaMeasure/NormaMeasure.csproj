@@ -50,6 +50,12 @@
     <Compile Include="Teraohmmeter\DBClasses\TeraDBMigration.cs" />
     <Compile Include="Teraohmmeter\DemoTera.cs" />
     <Compile Include="BaseClasses\Device.cs" />
+    <Compile Include="Teraohmmeter\Forms\TeraEtalonMapControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Teraohmmeter\Forms\TeraEtalonMapControl.Designer.cs">
+      <DependentUpon>TeraEtalonMapControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Teraohmmeter\TeraDevice.cs" />
     <Compile Include="Teraohmmeter\Forms\coeffsSynchronyzeStatus.cs">
       <SubType>Form</SubType>
@@ -85,6 +91,9 @@
     <Compile Include="Utils\ServiceFunctions.cs" />
     <EmbeddedResource Include="Teraohmmeter\Forms\coeffsSynchronyzeStatus.resx">
       <DependentUpon>coeffsSynchronyzeStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Teraohmmeter\Forms\TeraEtalonMapControl.resx">
+      <DependentUpon>TeraEtalonMapControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Teraohmmeter\Forms\TeraForm.resx">
       <DependentUpon>TeraForm.cs</DependentUpon>

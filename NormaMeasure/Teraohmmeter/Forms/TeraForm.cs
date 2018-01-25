@@ -18,6 +18,7 @@ namespace NormaMeasure.Teraohmmeter
     {
 
         double[][] isolationMaterialCoeffsArr;
+        private bool measureIsActive = false; 
 
         protected delegate void updateServiceFieldDelegate(string serviceInfo);
         protected delegate void updateResultFieldDelegate(MeasureResultTera result);
@@ -345,6 +346,7 @@ namespace NormaMeasure.Teraohmmeter
             {
                 this.measureStatus.Text = TeraMeasure.StatusString(status);
                 this.startHandMeasureBut.Enabled = !(status == MEASURE_STATUS.DISCHARGE);
+                this.measureIsActive = (status != MEASURE_STATUS.NOT_STARTED && status != MEASURE_STATUS.FINISHED && status != MEASURE_STATUS.STOPED);
             }
         }
 
@@ -425,6 +427,14 @@ namespace NormaMeasure.Teraohmmeter
             }
         }
 
-
+        private void TeraForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.measureIsActive)
+            {
+                MessageBox.Show(String.Format("{0} находится в процессе измерений!!! \nЧтобы закрыть окно, необходимо завершить измерение.", this.teraDevice.NameWithSerial()), "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true;
+            }
+            
+        }
     }
 }

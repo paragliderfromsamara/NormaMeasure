@@ -746,6 +746,7 @@ namespace NormaMeasure.Teraohmmeter
             this.MaximizeBox = false;
             this.Name = "TeraForm";
             this.Text = "Ручные измерения";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TeraForm_FormClosing);
             this.measureSettingsGroup.ResumeLayout(false);
             this.measureSettingsGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.minTimeToNorm)).EndInit();

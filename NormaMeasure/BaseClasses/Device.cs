@@ -226,7 +226,7 @@ namespace NormaMeasure.BaseClasses
         /// <summary>
         /// Отключение от устройства
         /// </summary>
-        protected void disconnect()
+        protected virtual void disconnect()
         {
             this.ClosePort();
             writePort(this.disconnectCmd);
