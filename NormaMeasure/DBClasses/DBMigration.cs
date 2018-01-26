@@ -56,14 +56,14 @@ namespace NormaMeasure.DBClasses
                                     //при добавлении столбцов необходимо исправить строки запроса 
                                     "id INT UNSIGNED AUTO_INCREMENT NOT NULL", //0
                                     "name TINYTEXT",                  //1
-                                    "one_mom DECIMAL Default 1.0",      //2
-                                    "ten_mom DECIMAL Default 10.0",
-                                    "one_hundred_mom DECIMAL Default 100.0",     //3
-                                    "one_gom DECIMAL Default 1000.0",    //4
-                                    "ten_gom DECIMAL Default 10000.0",     //5
-                                    "one_hundred_gom DECIMAL Default 100000.0", //6
-                                    "one_tom DECIMAL Default 1000000.0",      //7
-                                    "ten_tom DECIMAL Default 10000000.0",     //8
+                                    "one_mom FLOAT Default 1.0",      //2
+                                    "ten_mom FLOAT Default 10.0",
+                                    "one_hundred_mom FLOAT Default 100.0",     //3
+                                    "one_gom FLOAT Default 1000.0",    //4
+                                    "ten_gom FLOAT Default 10000.0",     //5
+                                    "one_hundred_gom FLOAT Default 100000.0", //6
+                                    "one_tom FLOAT Default 1000000.0",      //7
+                                    "ten_tom FLOAT Default 10000000.0",     //8
                                     "PRIMARY KEY (id)"
                                  };
             checkAndAddTable(tableName, colsArray);

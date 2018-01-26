@@ -31,10 +31,10 @@
             this.components = new System.ComponentModel.Container();
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.etalonMapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceListMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SerialPort = new System.IO.Ports.SerialPort(this.components);
-            this.картыЭталоновToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.добавитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.teraEtalonMapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,10 +52,18 @@
             // настройкиToolStripMenuItem
             // 
             this.настройкиToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.картыЭталоновToolStripMenuItem});
+            this.etalonMapsToolStripMenuItem});
             this.настройкиToolStripMenuItem.Name = "настройкиToolStripMenuItem";
             this.настройкиToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
             this.настройкиToolStripMenuItem.Text = "Настройки";
+            // 
+            // etalonMapsToolStripMenuItem
+            // 
+            this.etalonMapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.teraEtalonMapsToolStripMenuItem});
+            this.etalonMapsToolStripMenuItem.Name = "etalonMapsToolStripMenuItem";
+            this.etalonMapsToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.etalonMapsToolStripMenuItem.Text = "Карты эталонов";
             // 
             // deviceListMenuItem
             // 
@@ -63,20 +71,11 @@
             this.deviceListMenuItem.Size = new System.Drawing.Size(160, 20);
             this.deviceListMenuItem.Text = "Подключенные приборы";
             // 
-            // картыЭталоновToolStripMenuItem
+            // teraEtalonMapsToolStripMenuItem
             // 
-            this.картыЭталоновToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.добавитьToolStripMenuItem});
-            this.картыЭталоновToolStripMenuItem.Name = "картыЭталоновToolStripMenuItem";
-            this.картыЭталоновToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.картыЭталоновToolStripMenuItem.Text = "Карты эталонов";
-            // 
-            // добавитьToolStripMenuItem
-            // 
-            this.добавитьToolStripMenuItem.Name = "добавитьToolStripMenuItem";
-            this.добавитьToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
-            this.добавитьToolStripMenuItem.Text = "Добавить для ТОмМ-01";
-            this.добавитьToolStripMenuItem.Click += new System.EventHandler(this.добавитьToolStripMenuItem_Click);
+            this.teraEtalonMapsToolStripMenuItem.Name = "teraEtalonMapsToolStripMenuItem";
+            this.teraEtalonMapsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.teraEtalonMapsToolStripMenuItem.Text = "Тераомметр ТОмМ-01";
             // 
             // MainForm
             // 
@@ -101,8 +100,8 @@
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.IO.Ports.SerialPort SerialPort;
         private System.Windows.Forms.ToolStripMenuItem deviceListMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem картыЭталоновToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem добавитьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem etalonMapsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem teraEtalonMapsToolStripMenuItem;
     }
 }
 

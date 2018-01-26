@@ -21,15 +21,19 @@ namespace NormaMeasure.Teraohmmeter.Forms
             this.EtalonMap = new TeraEtalonMap();
             fillFromEtalonMap();
             createOrSaveButton.Text = "Добавить";
+            this.Text = "Новая карта эталонов для ТОмМ-01";
+            this.deleteButton.Visible = false;
         }
 
-        public TeraEtalonMapControl(TeraEtalonMap EtalonMap) : this()
+        public TeraEtalonMapControl(TeraEtalonMap EtalonMap)
         {
             InitializeComponent();
             this.EtalonMap = EtalonMap;
             isEditMode = true;
             fillFromEtalonMap();
             createOrSaveButton.Text = "Сохранить";
+            this.Text = "Изменение карты эталонов для ТОмМ-01";
+            this.deleteButton.Visible = true;
         }
 
         private void fillFromEtalonMap()
@@ -38,23 +42,33 @@ namespace NormaMeasure.Teraohmmeter.Forms
             textBox1MOm.Text = EtalonMap.OneMOm.ToString();
             textBox10MOm.Text = EtalonMap.TenMOm.ToString();
             textBox100MOm.Text = EtalonMap.OneHundredMOm.ToString();
-            textBox1GOm.Text = (EtalonMap.OneGOm / (decimal)1000).ToString();
-            textBox10GOm.Text = (EtalonMap.TenGOm / (decimal)1000).ToString();
-            textBox100GOm.Text = (EtalonMap.OneHundredGOm / (decimal)1000).ToString();
-            textBox1TOm.Text = (EtalonMap.OneTOm / (decimal)1000000).ToString();
-            textBox10TOm.Text = (EtalonMap.TenTOm / (decimal)1000000).ToString();
+            textBox1GOm.Text = (EtalonMap.OneGOm / 1000f).ToString();
+            textBox10GOm.Text = (EtalonMap.TenGOm / 1000f).ToString();
+            textBox100GOm.Text = (EtalonMap.OneHundredGOm / 1000f).ToString();
+            textBox1TOm.Text = (EtalonMap.OneTOm / 1000000f).ToString();
+            textBox10TOm.Text = (EtalonMap.TenTOm / 1000000f).ToString();
         }
 
         private void createOrSaveButton_Click(object sender, EventArgs e)
         {
             if (isEditMode)
             {
-
-            }else
+                if (EtalonMap.Update())
+                {
+                    MessageBox.Show("Карта эталонов успешно обновлена", "Успешно!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    this.Close();
+                    this.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось обновить карту эталонов", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
             {
                 if (EtalonMap.Create())
                 {
-                    MessageBox.Show("Карта эталонов успешно добавлена");
+                    MessageBox.Show("Карта эталонов успешно добавлена", "Успешно!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     this.Close();
                     this.Dispose();
                 }else
@@ -69,16 +83,17 @@ namespace NormaMeasure.Teraohmmeter.Forms
             TextBox tb = sender as TextBox;
             if (String.IsNullOrEmpty(tb.Text))
             {
-                tb.Text = "0";
+                tb.Text = "1";
                 return;
             }
             try
             {
-                decimal val = Convert.ToDecimal(tb.Text);
+                float val = float.Parse(tb.Text);
                 if (tb.Name == textBox1MOm.Name)
                 {
                     if (valid(val, textBox1MOm)) return;
                     this.EtalonMap.OneMOm = val;
+                   // MessageBox.Show(val.ToString());
                 }
                 else if (tb.Name == textBox10MOm.Name)
                 {
@@ -124,16 +139,16 @@ namespace NormaMeasure.Teraohmmeter.Forms
    
         }
 
-        private bool valid(decimal val, TextBox tb)
+        private bool valid(float val, TextBox tb)
         {
-            if (val <= 0)
+            if (val < 0)
             {
-                MessageBox.Show("Введённое значение не должно быть меньше или равным нулю!");
+                MessageBox.Show("Введённое значение не должно быть отрицательным!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tb.Text = 1.ToString();
             }
             else if (val > 1000)
             {
-                MessageBox.Show("Введённое значение слишком велико!");
+                MessageBox.Show("Введённое значение слишком велико!", "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 tb.Text = 1000.ToString();
             }
             return val > 1000 || val <= 0;
@@ -146,7 +161,21 @@ namespace NormaMeasure.Teraohmmeter.Forms
             this.EtalonMap.Name = tb.Text;
         }
 
-
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            DialogResult d = MessageBox.Show("Вы уверены, что хотите удалить карту эталонов?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (d == DialogResult.No) return;
+            if (this.EtalonMap.Delete())
+            {
+                MessageBox.Show("Карта эталонов успешно удалена", "Успешно!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                this.Close();
+                this.Dispose();
+            }
+            else
+            {
+                MessageBox.Show("Не удалось удалить карту эталонов!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 
 

@@ -12,30 +12,35 @@ namespace NormaMeasure.Teraohmmeter.DBClasses
 {
     public class TeraEtalonMap : DBBase
     {
-        public string Name = "No name";
-        public decimal OneMOm = 1;
-        public decimal TenMOm = 10;
-        public decimal OneHundredMOm = 100;
-        public decimal OneGOm = 1000;
-        public decimal TenGOm = 10000;
-        public decimal OneHundredGOm = 100000;
-        public decimal OneTOm = 1000000;
-        public decimal TenTOm = 10000000;
-
-        public int[] CalibrationEtalonNumbers = new int[] { 2, 3, 4, 5, 6 }; 
+        
+        public string Name = String.Empty;
+        public string AlterName
+        {
+            get { return String.IsNullOrEmpty(this.Name) ? "Карта эталонов " + this.Id : this.Name; }
+        }
+        public float OneMOm = 1;
+        public float TenMOm = 10;
+        public float OneHundredMOm = 100;
+        public float OneGOm = 1000;
+        public float TenGOm = 10000;
+        public float OneHundredGOm = 100000;
+        public float OneTOm = 1000000;
+        public float TenTOm = 10000000;
+        
+        public int[] CalibrationEtalonNumbers { get { return new int[] { 2, 3, 4, 5, 6 }; } } 
 
         /// <summary>
         /// Номинальные значения эталонов
         /// </summary>
-        public decimal[] Etalons = new decimal[] { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000 };
+        public float[] Etalons { get { return new float[] { 1f, 10f, 100f, 1000f, 10000f, 100000f, 1000000f, 10000000f }; } }
         /// <summary>
         /// Реальные значения эталонов
         /// </summary>
-        public decimal[] ResistanceList
+        public float[] ResistanceList
         {
             get
             {
-                return new decimal[] { OneMOm, TenMOm, OneHundredMOm, OneGOm, TenGOm, OneHundredGOm, OneTOm, TenTOm };
+                return new float[] { OneMOm, TenMOm, OneHundredMOm, OneGOm, TenGOm, OneHundredGOm, OneTOm, TenTOm };
             }
         }
 
@@ -70,15 +75,16 @@ namespace NormaMeasure.Teraohmmeter.DBClasses
 
         protected override void fillParametersFromRow(DataRow row)
         {
+            this.Id = row["id"].ToString();
             this.Name = row["name"].ToString();
-            this.OneMOm = ServiceFunctions.convertToDecimal(row["one_mom"]);
-            this.TenMOm = ServiceFunctions.convertToDecimal(row["ten_mom"]);
-            this.OneHundredMOm = ServiceFunctions.convertToDecimal(row["one_hundred_mom"]);
-            this.OneGOm = ServiceFunctions.convertToDecimal(row["one_gom"]);
-            this.TenGOm = ServiceFunctions.convertToDecimal(row["ten_gom"]);
-            this.OneHundredGOm = ServiceFunctions.convertToDecimal(row["one_hundred_gom"]);
-            this.OneTOm = ServiceFunctions.convertToDecimal(row["one_tom"]);
-            this.TenTOm = ServiceFunctions.convertToDecimal(row["ten_tom"]);
+            this.OneMOm = ServiceFunctions.convertToFloat(row["one_mom"]);
+            this.TenMOm = ServiceFunctions.convertToFloat(row["ten_mom"]);
+            this.OneHundredMOm = ServiceFunctions.convertToFloat(row["one_hundred_mom"]);
+            this.OneGOm = ServiceFunctions.convertToFloat(row["one_gom"]);
+            this.TenGOm = ServiceFunctions.convertToFloat(row["ten_gom"]);
+            this.OneHundredGOm = ServiceFunctions.convertToFloat(row["one_hundred_gom"]);
+            this.OneTOm = ServiceFunctions.convertToFloat(row["one_tom"]);
+            this.TenTOm = ServiceFunctions.convertToFloat(row["ten_tom"]);
         }
 
         protected override void setDefaultParameters()
@@ -93,7 +99,8 @@ namespace NormaMeasure.Teraohmmeter.DBClasses
                                             "ten_gom",
                                             "one_hundred_gom",
                                             "one_tom",
-                                            "ten_tom"
+                                            "ten_tom",
+                                            "id",
                                          };
 
             base.setDefaultParameters();
@@ -114,5 +121,7 @@ namespace NormaMeasure.Teraohmmeter.DBClasses
             }
             return mTypes;
         }
+
+
     }
 }

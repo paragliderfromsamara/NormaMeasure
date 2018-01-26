@@ -47,6 +47,7 @@
             this.createOrSaveButton = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
+            this.deleteButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -189,7 +190,7 @@
             // 
             this.createOrSaveButton.Location = new System.Drawing.Point(21, 245);
             this.createOrSaveButton.Name = "createOrSaveButton";
-            this.createOrSaveButton.Size = new System.Drawing.Size(182, 23);
+            this.createOrSaveButton.Size = new System.Drawing.Size(88, 23);
             this.createOrSaveButton.TabIndex = 18;
             this.createOrSaveButton.Text = "Добавить";
             this.createOrSaveButton.UseVisualStyleBackColor = true;
@@ -212,11 +213,22 @@
             this.textBoxName.TabIndex = 20;
             this.textBoxName.TextChanged += new System.EventHandler(this.textBoxName_TextChanged);
             // 
+            // deleteButton
+            // 
+            this.deleteButton.Location = new System.Drawing.Point(118, 245);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(88, 23);
+            this.deleteButton.TabIndex = 21;
+            this.deleteButton.Text = "Удалить";
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            // 
             // TeraEtalonMapControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(223, 289);
+            this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.createOrSaveButton);
@@ -271,5 +283,6 @@
         private System.Windows.Forms.Button createOrSaveButton;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox textBoxName;
+        private System.Windows.Forms.Button deleteButton;
     }
 }

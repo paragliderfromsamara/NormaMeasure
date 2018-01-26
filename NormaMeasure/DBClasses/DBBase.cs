@@ -70,7 +70,7 @@ namespace NormaMeasure.DBClasses
             string columns = "";
             string values = "";
             string[] colsVals = getColsValues();
-            for (int i = 0; i<this.colsList.Length; i++)
+            for (int i = 0; i<colsVals.Length; i++)
             {
                 if (i > 0)
                 {
@@ -82,6 +82,28 @@ namespace NormaMeasure.DBClasses
             }
             long val = SendQuery(String.Format(insertQuery, this.tableName, columns, values));
             return val == 0;
+        }
+
+        public virtual bool Update()
+        {
+            string[] colVals = getColsValues();
+            string condition = "id = " + this.Id;
+            string vals = String.Empty;
+            long v;
+            for(int i=0; i<colVals.Length; i++)
+            {
+                if (i > 0) vals += ", ";
+                vals += String.Format("{0} = {1}", this.colsList[i], colVals[i]);
+            }
+            v = UpdateField(vals, condition);
+            return v == 0;
+        }
+
+        public virtual bool Delete()
+        {
+            string query = BuildDestroyQueryWithCriteria(this.tableName, "id = " + this.Id);
+            long v = SendQuery(query);
+            return v == 0;
         }
 
         protected virtual void fillParametersFromRow(DataRow row) { }
