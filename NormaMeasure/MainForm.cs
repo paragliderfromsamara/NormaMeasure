@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Globalization;
 
+using NormaMeasure.DBClasses;
 using NormaMeasure.BaseClasses;
 using NormaMeasure.Teraohmmeter;
+using NormaMeasure.Teraohmmeter.Forms;
 
 namespace NormaMeasure
 {
@@ -34,7 +36,7 @@ namespace NormaMeasure
 
         private void initDataBases()
         {
-            TeraDBMigration tdbm = new TeraDBMigration();
+            DBMigration tdbm = new DBMigration();
         }
 
         private void fillDeviceList()
@@ -97,5 +99,19 @@ namespace NormaMeasure
             } else MessageBox.Show("Нет портов");
         }
 
+        private void добавитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            TeraEtalonMapControl temc = new TeraEtalonMapControl();
+            temc.FormClosed += TeraEtalonMapControl_Closed;//TeraEtalonMapControl_Closed;
+            temc.MdiParent = this;
+            temc.Show();
+            item.Enabled = false;
+        }
+
+        private void TeraEtalonMapControl_Closed(object sender, FormClosedEventArgs arg)
+        {
+            добавитьToolStripMenuItem.Enabled = true;
+        }
     }
 }

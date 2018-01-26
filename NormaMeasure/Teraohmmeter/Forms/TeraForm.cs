@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Threading;
+
+using NormaMeasure.DBClasses;
 using NormaMeasure.BaseClasses;
 using NormaMeasure.Utils;
 
@@ -42,7 +44,7 @@ namespace NormaMeasure.Teraohmmeter
 
         private void fillTeraDS()
         {
-            DBControl dc = new DBControl(TeraSettings.Default.dbName);
+            DBControl dc = new DBControl();
             MySqlDataAdapter da = new MySqlDataAdapter();
             da = new MySqlDataAdapter(TeraSettings.Default.selectMaterials, dc.MyConn);
             da.Fill(isolation_materials);

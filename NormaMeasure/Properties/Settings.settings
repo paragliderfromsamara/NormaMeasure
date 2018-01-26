@@ -8,12 +8,6 @@
     <Setting Name="DeviceSettingsFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">NormaDeviceSettings.ini</Value>
     </Setting>
-    <Setting Name="DBUser" Type="System.String" Scope="User">
-      <Value Profile="(Default)">root</Value>
-    </Setting>
-    <Setting Name="DBPassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="AdminMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

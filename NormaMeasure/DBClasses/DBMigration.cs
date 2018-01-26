@@ -7,17 +7,17 @@ using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 
 
-namespace NormaMeasure.Teraohmmeter
+namespace NormaMeasure.DBClasses
 {
-    class TeraDBMigration
+    class DBMigration
     {
-        private static string dbName = TeraSettings.Default.dbName;
+        private static string dbName = DBClasses.DBSettings.Default.DBName;
         private static string query;
         private static string message;
-        private static string connString = "UserId=root;Server=localhost;Password=;CharacterSet=cp1251;";
+        private static string connString = DBControl.ConnectionString;
         private static MySqlConnection dbCon;
 
-        public TeraDBMigration()
+        public DBMigration()
         {
             try
             {
@@ -49,21 +49,21 @@ namespace NormaMeasure.Teraohmmeter
 
         private void createEtalonMapsTable()
         {
-            string tableName = "etalon_maps";
+            string tableName = "tera_etalon_maps";
             string[] colsArray = {
                                     //INSERT INTO devices (serial_number) VALUES {0}
                                     //UPDATE devices SET devices.zero_range_coeff = {1}, devices.first_range_coeff = {2}, devices.second_range_coeff = {3}, devices.third_range_coeff = {4}, devices.third_range_additional_coeff = {5}, devices.one_hundred_volts_coeff = {6}, devices.five_hundred_volts_coeff = {7}, devices.thousand_volts_coeff = {8}, devices.coeffs_check_sum = {9} WHERE devices.serial_number IN("{0}")
                                     //при добавлении столбцов необходимо исправить строки запроса 
                                     "id INT UNSIGNED AUTO_INCREMENT NOT NULL", //0
                                     "name TINYTEXT",                  //1
-                                    "one_mom FLOAT Default 1.0",      //2
-                                    "ten_mom FLOAT Default 10.0",
-                                    "one_hundred_mom FLOAT Default 100.0",     //3
-                                    "one_gom FLOAT Default 1000.0",    //4
-                                    "ten_gom FLOAT Default 10000.0",     //5
-                                    "one_hundred_gom FLOAT Default 100000.0", //6
-                                    "one_tom FLOAT Default 1000000.0",      //7
-                                    "ten_tom FLOAT Default 10000000.0",     //8
+                                    "one_mom DECIMAL Default 1.0",      //2
+                                    "ten_mom DECIMAL Default 10.0",
+                                    "one_hundred_mom DECIMAL Default 100.0",     //3
+                                    "one_gom DECIMAL Default 1000.0",    //4
+                                    "ten_gom DECIMAL Default 10000.0",     //5
+                                    "one_hundred_gom DECIMAL Default 100000.0", //6
+                                    "one_tom DECIMAL Default 1000000.0",      //7
+                                    "ten_tom DECIMAL Default 10000000.0",     //8
                                     "PRIMARY KEY (id)"
                                  };
             checkAndAddTable(tableName, colsArray);
@@ -345,7 +345,7 @@ namespace NormaMeasure.Teraohmmeter
         {
             try
             {
-                message = "Создаём базу данных db_tera, если она не создана";
+                message = "Создаём базу данных db_norma, если она не создана";
                 query = "CREATE DATABASE IF NOT EXISTS " + dbName + " DEFAULT CHARACTER SET cp1251";
                 sendQuery();
                 query = "USE " + dbName;

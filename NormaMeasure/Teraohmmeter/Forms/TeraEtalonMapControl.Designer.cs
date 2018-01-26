@@ -38,7 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.textBox10GOm = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBoxGOm = new System.Windows.Forms.TextBox();
+            this.textBox1GOm = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox10TOm = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -46,7 +46,7 @@
             this.label9 = new System.Windows.Forms.Label();
             this.createOrSaveButton = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.textBoxName = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -64,6 +64,7 @@
             this.textBox1MOm.Name = "textBox1MOm";
             this.textBox1MOm.Size = new System.Drawing.Size(49, 22);
             this.textBox1MOm.TabIndex = 1;
+            this.textBox1MOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // textBox10MOm
             // 
@@ -71,6 +72,7 @@
             this.textBox10MOm.Name = "textBox10MOm";
             this.textBox10MOm.Size = new System.Drawing.Size(49, 22);
             this.textBox10MOm.TabIndex = 3;
+            this.textBox10MOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label2
             // 
@@ -87,6 +89,7 @@
             this.textBox100MOm.Name = "textBox100MOm";
             this.textBox100MOm.Size = new System.Drawing.Size(49, 22);
             this.textBox100MOm.TabIndex = 5;
+            this.textBox100MOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label3
             // 
@@ -103,6 +106,7 @@
             this.textBox100GOm.Name = "textBox100GOm";
             this.textBox100GOm.Size = new System.Drawing.Size(49, 22);
             this.textBox100GOm.TabIndex = 11;
+            this.textBox100GOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label4
             // 
@@ -119,6 +123,7 @@
             this.textBox10GOm.Name = "textBox10GOm";
             this.textBox10GOm.Size = new System.Drawing.Size(49, 22);
             this.textBox10GOm.TabIndex = 9;
+            this.textBox10GOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label5
             // 
@@ -129,12 +134,13 @@
             this.label5.TabIndex = 8;
             this.label5.Text = "10 ГОм";
             // 
-            // textBoxGOm
+            // textBox1GOm
             // 
-            this.textBoxGOm.Location = new System.Drawing.Point(21, 144);
-            this.textBoxGOm.Name = "textBoxGOm";
-            this.textBoxGOm.Size = new System.Drawing.Size(49, 22);
-            this.textBoxGOm.TabIndex = 7;
+            this.textBox1GOm.Location = new System.Drawing.Point(21, 144);
+            this.textBox1GOm.Name = "textBox1GOm";
+            this.textBox1GOm.Size = new System.Drawing.Size(49, 22);
+            this.textBox1GOm.TabIndex = 7;
+            this.textBox1GOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label6
             // 
@@ -147,15 +153,16 @@
             // 
             // textBox10TOm
             // 
-            this.textBox10TOm.Location = new System.Drawing.Point(87, 204);
+            this.textBox10TOm.Location = new System.Drawing.Point(87, 199);
             this.textBox10TOm.Name = "textBox10TOm";
             this.textBox10TOm.Size = new System.Drawing.Size(49, 22);
             this.textBox10TOm.TabIndex = 15;
+            this.textBox10TOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(84, 187);
+            this.label8.Location = new System.Drawing.Point(84, 182);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(50, 14);
             this.label8.TabIndex = 14;
@@ -163,15 +170,16 @@
             // 
             // textBox1TOm
             // 
-            this.textBox1TOm.Location = new System.Drawing.Point(21, 204);
+            this.textBox1TOm.Location = new System.Drawing.Point(21, 199);
             this.textBox1TOm.Name = "textBox1TOm";
             this.textBox1TOm.Size = new System.Drawing.Size(49, 22);
             this.textBox1TOm.TabIndex = 13;
+            this.textBox1TOm.TextChanged += new System.EventHandler(this.textBoxResistorValue_TextChanged);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(18, 187);
+            this.label9.Location = new System.Drawing.Point(18, 182);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(43, 14);
             this.label9.TabIndex = 12;
@@ -185,6 +193,7 @@
             this.createOrSaveButton.TabIndex = 18;
             this.createOrSaveButton.Text = "Добавить";
             this.createOrSaveButton.UseVisualStyleBackColor = true;
+            this.createOrSaveButton.Click += new System.EventHandler(this.createOrSaveButton_Click);
             // 
             // label10
             // 
@@ -195,19 +204,20 @@
             this.label10.TabIndex = 19;
             this.label10.Text = "Название";
             // 
-            // textBox10
+            // textBoxName
             // 
-            this.textBox10.Location = new System.Drawing.Point(21, 37);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(182, 22);
-            this.textBox10.TabIndex = 20;
+            this.textBoxName.Location = new System.Drawing.Point(21, 37);
+            this.textBoxName.Name = "textBoxName";
+            this.textBoxName.Size = new System.Drawing.Size(182, 22);
+            this.textBoxName.TabIndex = 20;
+            this.textBoxName.TextChanged += new System.EventHandler(this.textBoxName_TextChanged);
             // 
             // TeraEtalonMapControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(223, 289);
-            this.Controls.Add(this.textBox10);
+            this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.createOrSaveButton);
             this.Controls.Add(this.textBox10TOm);
@@ -218,7 +228,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBox10GOm);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.textBoxGOm);
+            this.Controls.Add(this.textBox1GOm);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textBox100MOm);
             this.Controls.Add(this.label3);
@@ -228,8 +238,12 @@
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "TeraEtalonMapControl";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.WindowsDefaultBounds;
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Карта эталонов тераомметра";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -248,7 +262,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox10GOm;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBoxGOm;
+        private System.Windows.Forms.TextBox textBox1GOm;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBox10TOm;
         private System.Windows.Forms.Label label8;
@@ -256,6 +270,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button createOrSaveButton;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.TextBox textBoxName;
     }
 }

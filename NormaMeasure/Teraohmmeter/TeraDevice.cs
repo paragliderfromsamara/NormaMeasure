@@ -5,9 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Data;
+
 using MySql.Data.MySqlClient;
 using NormaMeasure.Utils;
 using NormaMeasure.BaseClasses;
+using NormaMeasure.DBClasses;
 
 
 namespace NormaMeasure.Teraohmmeter
@@ -157,7 +159,7 @@ namespace NormaMeasure.Teraohmmeter
             stsForm.Show();
             if (fromDevToPC)
             {
-                DBControl dc = new DBControl(TeraSettings.Default.dbName);
+                DBControl dc = new DBControl();
                 string query = TeraSettings.Default.updateRangeAndVoltageCoeffs;
                 MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = dc.MyConn;

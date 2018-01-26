@@ -8,17 +8,26 @@ using System.Xml;
 using System.Threading;
 using MySql.Data.MySqlClient;
 
-namespace NormaMeasure.Utils
+namespace NormaMeasure.DBClasses
 {
     class DBControl : IDisposable
     {
         #region Данные класса DBControl
         public MySqlConnection MyConn;
+        public static string ConnectionString
+            {
+            get
+            { return String.Format("UserId={0};Server={1};Password={2}; CharacterSet=cp1251;", DBClasses.DBSettings.Default.DBUser, DBSettings.Default.DBHost, DBClasses.DBSettings.Default.DBPassword); }
+            }
         MySqlCommand MC;
         private string cur_base;
-        private string connstr = String.Format("UserId={0};Server=localhost;Password={1}; CharacterSet=cp1251;", Properties.Settings.Default.DBUser, Properties.Settings.Default.DBPassword);
+        private string connstr = ConnectionString;
         #endregion
         //------------------------------------------------------------------------------------------------------------------------
+        public DBControl() : this(DBSettings.Default.DBName)
+        {
+
+        }
         public DBControl(string cb)
         {
             cur_base = cb;
@@ -40,8 +49,6 @@ namespace NormaMeasure.Utils
                 MessageBox.Show(ex.Message, "Ошибка...", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 //throw new DBException(0, "MySQL сервер не доступен!  ");
             }
-
-
         }
         //------------------------------------------------------------------------------------------------------------------------
         //KRA Functions  
@@ -74,7 +81,7 @@ namespace NormaMeasure.Utils
             string query = "USE " + db_name;
             try
             {
-                MySqlConnection con = new MySqlConnection(String.Format("UserId={0};Server=localhost;Password={1}; CharacterSet=cp1251;", Properties.Settings.Default.DBUser, Properties.Settings.Default.DBPassword));
+                MySqlConnection con = new MySqlConnection(ConnectionString);
                 MySqlCommand com = new MySqlCommand(query, con);
                 con.Open();
                 com.ExecuteNonQuery();
@@ -262,6 +269,8 @@ namespace NormaMeasure.Utils
             while (msdr.Read()) { Ids.Add(msdr[0].ToString()); CSumms.Add(msdr[1].ToString()); }
             msdr.Close();
         }
+
+
     }
     //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     public class DBException : Exception
@@ -284,4 +293,6 @@ namespace NormaMeasure.Utils
         }
     }
     //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
 }

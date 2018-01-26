@@ -47,7 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Teraohmmeter\DBClasses\TeraDBMigration.cs" />
+    <Compile Include="APPLICATION_TEST\DBTest.cs" />
+    <Compile Include="DBClasses\DBBase.cs" />
+    <Compile Include="DBClasses\DBMigration.cs" />
+    <Compile Include="DBClasses\DBSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>DBSettings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Teraohmmeter\DBClasses\TeraEtalonMap.cs" />
     <Compile Include="Teraohmmeter\DemoTera.cs" />
     <Compile Include="BaseClasses\Device.cs" />
     <Compile Include="Teraohmmeter\Forms\TeraEtalonMapControl.cs">
@@ -86,7 +94,7 @@
     <Compile Include="Teraohmmeter\Measure\MeasureResultTera.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\DBControl.cs" />
+    <Compile Include="DBClasses\DBControl.cs" />
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Utils\ServiceFunctions.cs" />
     <EmbeddedResource Include="Teraohmmeter\Forms\coeffsSynchronyzeStatus.resx">
@@ -110,6 +118,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="DBClasses\DBSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>DBSettings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Teraohmmeter\TeraSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>TeraSettings.Designer.cs</LastGenOutput>

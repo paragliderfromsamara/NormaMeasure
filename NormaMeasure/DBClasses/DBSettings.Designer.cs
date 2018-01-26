@@ -8,54 +8,63 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace NormaMeasure.Properties {
+namespace NormaMeasure.DBClasses {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class DBSettings : global::System.Configuration.ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        private static DBSettings defaultInstance = ((DBSettings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new DBSettings())));
         
-        public static Settings Default {
+        public static DBSettings Default {
             get {
                 return defaultInstance;
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IsTestApp {
+        [global::System.Configuration.DefaultSettingValueAttribute("db_norma")]
+        public string DBName {
             get {
-                return ((bool)(this["IsTestApp"]));
-            }
-            set {
-                this["IsTestApp"] = value;
+                return ((string)(this["DBName"]));
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("NormaDeviceSettings.ini")]
-        public string DeviceSettingsFileName {
+        [global::System.Configuration.DefaultSettingValueAttribute("root")]
+        public string DBUser {
             get {
-                return ((string)(this["DeviceSettingsFileName"]));
+                return ((string)(this["DBUser"]));
             }
             set {
-                this["DeviceSettingsFileName"] = value;
+                this["DBUser"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool AdminMode {
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
+        public string DBHost {
             get {
-                return ((bool)(this["AdminMode"]));
+                return ((string)(this["DBHost"]));
             }
             set {
-                this["AdminMode"] = value;
+                this["DBHost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DBPassword {
+            get {
+                return ((string)(this["DBPassword"]));
+            }
+            set {
+                this["DBPassword"] = value;
             }
         }
     }
