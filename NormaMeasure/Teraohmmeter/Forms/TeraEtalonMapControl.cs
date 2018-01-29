@@ -19,6 +19,7 @@ namespace NormaMeasure.Teraohmmeter.Forms
         {
             InitializeComponent();
             this.EtalonMap = new TeraEtalonMap();
+            buildForms();
             fillFromEtalonMap();
             createOrSaveButton.Text = "Добавить";
             this.Text = "Новая карта эталонов для ТОмМ-01";
@@ -29,6 +30,7 @@ namespace NormaMeasure.Teraohmmeter.Forms
         {
             InitializeComponent();
             this.EtalonMap = EtalonMap;
+            buildForms();
             isEditMode = true;
             fillFromEtalonMap();
             createOrSaveButton.Text = "Сохранить";
@@ -36,17 +38,68 @@ namespace NormaMeasure.Teraohmmeter.Forms
             this.deleteButton.Visible = true;
         }
 
+        private void buildForms()
+        {
+            textBoxName.Text = EtalonMap.Name;
+            float[][] rList = this.EtalonMap.ResistanceList;
+            string[] voltList = new string[] { "10В", "100В", "500В", "1000В" };
+            string[] nominals = new string[] { "1МОм", "10МОм", "100МОм", "1ГОм", "10ГОм", "100ГОм", "1ТОм", "10ТОм" };
+            int xPos = textBoxName.Location.X;
+            int yPos = textBoxName.Location.Y + 50;
+            int tabIndex = 100;
+            textBoxName.Width = xPos + 90 + (xPos + 50) * (voltList.Length - 1);
+            textBoxName.TabIndex = tabIndex;
+            for (int i = 0; i < voltList.Length; i++)
+            {
+                Label l = new Label();
+                l.Parent = this;
+                l.Location = new Point(xPos + 60 + (xPos + 50) * i, yPos);
+                l.Width = 50;
+                l.Text = voltList[i];
+            }
+            for (int res = 0; res < rList.Length; res++)
+            {
+                Label l = new Label();
+                l.Parent = this;
+                l.Location = new Point(xPos, yPos + 27 + (22 + 20) * (rList.Length - res - 1));
+                l.Width = 60;
+                l.Text = nominals[res];
+                for (int volt = 0; volt < rList[res].Length; volt++)
+                {
+                    if (rList[res][volt] == -1) continue;
+                    TextBox tb = new TextBox();
+                    tb.Parent = this;
+                    tb.Size = new Size(50, 22);
+                    tb.TabIndex = tabIndex++;
+                    tb.Location = new Point(xPos + l.Width + (xPos + tb.Size.Width) * volt, yPos + 25 + (tb.Size.Height + 20) * (rList.Length - res - 1));
+                    tb.Name = String.Format("v{0}r{1}", volt, res);
+                    tb.Text = (rList[res][volt] / this.EtalonMap.Dividers[res]).ToString();
+                    tb.TextChanged += textBoxResistorValue_TextChanged;
+                }
+            }
+            this.Height = yPos + 40 + (44) * rList.Length + buttonsMenu.Height;
+            this.Width = 2 * xPos + 60 + (xPos + 50) * rList[0].Length;
+            buttonsMenu.Location = new Point(xPos, 22 + this.Height - buttonsMenu.Height * 2);
+            createOrSaveButton.TabIndex = tabIndex++;
+            deleteButton.TabIndex = tabIndex++;
+        }
+
         private void fillFromEtalonMap()
         {
             textBoxName.Text = EtalonMap.Name;
-            textBox1MOm.Text = EtalonMap.OneMOm.ToString();
-            textBox10MOm.Text = EtalonMap.TenMOm.ToString();
-            textBox100MOm.Text = EtalonMap.OneHundredMOm.ToString();
-            textBox1GOm.Text = (EtalonMap.OneGOm / 1000f).ToString();
-            textBox10GOm.Text = (EtalonMap.TenGOm / 1000f).ToString();
-            textBox100GOm.Text = (EtalonMap.OneHundredGOm / 1000f).ToString();
-            textBox1TOm.Text = (EtalonMap.OneTOm / 1000000f).ToString();
-            textBox10TOm.Text = (EtalonMap.TenTOm / 1000000f).ToString();
+            float[][] rList = this.EtalonMap.ResistanceList;
+            for(int res = 0; res<rList.Length; res++)
+            {
+                for(int volt =0; volt<rList[res].Length; volt++)
+                {
+                    Control[] ctrls = this.Controls.Find(String.Format("v{0}r{1}", volt, res), false);
+                    if (ctrls.Length > 0)
+                    {
+                        TextBox tb = ctrls[0] as TextBox;
+                        tb.Text = (rList[res][volt]/this.EtalonMap.Dividers[res]).ToString();
+                    } 
+                }
+            }
         }
 
         private void createOrSaveButton_Click(object sender, EventArgs e)
@@ -81,6 +134,7 @@ namespace NormaMeasure.Teraohmmeter.Forms
         private void textBoxResistorValue_TextChanged(object sender, EventArgs e)
         {
             TextBox tb = sender as TextBox;
+            float[][] rList = this.EtalonMap.ResistanceList;
             if (String.IsNullOrEmpty(tb.Text))
             {
                 tb.Text = "1";
@@ -89,46 +143,22 @@ namespace NormaMeasure.Teraohmmeter.Forms
             try
             {
                 float val = float.Parse(tb.Text);
-                if (tb.Name == textBox1MOm.Name)
+                bool isFounded = false;
+                for (int res = 0; res < rList.Length; res++)
                 {
-                    if (valid(val, textBox1MOm)) return;
-                    this.EtalonMap.OneMOm = val;
-                   // MessageBox.Show(val.ToString());
-                }
-                else if (tb.Name == textBox10MOm.Name)
-                {
-                    if (valid(val, textBox10MOm)) return;
-                    this.EtalonMap.TenMOm = val;
-                }
-                else if (tb.Name == textBox100MOm.Name)
-                {
-                    if (valid(val, textBox100MOm)) return;
-                    this.EtalonMap.OneHundredMOm = val;
-                }
-                else if (tb.Name == textBox1GOm.Name)
-                {
-                    if (valid(val, textBox1GOm)) return;
-                    this.EtalonMap.OneGOm = val * 1000;
-                }
-                else if (tb.Name == textBox10GOm.Name)
-                {
-                    if (valid(val, textBox10GOm)) return;
-                    this.EtalonMap.TenGOm = val * 1000;
-                }
-                else if (tb.Name == textBox100GOm.Name)
-                {
-                    if (valid(val, textBox100GOm)) return;
-                    this.EtalonMap.OneHundredGOm = val * 1000;
-                }
-                else if (tb.Name == textBox1TOm.Name)
-                {
-                    if (valid(val, textBox1TOm)) return;
-                    this.EtalonMap.OneTOm = val * 1000000;
-                }
-                else if (tb.Name == textBox10TOm.Name)
-                {
-                    if (valid(val, textBox10TOm)) return;
-                    this.EtalonMap.TenTOm = val * 1000000;
+                    for(int volt=0; volt<rList[res].Length; volt++)
+                    {
+                        string name = String.Format("v{0}r{1}", volt, res);
+                        if (String.Equals(name, tb.Name))
+                        {
+                            if (valid(val, tb)) return;
+                            this.EtalonMap.ResistanceList[res][volt] = val*this.EtalonMap.Dividers[res];
+                            isFounded = true;
+                            //MessageBox.Show(this.EtalonMap.ResistanceList[res][volt].ToString());
+                            break;
+                        }
+                    }
+                    if (isFounded) break;
                 }
             }
             catch(FormatException ex)

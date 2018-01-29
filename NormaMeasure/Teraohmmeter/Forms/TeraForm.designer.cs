@@ -89,6 +89,8 @@ namespace NormaMeasure.Teraohmmeter
             this.handMeasureTabPage = new System.Windows.Forms.TabPage();
             this.calibrationTabPage = new System.Windows.Forms.TabPage();
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
+            this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
+            this.selectEtalonMapLbl = new System.Windows.Forms.Label();
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.minTimeToNorm)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
@@ -106,6 +108,7 @@ namespace NormaMeasure.Teraohmmeter
             ((System.ComponentModel.ISupportInitialize)(this.materialHeight)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.handMeasureTabPage.SuspendLayout();
+            this.calibrationTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // voltageComboBox
@@ -724,17 +727,36 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // calibrationTabPage
             // 
+            this.calibrationTabPage.Controls.Add(this.selectEtalonMapLbl);
+            this.calibrationTabPage.Controls.Add(this.teraEtalonMapComboBox);
             this.calibrationTabPage.Location = new System.Drawing.Point(4, 22);
             this.calibrationTabPage.Name = "calibrationTabPage";
             this.calibrationTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.calibrationTabPage.Size = new System.Drawing.Size(775, 400);
             this.calibrationTabPage.TabIndex = 1;
-            this.calibrationTabPage.Text = "Калибровка";
+            this.calibrationTabPage.Text = "Поверка";
             this.calibrationTabPage.UseVisualStyleBackColor = true;
             // 
             // MeasureTimer
             // 
             this.MeasureTimer.Interval = 1000;
+            // 
+            // teraEtalonMapComboBox
+            // 
+            this.teraEtalonMapComboBox.FormattingEnabled = true;
+            this.teraEtalonMapComboBox.Location = new System.Drawing.Point(18, 25);
+            this.teraEtalonMapComboBox.Name = "teraEtalonMapComboBox";
+            this.teraEtalonMapComboBox.Size = new System.Drawing.Size(121, 21);
+            this.teraEtalonMapComboBox.TabIndex = 0;
+            // 
+            // selectEtalonMapLbl
+            // 
+            this.selectEtalonMapLbl.AutoSize = true;
+            this.selectEtalonMapLbl.Location = new System.Drawing.Point(15, 9);
+            this.selectEtalonMapLbl.Name = "selectEtalonMapLbl";
+            this.selectEtalonMapLbl.Size = new System.Drawing.Size(87, 13);
+            this.selectEtalonMapLbl.TabIndex = 1;
+            this.selectEtalonMapLbl.Text = "Карта эталонов";
             // 
             // TeraForm
             // 
@@ -767,6 +789,8 @@ namespace NormaMeasure.Teraohmmeter
             this.tabControl1.ResumeLayout(false);
             this.handMeasureTabPage.ResumeLayout(false);
             this.handMeasureTabPage.PerformLayout();
+            this.calibrationTabPage.ResumeLayout(false);
+            this.calibrationTabPage.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -830,5 +854,7 @@ namespace NormaMeasure.Teraohmmeter
         private System.Windows.Forms.TabPage handMeasureTabPage;
         private System.Windows.Forms.TabPage calibrationTabPage;
         private Timer MeasureTimer;
+        private Label selectEtalonMapLbl;
+        private ComboBox teraEtalonMapComboBox;
     }
 }

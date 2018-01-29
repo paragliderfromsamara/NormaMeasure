@@ -13,6 +13,7 @@ using System.Threading;
 using NormaMeasure.DBClasses;
 using NormaMeasure.BaseClasses;
 using NormaMeasure.Utils;
+using NormaMeasure.Teraohmmeter.DBClasses;
 
 namespace NormaMeasure.Teraohmmeter
 {
@@ -20,7 +21,8 @@ namespace NormaMeasure.Teraohmmeter
     {
 
         double[][] isolationMaterialCoeffsArr;
-        private bool measureIsActive = false; 
+        private bool measureIsActive = false;
+        private string curEtalonMapId = String.Empty; 
 
         protected delegate void updateServiceFieldDelegate(string serviceInfo);
         protected delegate void updateResultFieldDelegate(MeasureResultTera result);
@@ -437,6 +439,31 @@ namespace NormaMeasure.Teraohmmeter
                 e.Cancel = true;
             }
             
+        }
+
+        /// <summary>
+        /// Заполняем список эталонов
+        /// </summary>
+        public void fillEtalonMapComboBox()
+        {
+            MainForm f = this.ParentForm as MainForm;
+            List<TeraEtalonMap> maps = new List<TeraEtalonMap>();
+            teraEtalonMapComboBox.Items.Clear();
+            foreach (TeraEtalonMap m in f.TeraEtalonMaps) { teraEtalonMapComboBox.Items.Add(m.AlterName); }
+            if (teraEtalonMapComboBox.Items.Count > 0)
+            {
+                teraEtalonMapComboBox.Enabled = true;
+                if (String.IsNullOrWhiteSpace(curEtalonMapId))
+                {
+                    teraEtalonMapComboBox.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                teraEtalonMapComboBox.Text = "Карты эталонов отсутствуют";
+                teraEtalonMapComboBox.Enabled = false;
+                curEtalonMapId = String.Empty;
+            }
         }
     }
 }
