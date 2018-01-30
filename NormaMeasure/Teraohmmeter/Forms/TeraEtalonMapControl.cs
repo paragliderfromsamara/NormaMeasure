@@ -11,7 +11,7 @@ using NormaMeasure.Teraohmmeter.DBClasses;
 
 namespace NormaMeasure.Teraohmmeter.Forms
 {
-    public partial class TeraEtalonMapControl : Form
+    public partial class  TeraEtalonMapControl : Form
     {
         private TeraEtalonMap EtalonMap;
         private bool isEditMode = false;

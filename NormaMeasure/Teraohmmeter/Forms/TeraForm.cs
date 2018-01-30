@@ -19,7 +19,7 @@ namespace NormaMeasure.Teraohmmeter
 {
     public partial class TeraForm : Form
     {
-
+        private MainForm mainForm; 
         double[][] isolationMaterialCoeffsArr;
         private bool measureIsActive = false;
         private string curEtalonMapId = String.Empty; 
@@ -35,13 +35,20 @@ namespace NormaMeasure.Teraohmmeter
 
         TeraDevice teraDevice;
         TeraMeasure handMeasure;
-        public TeraForm(TeraDevice tera_device)
+        public TeraForm(TeraDevice tera_device, MainForm f)
         {
             InitializeComponent();
+            this.mainForm = f;
             this.teraDevice = tera_device;
             this.Text = teraDevice.NameWithSerial();
             fillTeraDS();
+        }
+
+        public void InitAndShow()
+        {
             initHandMeasurePage();
+            initVerificationPage();
+            this.Show();
         }
 
         private void fillTeraDS()
@@ -441,15 +448,21 @@ namespace NormaMeasure.Teraohmmeter
             
         }
 
+        private void initVerificationPage()
+        {
+            fillEtalonMapComboBox();
+
+        }
+
         /// <summary>
         /// Заполняем список эталонов
         /// </summary>
         public void fillEtalonMapComboBox()
         {
-            MainForm f = this.ParentForm as MainForm;
+            MainForm f = this.MdiParent as MainForm;
             List<TeraEtalonMap> maps = new List<TeraEtalonMap>();
             teraEtalonMapComboBox.Items.Clear();
-            foreach (TeraEtalonMap m in f.TeraEtalonMaps) { teraEtalonMapComboBox.Items.Add(m.AlterName); }
+            foreach (TeraEtalonMap m in f.TeraEtalonMaps) { teraEtalonMapComboBox.Items.Add(m.AlterName); } 
             if (teraEtalonMapComboBox.Items.Count > 0)
             {
                 teraEtalonMapComboBox.Enabled = true;
@@ -460,10 +473,15 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                teraEtalonMapComboBox.Text = "Карты эталонов отсутствуют";
-                teraEtalonMapComboBox.Enabled = false;
                 curEtalonMapId = String.Empty;
+                teraEtalonMapComboBox.Items.Add("Карты эталонов отсутствуют");
+                teraEtalonMapComboBox.Refresh();
+                teraEtalonMapComboBox.SelectedIndex = 0;
+                teraEtalonMapComboBox.Enabled = false;
             }
+
+
+            
         }
     }
 }

@@ -24,7 +24,8 @@ namespace NormaMeasure.BaseClasses
     public enum MEASURE_TYPE : byte
     {
         HAND = 1,
-        AUTO = 2
+        AUTO = 2,
+        VERIFICATION = 3
     }
     public class MeasureBase
     {
@@ -52,8 +53,19 @@ namespace NormaMeasure.BaseClasses
         protected Thread measureThread = null;
         protected int measSeconds;
 
+        /// <summary>
+        /// Ручные испытания
+        /// </summary>
         protected virtual void handMeasureThreadFunction() { }
+        /// <summary>
+        /// Автоматические
+        /// </summary>
         protected virtual void autoMeasureThreadFunction() { }
+
+        /// <summary>
+        /// Поверочные испытания
+        /// </summary>
+        protected virtual void verificationMeasureThreadFunction() { }
         protected virtual void measureTimerHandler() { }
 
         protected virtual void initByMeasureType(){}
@@ -110,6 +122,9 @@ namespace NormaMeasure.BaseClasses
                         break;
                     case MEASURE_TYPE.HAND:
                         measureThread = new Thread(handMeasureThreadFunction);
+                        break;
+                    case MEASURE_TYPE.VERIFICATION:
+                        measureThread = new Thread(verificationMeasureThreadFunction);
                         break;
                 }
                 if (measureThread == null)

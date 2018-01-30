@@ -176,6 +176,13 @@ namespace NormaMeasure
             TeraEtalonMapControl t = sender as TeraEtalonMapControl;
             teraEtalonMapsToolStripMenuItem.DropDownItems.Clear();
             fillTeraEtalonMapItems();
+            foreach(Form f in this.MdiChildren)
+            {
+                if (f.GetType().Name == "TeraForm")
+                {
+                    (f as TeraForm).fillEtalonMapComboBox();
+                }
+            }
         }
 
 

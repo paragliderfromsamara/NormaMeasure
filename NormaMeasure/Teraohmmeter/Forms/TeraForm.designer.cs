@@ -88,9 +88,9 @@ namespace NormaMeasure.Teraohmmeter
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.handMeasureTabPage = new System.Windows.Forms.TabPage();
             this.calibrationTabPage = new System.Windows.Forms.TabPage();
-            this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
-            this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
             this.selectEtalonMapLbl = new System.Windows.Forms.Label();
+            this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
+            this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.minTimeToNorm)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
@@ -737,18 +737,6 @@ namespace NormaMeasure.Teraohmmeter
             this.calibrationTabPage.Text = "Поверка";
             this.calibrationTabPage.UseVisualStyleBackColor = true;
             // 
-            // MeasureTimer
-            // 
-            this.MeasureTimer.Interval = 1000;
-            // 
-            // teraEtalonMapComboBox
-            // 
-            this.teraEtalonMapComboBox.FormattingEnabled = true;
-            this.teraEtalonMapComboBox.Location = new System.Drawing.Point(18, 25);
-            this.teraEtalonMapComboBox.Name = "teraEtalonMapComboBox";
-            this.teraEtalonMapComboBox.Size = new System.Drawing.Size(121, 21);
-            this.teraEtalonMapComboBox.TabIndex = 0;
-            // 
             // selectEtalonMapLbl
             // 
             this.selectEtalonMapLbl.AutoSize = true;
@@ -757,6 +745,19 @@ namespace NormaMeasure.Teraohmmeter
             this.selectEtalonMapLbl.Size = new System.Drawing.Size(87, 13);
             this.selectEtalonMapLbl.TabIndex = 1;
             this.selectEtalonMapLbl.Text = "Карта эталонов";
+            // 
+            // teraEtalonMapComboBox
+            // 
+            this.teraEtalonMapComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.teraEtalonMapComboBox.FormattingEnabled = true;
+            this.teraEtalonMapComboBox.Location = new System.Drawing.Point(18, 25);
+            this.teraEtalonMapComboBox.Name = "teraEtalonMapComboBox";
+            this.teraEtalonMapComboBox.Size = new System.Drawing.Size(197, 21);
+            this.teraEtalonMapComboBox.TabIndex = 0;
+            // 
+            // MeasureTimer
+            // 
+            this.MeasureTimer.Interval = 1000;
             // 
             // TeraForm
             // 

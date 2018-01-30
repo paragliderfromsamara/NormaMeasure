@@ -7,6 +7,7 @@ using System.Threading;
 //using System.Windows.Forms;
 using NormaMeasure.Utils;
 using NormaMeasure.BaseClasses;
+using NormaMeasure.Teraohmmeter.DBClasses;
 
 namespace NormaMeasure.Teraohmmeter
 {
@@ -23,6 +24,8 @@ namespace NormaMeasure.Teraohmmeter
     public class TeraMeasure : MeasureBase
     {
         TeraDevice teraDevice;
+        List<TeraMeasure> MeasureList = new List<TeraMeasure>(); 
+        private TeraEtalonMap etalonMap;
         private int temperature = 20;
         private int voltage = 10;
         private int dischargeDelay = 0;
@@ -43,6 +46,24 @@ namespace NormaMeasure.Teraohmmeter
         private byte voltageId = 0;
         public double EtalonVal = 10000;
         public double MaxDeviationPercent = 5;
+
+        public TeraEtalonMap EtalonMap
+        {
+            get { return this.etalonMap; }
+            set
+            {
+                this.etalonMap = value;
+                float[][] eList = this.etalonMap.ResistanceList;
+                for(int res = 0; res<eList.Length; res++)
+                {
+                    for(int volt = 0; volt < eList[res].Length; volt++)
+                    {
+
+                    }
+                }
+            }
+        } 
+
         /// <summary>
         /// Температура испытаний
         /// </summary>
@@ -579,6 +600,11 @@ namespace NormaMeasure.Teraohmmeter
         protected override void autoMeasureThreadFunction()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void verificationMeasureThreadFunction()
+        {
+            if (MeasureList.Count == 0) return;
         }
 
 

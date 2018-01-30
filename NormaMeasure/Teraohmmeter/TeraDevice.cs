@@ -114,7 +114,7 @@ namespace NormaMeasure.Teraohmmeter
             {
                 if (connect())
                 {
-                    DeviceForm = new TeraForm(this);
+                    DeviceForm = new TeraForm(this, form);
                     DeviceForm.MdiParent = form;
                     DeviceForm.FormClosed += new System.Windows.Forms.FormClosedEventHandler(deviceFormClosedEvent);
                     //DeviceForm.FormClosing += new System.Windows.Forms.FormClosingEventHandler(deviceFormClosedEvent);
@@ -124,7 +124,7 @@ namespace NormaMeasure.Teraohmmeter
                     {
                         syncCoeffs(true);
                     }
-                    DeviceForm.Show();
+                    DeviceForm.InitAndShow();
                 }
             }else
             {
