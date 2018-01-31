@@ -7,6 +7,7 @@ using System.Threading;
 //using System.Windows.Forms;
 using NormaMeasure.Utils;
 using NormaMeasure.BaseClasses;
+using NormaMeasure.DBClasses;
 using NormaMeasure.Teraohmmeter.DBClasses;
 
 namespace NormaMeasure.Teraohmmeter
@@ -20,11 +21,11 @@ namespace NormaMeasure.Teraohmmeter
 
 
 
-
     public class TeraMeasure : MeasureBase
     {
         TeraDevice teraDevice;
-        List<TeraMeasure> MeasureList = new List<TeraMeasure>(); 
+        List<TeraMeasure> MeasureList = new List<TeraMeasure>();
+        IsolationMaterial material; 
         private TeraEtalonMap etalonMap;
         private int temperature = 20;
         private int voltage = 10;
@@ -43,10 +44,17 @@ namespace NormaMeasure.Teraohmmeter
         private string materialId = "1";
         private int bringingLength = 1000;
         private int bringingLengthMeasureId = 0;
-        private byte voltageId = 0;
+        public byte voltageId = 0;
         public double EtalonVal = 10000;
         public double MaxDeviationPercent = 5;
 
+        public double BringingCoeff
+        {
+            get
+            {
+                return calculateCoeff();
+            }
+        }
         public TeraEtalonMap EtalonMap
         {
             get { return this.etalonMap; }
@@ -80,7 +88,6 @@ namespace NormaMeasure.Teraohmmeter
                     writeToIni("Temperature", value.ToString());
                     temperature = value;
                 }
-
             }
         }
 
@@ -104,6 +111,8 @@ namespace NormaMeasure.Teraohmmeter
                 setVoltageId();
             }
         }
+
+        public byte VoltageId { get { return this.voltageId; } }
         /// <summary>
         /// Время разряда, сек
         /// </summary>
@@ -337,9 +346,15 @@ namespace NormaMeasure.Teraohmmeter
                 {
                     writeToIni("MaterialId", value.ToString());
                     materialId = value;
+                    
                 }
-
+                this.material = new IsolationMaterial(value);
             }
+        }
+
+        public IsolationMaterial Material
+        {
+            get { return this.material; }
         }
         /// <summary>
         /// Длина приведения
@@ -491,27 +506,26 @@ namespace NormaMeasure.Teraohmmeter
             int cycleCount = 0;
             int mCountLimit = this.AveragingTimes;
             int cycleCountLimit = this.CycleTimes;
-            MeasureResultTera result = new MeasureResultTera();
-            List<MeasureResultTera> resultList = new List<MeasureResultTera>();
+            MeasureResultCollection rCollection = new MeasureResultCollection();
             resetTime();
             this.MeasureStatus = MEASURE_STATUS.IS_GOING;
             this.updateResultFieldText("подождите...");
             do
             {
+                MeasureResultTera result = new MeasureResultTera(this, this.teraDevice);
                 this.teraDevice.DeviceForm.updateCycleNumberField((cycleCount + 1).ToString());
-                this.teraDevice.StartIntegrator();
-                result = this.getMeasureResult();
-                if (!result.IsReceived) { TeraMeasure.measureError("Превышено время ожидания результата"); break; }
+                //this.teraDevice.StartIntegrator();
+                this.teraDevice.DoMeasure(ref result);
+                if (!result.IsCompleted) { TeraMeasure.measureError("Превышено время ожидания результата"); break; }
                 if (result.Status > 0) break;
                 if (Properties.Settings.Default.IsTestApp) Thread.Sleep(2000);
-                resultList.Add(result);
+                rCollection.Add(result);
 
-                if (this.IsStatistic) this.updateStatMeasInfo(new string[] { String.Format("{0} из {1}", resultList.Count, mCountLimit), this.teraDevice.DeviceForm.absoluteResultView(result.AbsoluteResult) });
+                if (this.IsStatistic) this.updateStatMeasInfo(new string[] { String.Format("{0} из {1}", rCollection.Count, mCountLimit), this.teraDevice.DeviceForm.absoluteResultView(result.AbsoluteResult) });
+                if (rCollection.Count < mCountLimit) continue;
 
-                if (resultList.Count < mCountLimit) continue;
-                result = calcAverage(resultList);
                 this.teraDevice.DeviceForm.updateResultField(result);
-                resultList.Clear();
+                rCollection.Clear();
                 cycleCount++;
                 if (!this.IsCyclicMeasure && cycleCount == this.CycleTimes) break;
                 //счетчик циклов
@@ -522,7 +536,7 @@ namespace NormaMeasure.Teraohmmeter
 
         protected override void handMeasureThreadFunction()
         {
-            this.teraDevice.setVoltage(this.voltageId);
+            this.teraDevice.setVoltage(this.VoltageId);
             Thread.Sleep(500);
             if (this.PolarizationDelay > 0) polarisation();
             measure();
@@ -558,45 +572,6 @@ namespace NormaMeasure.Teraohmmeter
             if (this.MeasureType == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateStatMeasInfo(txt);
         }
 
-        private MeasureResultTera calcAverage(List<MeasureResultTera> resultList)
-        {
-            MeasureResultTera result = resultList.Last();
-            double absRes = 0;
-            double brRes = 0;
-            if (resultList.Count > 1)
-            {
-                foreach (MeasureResultTera tmr in resultList)
-                {
-                    absRes += tmr.AbsoluteResult;
-                    brRes += tmr.BringingResult;
-                }
-                result.AbsoluteResult = absRes / resultList.Count;
-                result.BringingResult = brRes / resultList.Count;
-            }
-            return result;
-        }
-
-        private MeasureResultTera getMeasureResult()
-        {
-            this.teraDevice.StartIntegrator();
-            MeasureResultTera r;
-            int maxMeasTime = 400;
-            int time = 0;
-            do
-            {
-                r = this.teraDevice.CheckResult();
-                if (r.IsReceived)
-                {
-                    if (r.Status == 0) r = convertAdcResult(r);
-                    break;
-                }
-                Thread.Sleep(100);
-                time++;
-            } while (time < maxMeasTime);
-
-            return r;
-        }
-
         protected override void autoMeasureThreadFunction()
         {
             throw new NotImplementedException();
@@ -605,37 +580,6 @@ namespace NormaMeasure.Teraohmmeter
         protected override void verificationMeasureThreadFunction()
         {
             if (MeasureList.Count == 0) return;
-        }
-
-
-        private MeasureResultTera convertAdcResult(MeasureResultTera result)
-        {
-            double _R = 0;
-            double integratorDifference = (result.LastMeasure > result.FirstMeasure) ? ((double)result.LastMeasure - (double)result.FirstMeasure) : 0;
-            double capacity = this.teraDevice.capacitiesList[result.Range];
-            double v = (double)this.Voltage / 100;
-            double[] limit = new double[] { 20000, 200000, 1000000, 2000000 };
-            double mTime = Convert.ToDouble(result.MeasureTime);
-            //string s = String.Format("Статус: {0}; Диапазон: {1}; Длительность: {2}; Начальное состояние: {3}; Конечное состояние: {4};", this.measStatus, this.rangeId, this.measTime, this.firstMeasure, this.lastMeasure);
-            //this.mForm.updateServiceField(s);
-            if (integratorDifference > 0)
-            {
-                _R = (2048.0 * v * (double)(result.MeasureTime)) / (this.teraDevice.refVoltage * integratorDifference * this.teraDevice.capacitiesList[result.Range]);
-            }
-            else
-            {
-                _R = 0;
-            }
-            if ((mTime == Convert.ToDouble(1499)) && (_R < (limit[this.voltageId])) && (_R > 0))
-                if (integratorDifference > 0) _R = (2048.0 * v * (double)(result.MeasureTime)) / (this.teraDevice.refVoltage * (integratorDifference - (double)this.teraDevice.rangeCoeffs[5]) * this.teraDevice.capacitiesList[result.Range]);
-
-            _R *= (double)this.teraDevice.rangeCoeffs[result.Range];      			                    // Умножаем на коэф. коррекции от диапазона.
-            if (this.Voltage > 10) _R *= (double)this.teraDevice.voltageCoeffs[this.voltageId - 2]; // Умножаем на коэф. коррекции от напряжения если оно не 10В.
-            if (_R > 0.0004) _R -= this.teraDevice.zeroResistance;                                     // Вычитаем 300кОм последовательно включён
-            if (_R < 0.005 && _R > 0) _R += 0.00013; // Если меньше 5МОм то добавляем 170 кОм
-            result.AbsoluteResult = _R; // * this.bringingCoeff;
-            result.BringingResult = _R;
-            return result;
         }
 
         public static string StatusString(MEASURE_STATUS sts)
@@ -686,6 +630,39 @@ namespace NormaMeasure.Teraohmmeter
                 this.measureThread.Start();
                 MeasureTimer.Start();
             } 
+        }
+
+        private double calculateCoeff()
+        {
+            double coeff = (double)this.material.GetCoefficient(this.Temperature);
+            switch (this.BringingTypeId)
+            {
+                case "1": //без приведения
+                    break;
+                case "2": //к длине
+                    double length = this.BringingLength;
+                    switch (this.BringingLengthMeasureId)
+                    {
+                        case 0:
+                            length *= 100;
+                            break;
+                        case 1:
+                            length *= 10;
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            length /= 1000;
+                            break;
+                    }
+                    coeff *= length;
+                    break;
+                case "3": //объёмное
+                    break;
+                case "4": //поверхностное
+                    break;
+            }
+            return coeff;
         }
         
 

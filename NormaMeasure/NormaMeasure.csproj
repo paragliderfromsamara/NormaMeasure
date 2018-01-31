@@ -55,6 +55,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>DBSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="DBClasses\IsolationMaterial.cs" />
     <Compile Include="Teraohmmeter\DBClasses\TeraEtalonMap.cs" />
     <Compile Include="Teraohmmeter\DemoTera.cs" />
     <Compile Include="BaseClasses\Device.cs" />

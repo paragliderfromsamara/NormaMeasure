@@ -378,12 +378,12 @@ namespace NormaMeasure.Teraohmmeter
         {
             if (isDegreeViewCheckBox.Checked)
             {
-                this.updateResultFieldText(deegreeResultView(result.AbsoluteResult)); //absoluteResultView(result);
+                this.updateResultFieldText(deegreeResultView(result.BringingResult)); //absoluteResultView(result);
                 this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + deegreeResultView((double)this.normaField.Value / 1000) : "";
             }
             else
             {
-                this.updateResultFieldText(absoluteResultView(result.AbsoluteResult)); //absoluteResultView(result);
+                this.updateResultFieldText(absoluteResultView(result.BringingResult)); //absoluteResultView(result);
                 this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + absoluteResultView((double)this.normaField.Value / 1000) : "";
             }
         }
@@ -482,6 +482,18 @@ namespace NormaMeasure.Teraohmmeter
 
 
             
+        }
+
+        private void temperatureField_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            this.handMeasure.Temperature = Convert.ToInt16(n.Value);
+        }
+
+        private void materialTypes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            this.handMeasure.MaterialId = cb.SelectedValue.ToString();
         }
     }
 }

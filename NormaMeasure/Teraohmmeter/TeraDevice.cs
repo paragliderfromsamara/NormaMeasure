@@ -289,35 +289,42 @@ namespace NormaMeasure.Teraohmmeter
             this.setVoltage(0);
         }
 
-        public MeasureResultTera CheckResult()
+        public void DoMeasure(ref MeasureResultTera result)
         {
-            MeasureResultTera result = new MeasureResultTera();
-            result.IsReceived = false;
-            if (!Properties.Settings.Default.IsTestApp)
+            this.StartIntegrator();
+            int maxMeasTime = 400;
+            int time = 0;
+            do
             {
-                if (result.IsReceived = (this.DevicePort.BytesToRead == 8))
+                if (!Properties.Settings.Default.IsTestApp)
                 {
-                    result.Status = 0x0F & this.DevicePort.ReadByte();
-                    result.Range = this.DevicePort.ReadByte();
-                    result.MeasureTime = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
-                    result.FirstMeasure = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
-                    result.LastMeasure = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
+                    if (this.DevicePort.BytesToRead == 8)
+                    {
+                        result.Status = 0x0F & this.DevicePort.ReadByte();
+                        result.Range = this.DevicePort.ReadByte();
+                        result.MeasureTime = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
+                        result.FirstMeasure = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
+                        result.LastMeasure = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
+                    }
                 }
-            }
-            else
-            {
-                Random r = new Random();
-                result.Status = 0;
-                result.Range = 2;
-                result.MeasureTime = r.Next(130, 133);
-                Thread.Sleep(50);
-                result.FirstMeasure = r.Next(46, 48);
-                Thread.Sleep(50);
-                result.LastMeasure = r.Next(500, 510);
-                Thread.Sleep(50);
-                result.IsReceived = true;
-            }
-            return result;
+                else
+                {
+                    Random r = new Random();
+                    result.Status = 0;
+                    result.Range = 2;
+                    result.MeasureTime = r.Next(130, 133);
+                    Thread.Sleep(50);
+                    result.FirstMeasure = r.Next(46, 48);
+                    Thread.Sleep(50);
+                    result.LastMeasure = r.Next(500, 510);
+                    Thread.Sleep(50);
+                }
+                if (result.IsCompleted) break;
+                Thread.Sleep(100);
+                time++;
+            } while (time < maxMeasTime);
         }
+
+        
     }
 }

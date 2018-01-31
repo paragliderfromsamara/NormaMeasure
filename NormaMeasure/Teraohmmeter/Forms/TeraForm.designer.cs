@@ -391,6 +391,7 @@ namespace NormaMeasure.Teraohmmeter
             this.materialTypes.Size = new System.Drawing.Size(148, 21);
             this.materialTypes.TabIndex = 4;
             this.materialTypes.ValueMember = "isolation_materials.id";
+            this.materialTypes.SelectedIndexChanged += new System.EventHandler(this.materialTypes_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -621,6 +622,7 @@ namespace NormaMeasure.Teraohmmeter
             0,
             0,
             0});
+            this.temperatureField.ValueChanged += new System.EventHandler(this.temperatureField_ValueChanged);
             // 
             // bringingLengthMeasCb
             // 
@@ -656,7 +658,7 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // materialHeight
             // 
-            this.materialHeight.Location = new System.Drawing.Point(24, 327);
+            this.materialHeight.Location = new System.Drawing.Point(24, 368);
             this.materialHeight.Maximum = new decimal(new int[] {
             20000,
             0,
