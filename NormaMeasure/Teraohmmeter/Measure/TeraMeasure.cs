@@ -25,7 +25,7 @@ namespace NormaMeasure.Teraohmmeter
     {
         TeraDevice teraDevice;
         List<TeraMeasure> MeasureList = new List<TeraMeasure>();
-        IsolationMaterial material; 
+        IsolationMaterial material;
         private TeraEtalonMap etalonMap;
         private int temperature = 20;
         private int voltage = 10;
@@ -62,15 +62,15 @@ namespace NormaMeasure.Teraohmmeter
             {
                 this.etalonMap = value;
                 float[][] eList = this.etalonMap.ResistanceList;
-                for(int res = 0; res<eList.Length; res++)
+                for (int res = 0; res < eList.Length; res++)
                 {
-                    for(int volt = 0; volt < eList[res].Length; volt++)
+                    for (int volt = 0; volt < eList[res].Length; volt++)
                     {
 
                     }
                 }
             }
-        } 
+        }
 
         /// <summary>
         /// Температура испытаний
@@ -212,7 +212,8 @@ namespace NormaMeasure.Teraohmmeter
             get
             {
                 return externalCamDiam;
-            } set
+            }
+            set
             {
                 if (externalCamDiam != value)
                 {
@@ -346,7 +347,7 @@ namespace NormaMeasure.Teraohmmeter
                 {
                     writeToIni("MaterialId", value.ToString());
                     materialId = value;
-                    
+
                 }
                 this.material = new IsolationMaterial(value);
             }
@@ -431,7 +432,7 @@ namespace NormaMeasure.Teraohmmeter
 
         public TeraMeasure() : base()
         {
-            
+
         }
 
         public TeraMeasure(TeraDevice tera, MEASURE_TYPE t) : base(t)
@@ -495,10 +496,10 @@ namespace NormaMeasure.Teraohmmeter
             resetTime();
             MEASURE_STATUS was = MeasureStatus;
             this.MeasureStatus = MEASURE_STATUS.DISCHARGE;
-            while (DischargeDelay > measSeconds);
+            do { } while (DischargeDelay > measSeconds);
             resetTime();
             if (was == MEASURE_STATUS.STOPED) this.MeasureStatus = MEASURE_STATUS.STOPED;
-            
+
         }
 
         private void measure()
@@ -538,7 +539,7 @@ namespace NormaMeasure.Teraohmmeter
         {
             this.teraDevice.setVoltage(this.VoltageId);
             Thread.Sleep(500);
-            if (this.PolarizationDelay > 0) polarisation();
+            if (this.PolarizationDelay > 0 && NormaValue == 0) polarisation();
             measure();
             if (this.DischargeDelay > 0) discharge();
             this.MeasureStatus = MEASURE_STATUS.FINISHED;
@@ -606,13 +607,24 @@ namespace NormaMeasure.Teraohmmeter
         protected override void measureTimerHandler()
         {
             int sec;
-            switch(measureStatus)
+            switch (measureStatus)
             {
                 case MEASURE_STATUS.POLAR:
                     sec = (this.PolarizationDelay * 60) - measSeconds;
                     break;
                 case MEASURE_STATUS.DISCHARGE:
                     sec = this.DischargeDelay - measSeconds;
+                    break;
+                case MEASURE_STATUS.IS_GOING:
+                    if (this.PolarizationDelay > 0 && this.NormaValue > 0)
+                    {
+                        sec = (this.PolarizationDelay * 60) - measSeconds;
+                        if (sec == 0)
+                        {
+                            this.StopWithStatus(MEASURE_STATUS.FINISHED);
+                        }
+                    }
+                    else sec = measSeconds;
                     break;
                 default:
                     sec = measSeconds;
@@ -621,16 +633,18 @@ namespace NormaMeasure.Teraohmmeter
             this.teraDevice.DeviceForm.RefreshMeasureTimer(sec);
         }
 
-        public override void Stop()
+        public override void StopWithStatus(MEASURE_STATUS status)
         {
-            base.Stop();
+            base.StopWithStatus(status);
             if (DischargeDelay > 0)
             {
+                resetTime();
                 this.measureThread = new Thread(discharge);
                 this.measureThread.Start();
                 MeasureTimer.Start();
-            } 
+            }
         }
+
 
         private double calculateCoeff()
         {
@@ -658,13 +672,16 @@ namespace NormaMeasure.Teraohmmeter
                     coeff *= length;
                     break;
                 case "3": //объёмное
+                    double sumDiamHalf = (this.ExternalCamDiam + this.InternalCamDiam) / 2;
+                    coeff *= (Math.PI * Math.Pow(sumDiamHalf, 2)) / (this.MaterialHeight * 4);
                     break;
                 case "4": //поверхностное
+                    coeff *= Math.PI * (this.ExternalCamDiam + this.InternalCamDiam) / (this.ExternalCamDiam - this.InternalCamDiam);
                     break;
             }
             return coeff;
         }
-        
 
     }
+
 }

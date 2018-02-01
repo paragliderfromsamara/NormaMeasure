@@ -76,7 +76,54 @@ namespace NormaMeasure.Teraohmmeter
         }
 
 
+        /// <summary>
+        /// Абсолютный вид результата
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public static string AbsResultViewWithMeasure(double r)
+        {
+            string[] quntMeas = new string[] { "МОм", "ГОм", "ТОм" };
+            int qIdx = 0;
+            double mult = 0;
+            int rnd = 0;
+            if (r > 1)
+            {
+                if ((r / 1000) > 1) { qIdx = 2; mult = 0.001; }
+                else { qIdx = 1; mult = 1; }
+            }
+            else
+            {
+                qIdx = 0;
+                mult = 1000;
+            }
+            r *= mult;
+            if (r > 99) rnd = 2;
+            else rnd = 3;
+            return String.Format("{0} {1}", Math.Round(r, rnd), quntMeas[qIdx]);
+        }
 
+        /// <summary>
+        /// Степенной вид результата
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public static string DegResultViewWithMeasure(double r)
+        {
+            double dg = 0;
+            double maxDg = 9; //максимальный порядок
+            r *= 1000.0;
+            for (dg = 0; dg <= maxDg; dg++)
+            {
+                double curVal = Math.Pow(10, dg);
+                double nextVal = curVal * 10;
+                bool cResult = (dg == 0) ? (r >= 0) : r >= curVal;
+                cResult &= r < nextVal;
+                if (cResult) break;
+            }
+            r /= Math.Pow(10, dg);
+            return String.Format("{0}Е{1} МОм", Math.Round(r, 2), dg);
+        }
 
     }
 }

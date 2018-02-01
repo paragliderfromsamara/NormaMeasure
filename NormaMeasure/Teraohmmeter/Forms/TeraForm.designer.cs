@@ -36,8 +36,6 @@ namespace NormaMeasure.Teraohmmeter
             this.label1 = new System.Windows.Forms.Label();
             this.startHandMeasureBut = new System.Windows.Forms.Button();
             this.measureSettingsGroup = new System.Windows.Forms.GroupBox();
-            this.minTimeToNorm = new System.Windows.Forms.NumericUpDown();
-            this.label9 = new System.Windows.Forms.Label();
             this.measureTimesLbl = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.cycleTimes = new System.Windows.Forms.NumericUpDown();
@@ -45,7 +43,7 @@ namespace NormaMeasure.Teraohmmeter
             this.label3 = new System.Windows.Forms.Label();
             this.dischargeDelay = new System.Windows.Forms.NumericUpDown();
             this.isCyclicMeasure = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.polTime = new System.Windows.Forms.Label();
             this.polarizationDelay = new System.Windows.Forms.NumericUpDown();
             this.normaField = new System.Windows.Forms.NumericUpDown();
             this.normaFieldLbl = new System.Windows.Forms.Label();
@@ -92,7 +90,6 @@ namespace NormaMeasure.Teraohmmeter
             this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
             this.measureSettingsGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.minTimeToNorm)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.averagingTimes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dischargeDelay)).BeginInit();
@@ -147,8 +144,6 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // measureSettingsGroup
             // 
-            this.measureSettingsGroup.Controls.Add(this.minTimeToNorm);
-            this.measureSettingsGroup.Controls.Add(this.label9);
             this.measureSettingsGroup.Controls.Add(this.measureTimesLbl);
             this.measureSettingsGroup.Controls.Add(this.label4);
             this.measureSettingsGroup.Controls.Add(this.cycleTimes);
@@ -156,7 +151,7 @@ namespace NormaMeasure.Teraohmmeter
             this.measureSettingsGroup.Controls.Add(this.label3);
             this.measureSettingsGroup.Controls.Add(this.dischargeDelay);
             this.measureSettingsGroup.Controls.Add(this.isCyclicMeasure);
-            this.measureSettingsGroup.Controls.Add(this.label2);
+            this.measureSettingsGroup.Controls.Add(this.polTime);
             this.measureSettingsGroup.Controls.Add(this.polarizationDelay);
             this.measureSettingsGroup.Controls.Add(this.voltageComboBox);
             this.measureSettingsGroup.Controls.Add(this.normaField);
@@ -168,37 +163,6 @@ namespace NormaMeasure.Teraohmmeter
             this.measureSettingsGroup.TabIndex = 3;
             this.measureSettingsGroup.TabStop = false;
             this.measureSettingsGroup.Text = "Настройки измерителя";
-            // 
-            // minTimeToNorm
-            // 
-            this.minTimeToNorm.Location = new System.Drawing.Point(224, 42);
-            this.minTimeToNorm.Maximum = new decimal(new int[] {
-            30,
-            0,
-            0,
-            0});
-            this.minTimeToNorm.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.minTimeToNorm.Name = "minTimeToNorm";
-            this.minTimeToNorm.Size = new System.Drawing.Size(54, 20);
-            this.minTimeToNorm.TabIndex = 27;
-            this.minTimeToNorm.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(221, 26);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(36, 13);
-            this.label9.TabIndex = 26;
-            this.label9.Text = "t, мин";
             // 
             // measureTimesLbl
             // 
@@ -279,14 +243,14 @@ namespace NormaMeasure.Teraohmmeter
             this.isCyclicMeasure.UseVisualStyleBackColor = true;
             this.isCyclicMeasure.CheckedChanged += new System.EventHandler(this.isCyclicMeasure_CheckedChanged);
             // 
-            // label2
+            // polTime
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(281, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Поляризация, мин";
+            this.polTime.AutoSize = true;
+            this.polTime.Location = new System.Drawing.Point(281, 25);
+            this.polTime.Name = "polTime";
+            this.polTime.Size = new System.Drawing.Size(101, 13);
+            this.polTime.TabIndex = 3;
+            this.polTime.Text = "Поляризация, мин";
             // 
             // polarizationDelay
             // 
@@ -304,7 +268,7 @@ namespace NormaMeasure.Teraohmmeter
             0,
             0});
             this.normaField.Name = "normaField";
-            this.normaField.Size = new System.Drawing.Size(90, 20);
+            this.normaField.Size = new System.Drawing.Size(144, 20);
             this.normaField.TabIndex = 17;
             this.normaField.ValueChanged += new System.EventHandler(this.normaField_ValueChanged);
             // 
@@ -658,7 +622,7 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // materialHeight
             // 
-            this.materialHeight.Location = new System.Drawing.Point(24, 368);
+            this.materialHeight.Location = new System.Drawing.Point(24, 327);
             this.materialHeight.Maximum = new decimal(new int[] {
             20000,
             0,
@@ -774,7 +738,6 @@ namespace NormaMeasure.Teraohmmeter
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TeraForm_FormClosing);
             this.measureSettingsGroup.ResumeLayout(false);
             this.measureSettingsGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.minTimeToNorm)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.averagingTimes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dischargeDelay)).EndInit();
@@ -811,7 +774,7 @@ namespace NormaMeasure.Teraohmmeter
         private System.Windows.Forms.NumericUpDown averagingTimes;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown dischargeDelay;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label polTime;
         private System.Windows.Forms.NumericUpDown polarizationDelay;
         private System.Data.DataSet teraDS;
         private System.Data.DataTable camera_types;
@@ -850,8 +813,6 @@ namespace NormaMeasure.Teraohmmeter
         private System.Windows.Forms.Label materialHeightLbl;
         private System.Windows.Forms.NumericUpDown materialHeight;
         private System.Windows.Forms.CheckBox isDegreeViewCheckBox;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.NumericUpDown minTimeToNorm;
         private System.Windows.Forms.Label measureStatus;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage handMeasureTabPage;

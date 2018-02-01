@@ -96,7 +96,7 @@ namespace NormaMeasure.BaseClasses
 
         private void initTimer()
         {
-            MeasureTimer = new System.Timers.Timer(1000);
+            MeasureTimer = new System.Timers.Timer(300);
             MeasureTimer.AutoReset = true;
             MeasureTimer.Elapsed += MeasureTimer_Elapsed;
             resetTime();
@@ -142,18 +142,22 @@ namespace NormaMeasure.BaseClasses
             return IsStarted;
         }
 
-        public virtual void Stop()
+        protected virtual bool stop()
         {
             if (measureThread != null)
             {
                 measureThread.Abort();
                 measureThread = null;
                 MeasureTimer.Stop();
-                this.MeasureStatus = MEASURE_STATUS.STOPED;
+                return true;
             }
+            else return false;
         }
 
-
+        public virtual void StopWithStatus(MEASURE_STATUS status)
+        {
+            if (this.stop()) this.MeasureStatus = status;
+        }
 
         public static void measureError(string m)
         {

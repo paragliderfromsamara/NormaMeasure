@@ -88,7 +88,7 @@ namespace NormaMeasure.Teraohmmeter
             bringingLengthMeasCb.SelectedIndex = handMeasure.BringingLengthMeasureId;
             materialHeight.Value = handMeasure.MaterialHeight;
             isDegreeViewCheckBox.Checked = handMeasure.IsDegreeViewMode;
-            minTimeToNorm.Value = handMeasure.MinTimeToNorm;
+            //minTimeToNorm.Value = handMeasure.MinTimeToNorm;
             normaField.Value = handMeasure.NormaValue;
             materialLength.Value = handMeasure.BringingLength;
             foreach (DataRow r in camera_types.Rows)
@@ -146,7 +146,7 @@ namespace NormaMeasure.Teraohmmeter
         private void normaField_ValueChanged(object sender, EventArgs e)
         {
             int v = Convert.ToInt32(this.normaField.Value);
-            this.minTimeToNorm.Enabled = (v > 0);
+            this.polTime.Text = (v > 0) ? "Достижение, мин" : "Поляризация, мин";
         }
 
         private void isCyclicMeasure_CheckedChanged(object sender, EventArgs e)
@@ -228,7 +228,7 @@ namespace NormaMeasure.Teraohmmeter
                 handMeasure.BringingTypeId = bringingTypeCB.SelectedValue.ToString();
                 handMeasure.MaterialHeight = Convert.ToInt32(this.materialHeight.Value);
                 handMeasure.IsDegreeViewMode = isDegreeViewCheckBox.Checked;
-                handMeasure.MinTimeToNorm = Convert.ToInt32(minTimeToNorm.Value);
+               // handMeasure.MinTimeToNorm = Convert.ToInt32(minTimeToNorm.Value);
                 handMeasure.NormaValue = Convert.ToInt32(this.normaField.Value);
                 handMeasure.MaterialId = materialTypes.SelectedValue.ToString();
                 handMeasure.BringingLength = Convert.ToInt16(materialLength.Value);
@@ -237,7 +237,7 @@ namespace NormaMeasure.Teraohmmeter
 
             }else
                 {
-                     handMeasure.Stop();
+                     handMeasure.StopWithStatus(MEASURE_STATUS.STOPED);
                      Thread.Sleep(300);
                      if (!Properties.Settings.Default.IsTestApp)
                      {
@@ -246,7 +246,6 @@ namespace NormaMeasure.Teraohmmeter
                          switchFieldsMeasureOnOff(true);
                      }
                      else switchFieldsMeasureOnOff(true);
-                     updateMeasureStatus(MEASURE_STATUS.STOPED);
             }
                 //else { this.mForm.currentDevice.stopMeasure();}//this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
                 //this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
@@ -286,12 +285,9 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                this.measureSettingsGroup.Enabled = flag;
-                startHandMeasureBut.Text = flag ? "ПУСК ИЗМЕРЕНИЯ" : "ОСТАНОВИТЬ ИЗМЕРЕНИЯ";
                 if (flag)
                 {
                     this.teraDevice.ClosePort();
-                    this.handMeasure.Stop();
                 }
                 else
                 {
@@ -355,9 +351,12 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
+                bool isActive = status != MEASURE_STATUS.NOT_STARTED && status != MEASURE_STATUS.FINISHED && status != MEASURE_STATUS.STOPED;
                 this.measureStatus.Text = TeraMeasure.StatusString(status);
                 this.startHandMeasureBut.Enabled = !(status == MEASURE_STATUS.DISCHARGE);
-                this.measureIsActive = (status != MEASURE_STATUS.NOT_STARTED && status != MEASURE_STATUS.FINISHED && status != MEASURE_STATUS.STOPED);
+                this.measureIsActive = isActive;
+                this.measureSettingsGroup.Enabled = !isActive;
+                startHandMeasureBut.Text = !isActive ? "ПУСК ИЗМЕРЕНИЯ" : "ОСТАНОВИТЬ ИЗМЕРЕНИЯ";
             }
         }
 
@@ -390,40 +389,11 @@ namespace NormaMeasure.Teraohmmeter
 
         public string absoluteResultView(double r)
         {
-            string[] quntMeas = new string[] { "МОм", "ГОм", "ТОм" };
-            int qIdx = 0;
-            double mult = 0;
-            int rnd = 0;
-            if (r > 1)
-            {
-                if ((r / 1000) > 1) { qIdx = 2; mult = 0.001; }
-                else { qIdx = 1; mult = 1; }
-            }
-            else
-            {
-                qIdx = 0;
-                mult = 1000;
-            }
-            r *= mult;
-            if (r > 99) rnd = 2;
-            else rnd = 3;
-            return String.Format("{0} {1}{2}", Math.Round(r, rnd), quntMeas[qIdx], getBringingName());
+            return MeasureResultTera.AbsResultViewWithMeasure(r) + getBringingName();
         }
         private string deegreeResultView(double r)
         {
-            double dg = 0;
-            double maxDg = 9; //максимальный порядок
-            r *= 1000.0;
-            for (dg = 0; dg <= maxDg; dg++)
-            {
-                double curVal = Math.Pow(10, dg);
-                double nextVal = curVal * 10;
-                bool cResult = (dg == 0) ? (r >= 0) : r >= curVal;
-                cResult &= r < nextVal;
-                if (cResult) break;
-            }
-            r /= Math.Pow(10, dg);
-            return String.Format("{0}Е{1} МОм{2}", Math.Round(r, 2), dg, getBringingName());
+            return MeasureResultTera.DegResultViewWithMeasure(r) + getBringingName();
         }
         private string getBringingName()
         {
