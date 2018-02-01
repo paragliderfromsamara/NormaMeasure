@@ -499,6 +499,7 @@ namespace NormaMeasure.Teraohmmeter
             do { } while (DischargeDelay > measSeconds);
             resetTime();
             if (was == MEASURE_STATUS.STOPED) this.MeasureStatus = MEASURE_STATUS.STOPED;
+            else if (was == MEASURE_STATUS.DISCHARGE) this.MeasureStatus = MEASURE_STATUS.FINISHED;
 
         }
 
@@ -621,7 +622,7 @@ namespace NormaMeasure.Teraohmmeter
                         sec = (this.PolarizationDelay * 60) - measSeconds;
                         if (sec == 0)
                         {
-                            this.StopWithStatus(MEASURE_STATUS.FINISHED);
+                            this.StopWithStatus(MEASURE_STATUS.DISCHARGE);
                         }
                     }
                     else sec = measSeconds;
