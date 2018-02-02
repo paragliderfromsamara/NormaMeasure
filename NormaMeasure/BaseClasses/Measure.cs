@@ -29,6 +29,42 @@ namespace NormaMeasure.BaseClasses
     }
     public class MeasureBase
     {
+        protected int number = 0;
+        protected int cycleNumber;
+        protected int statCycleNumber;
+        public List<MeasureResultCollection> ResultCollectionsList = new List<MeasureResultCollection>();
+        /// <summary>
+        /// Номер испытания в данном цикле
+        /// </summary>
+        public int StatCycleNumber
+        {
+            get { return statCycleNumber; }
+            set { this.statCycleNumber = value; }
+        }
+        /// <summary>
+        /// Номер испытания в текущем сеансе
+        /// </summary>
+        public int Number
+        {
+            get { return number; }
+            set
+            {
+                this.number = value;
+                CycleNumber = 1;
+                ResultCollectionsList.Add(new MeasureResultCollection(CycleNumber));
+            }
+        }
+        public int CycleNumber
+        {
+            get { return cycleNumber; }
+            set
+            {
+                cycleNumber = value;
+                statCycleNumber = 1;
+            }
+        }
+
+
 
         public MEASURE_TYPE MeasureType = MEASURE_TYPE.HAND;
         protected MEASURE_STATUS measureStatus;
@@ -121,6 +157,7 @@ namespace NormaMeasure.BaseClasses
                         measureThread = new Thread(autoMeasureThreadFunction);
                         break;
                     case MEASURE_TYPE.HAND:
+                        this.Number++;
                         measureThread = new Thread(handMeasureThreadFunction);
                         break;
                     case MEASURE_TYPE.VERIFICATION:

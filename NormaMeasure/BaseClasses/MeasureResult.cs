@@ -8,11 +8,35 @@ namespace NormaMeasure.BaseClasses
 {
     public abstract class MeasureResult
     {
+        /// <summary>
+        /// Абсолютный результат
+        /// </summary>
         public double AbsoluteResult; //Абсолютные результат
+        /// <summary>
+        /// Приведенный результатат
+        /// </summary>
         public double BringingResult; //Приведенный результат
+        /// <summary>
+        /// Время получение результата с момента начала испытания
+        /// </summary>
+        public int SecondsFromStart;
+        /// <summary>
+        /// Номер испытания
+        /// </summary>
+        public int MeasureNumber = 0;
+        /// <summary>
+        /// Номер цикла испытаний
+        /// </summary>
+        public int CycleNumber = 0;
+        /// <summary>
+        /// Номер подцикла испытаний (для статистических измерений)
+        /// </summary>
+        public int StatCycleNumber = 0;
     }
     public class MeasureResultCollection
     {
+        private int measureNumber;
+        public int MeasureNumber { get { return measureNumber; } }
         public int Count
         {
             get
@@ -47,6 +71,16 @@ namespace NormaMeasure.BaseClasses
         public MeasureResultCollection()
         {
             resultsList = new List<MeasureResult>();
+            this.measureNumber = 1;
+        }
+
+        /// <summary>
+        /// Создаём коллекцию результатов с номером испытания
+        /// </summary>
+        /// <param name="measure_number"></param>
+        public MeasureResultCollection(int measure_number) : this()
+        {
+            this.measureNumber = measure_number;
         }
 
         public void Add(MeasureResult result)
@@ -58,6 +92,19 @@ namespace NormaMeasure.BaseClasses
         {
             resultsList.Clear();
         }
+
+        public MeasureResult Last()
+        {
+            return resultsList.Last();
+        }
+
+        public MeasureResult First()
+        {
+            return resultsList.First();
+        }
+
+
+
 
 
         /// <summary>
@@ -88,6 +135,20 @@ namespace NormaMeasure.BaseClasses
         }
 
         /// <summary>
+        /// Среднее значение абсолютного результата
+        /// </summary>
+        /// <param name="measure_number">Номер испытания в данной серии</param>
+        /// <param name="cycle_number">Номер цикла в данном испытании</param>
+        /// <returns></returns>
+        public double AverageAbsolute(int measure_number, int cycle_number)
+        {
+            MeasureResultCollection col = GetMeasureResultList(measure_number);
+            col = col.getStatResultList(cycle_number);
+
+            return col.AverageAbsolute();
+        }
+
+        /// <summary>
         /// Максимальное значение приведенного результата в коллекции
         /// </summary>
         /// <returns></returns>
@@ -114,6 +175,37 @@ namespace NormaMeasure.BaseClasses
             return getStat(ReturnedValue.AVERAGE, ReturnedVariable.BRINGING_RESULT);
         }
 
+        /// <summary>
+        /// Среднее значение приведенного результата
+        /// </summary>
+        /// <param name="measure_number">Номер испытания в данной серии</param>
+        /// <param name="cycle_number">Номер цикла в данном испытании</param>
+        /// <returns></returns>
+        public double AverageBringing(int measure_number, int cycle_number)
+        {
+            MeasureResultCollection col = GetMeasureResultList(measure_number);
+            col = col.getStatResultList(cycle_number);
+            return col.AverageBringing();
+        }
+
+        public MeasureResultCollection GetMeasureResultList(int measure_number)
+        {
+            MeasureResultCollection col = new MeasureResultCollection();
+            foreach (MeasureResult r in this.ResultsList) if (r.MeasureNumber == measure_number) col.Add(r);
+            return col;
+        }
+        /// <summary>
+        /// Ищет промежуточные результаты статистического испытания в рамках одного испытания по номеру цикла
+        /// Список испытаний при этом, должен содержать только результаты одного испытания
+        /// </summary>
+        /// <param name="cycle_number">Номер цикла текущего испытания</param>
+        /// <returns></returns>
+        private MeasureResultCollection getStatResultList(int cycle_number)
+        {
+            MeasureResultCollection col = new MeasureResultCollection();
+            foreach (MeasureResult r in this.ResultsList) if (r.CycleNumber == cycle_number) col.Add(r);
+            return col;
+        }
 
         private double getStat(ReturnedValue type, ReturnedVariable var)
         {

@@ -25,7 +25,7 @@ namespace NormaMeasure.Teraohmmeter
         private string curEtalonMapId = String.Empty; 
 
         protected delegate void updateServiceFieldDelegate(string serviceInfo);
-        protected delegate void updateResultFieldDelegate(MeasureResultTera result);
+        protected delegate void updateResultFieldDelegate();
         protected delegate void updateCycleNumberFieldDelegate(string cycleNumb);
         protected delegate void updateStatMeasInfoDelegate(string[] statMeasInfo);
         protected delegate void refreshMeasureTimerDelegate(int seconds);
@@ -250,16 +250,67 @@ namespace NormaMeasure.Teraohmmeter
                 //else { this.mForm.currentDevice.stopMeasure();}//this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
                 //this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
             }
-        public void updateResultField(MeasureResultTera result) //Для обновления поля результата из другого потока в котором проходит испытание
+        public void updateResultField() //Для обновления поля результата из другого потока в котором проходит испытание
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new updateResultFieldDelegate(updateResultField), new object[] { result});
+                BeginInvoke(new updateResultFieldDelegate(updateResultField));
                 return;
             }
             else
             {
-                fillHandMeasureResultFields(result);
+                MeasureResultCollection resultList = handMeasure.ResultCollectionsList[this.handMeasure.Number-1];
+                this.cycleCounterLbl.Text = String.Format("Измерение {0}  Цикл {1}", this.handMeasure.Number, this.handMeasure.CycleNumber);
+                //Отрисовка для статистических испытаний
+                if (handMeasure.IsStatistic)  
+                {
+                    this.statMeasNumbOfLbl.Text = String.Format("измерено {0} из {1}", handMeasure.StatCycleNumber, handMeasure.AveragingTimes);
+                    if (resultList.Count > 0)
+                    {
+                        MeasureResultTera result = resultList.Last() as MeasureResultTera;
+                        this.midStatMeasValLbl.Text = String.Format("промежуточное значение: {0}", isDegreeViewCheckBox.Checked ? absoluteResultView(result.BringingResult) : deegreeResultView(result.BringingResult));
+                        if (handMeasure.StatCycleNumber == handMeasure.AveragingTimes)
+                        {
+                            double avVal = resultList.AverageBringing();
+                            if (isDegreeViewCheckBox.Checked)
+                            {
+                                this.updateResultFieldText(deegreeResultView(avVal));
+                            }
+                            else
+                            {
+                                this.updateResultFieldText(deegreeResultView(avVal));
+                            }
+                                
+                        }else
+                        {
+                            this.measureResultLbl.Text = "подождите...";
+                        }
+                    }
+                }else
+                //для обычных испытаний
+                {
+                    if (resultList.Count > 0)
+                    {
+                        MeasureResultTera result = resultList.Last() as MeasureResultTera;
+                        if (handMeasure.StatCycleNumber == this.handMeasure.AveragingTimes)
+                        {
+                            if (isDegreeViewCheckBox.Checked)
+                            {
+                                this.updateResultFieldText(deegreeResultView(result.BringingResult)); //absoluteResultView(result);
+                                this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + deegreeResultView((double)this.normaField.Value / 1000) : "";
+                            }
+                            else
+                            {
+                                this.updateResultFieldText(absoluteResultView(result.BringingResult)); //absoluteResultView(result);
+                                this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + absoluteResultView((double)this.normaField.Value / 1000) : "";
+                            }
+                        }
+                        else
+                        {
+                            this.measureResultLbl.Text = "подождите...";
+                        }
+                    }
+                }
             }
         }
 
@@ -324,7 +375,7 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                this.serviceParameters.Text = serviceInfo;
+                //this.serviceParameters.Text = serviceInfo;
             }
         }
 
@@ -373,19 +424,6 @@ namespace NormaMeasure.Teraohmmeter
             }
         }
 
-        private void fillHandMeasureResultFields(MeasureResultTera result)
-        {
-            if (isDegreeViewCheckBox.Checked)
-            {
-                this.updateResultFieldText(deegreeResultView(result.BringingResult)); //absoluteResultView(result);
-                this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + deegreeResultView((double)this.normaField.Value / 1000) : "";
-            }
-            else
-            {
-                this.updateResultFieldText(absoluteResultView(result.BringingResult)); //absoluteResultView(result);
-                this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + absoluteResultView((double)this.normaField.Value / 1000) : "";
-            }
-        }
 
         public string absoluteResultView(double r)
         {

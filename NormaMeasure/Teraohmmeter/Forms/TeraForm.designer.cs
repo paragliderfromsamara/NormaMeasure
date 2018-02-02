@@ -75,7 +75,6 @@ namespace NormaMeasure.Teraohmmeter
             this.cycleCounterLbl = new System.Windows.Forms.Label();
             this.measTimeLbl = new System.Windows.Forms.Label();
             this.midStatMeasValLbl = new System.Windows.Forms.Label();
-            this.serviceParameters = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.temperatureField = new System.Windows.Forms.NumericUpDown();
             this.bringingLengthMeasCb = new System.Windows.Forms.ComboBox();
@@ -89,6 +88,9 @@ namespace NormaMeasure.Teraohmmeter
             this.selectEtalonMapLbl = new System.Windows.Forms.Label();
             this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.averagingTimes)).BeginInit();
@@ -106,6 +108,8 @@ namespace NormaMeasure.Teraohmmeter
             this.tabControl1.SuspendLayout();
             this.handMeasureTabPage.SuspendLayout();
             this.calibrationTabPage.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // voltageComboBox
@@ -134,9 +138,9 @@ namespace NormaMeasure.Teraohmmeter
             // startHandMeasureBut
             // 
             this.startHandMeasureBut.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.startHandMeasureBut.Location = new System.Drawing.Point(210, 342);
+            this.startHandMeasureBut.Location = new System.Drawing.Point(196, 403);
             this.startHandMeasureBut.Name = "startHandMeasureBut";
-            this.startHandMeasureBut.Size = new System.Drawing.Size(555, 46);
+            this.startHandMeasureBut.Size = new System.Drawing.Size(574, 46);
             this.startHandMeasureBut.TabIndex = 2;
             this.startHandMeasureBut.Text = "ПУСК ИЗМЕРЕНИЯ";
             this.startHandMeasureBut.UseVisualStyleBackColor = false;
@@ -451,11 +455,11 @@ namespace NormaMeasure.Teraohmmeter
             this.measureResultLbl.AutoSize = true;
             this.measureResultLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 48F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.measureResultLbl.ForeColor = System.Drawing.Color.SteelBlue;
-            this.measureResultLbl.Location = new System.Drawing.Point(58, 48);
+            this.measureResultLbl.Location = new System.Drawing.Point(60, 80);
             this.measureResultLbl.Name = "measureResultLbl";
-            this.measureResultLbl.Size = new System.Drawing.Size(271, 73);
+            this.measureResultLbl.Size = new System.Drawing.Size(415, 73);
             this.measureResultLbl.TabIndex = 13;
-            this.measureResultLbl.Text = "0.0 ГОм";
+            this.measureResultLbl.Text = "99999.0 ГОм";
             this.measureResultLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // panel1
@@ -469,9 +473,9 @@ namespace NormaMeasure.Teraohmmeter
             this.panel1.Controls.Add(this.measTimeLbl);
             this.panel1.Controls.Add(this.midStatMeasValLbl);
             this.panel1.Controls.Add(this.measureResultLbl);
-            this.panel1.Location = new System.Drawing.Point(210, 133);
+            this.panel1.Location = new System.Drawing.Point(6, 9);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(555, 175);
+            this.panel1.Size = new System.Drawing.Size(555, 228);
             this.panel1.TabIndex = 14;
             // 
             // measureStatus
@@ -492,7 +496,7 @@ namespace NormaMeasure.Teraohmmeter
             this.normaLbl.AutoSize = true;
             this.normaLbl.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.normaLbl.ForeColor = System.Drawing.Color.SteelBlue;
-            this.normaLbl.Location = new System.Drawing.Point(68, 117);
+            this.normaLbl.Location = new System.Drawing.Point(70, 149);
             this.normaLbl.Name = "normaLbl";
             this.normaLbl.Size = new System.Drawing.Size(146, 16);
             this.normaLbl.TabIndex = 18;
@@ -517,7 +521,7 @@ namespace NormaMeasure.Teraohmmeter
             this.cycleCounterLbl.AutoSize = true;
             this.cycleCounterLbl.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.cycleCounterLbl.ForeColor = System.Drawing.Color.SteelBlue;
-            this.cycleCounterLbl.Location = new System.Drawing.Point(54, 148);
+            this.cycleCounterLbl.Location = new System.Drawing.Point(55, 207);
             this.cycleCounterLbl.Name = "cycleCounterLbl";
             this.cycleCounterLbl.Size = new System.Drawing.Size(102, 16);
             this.cycleCounterLbl.TabIndex = 16;
@@ -529,7 +533,7 @@ namespace NormaMeasure.Teraohmmeter
             this.measTimeLbl.AutoSize = true;
             this.measTimeLbl.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.measTimeLbl.ForeColor = System.Drawing.Color.SteelBlue;
-            this.measTimeLbl.Location = new System.Drawing.Point(2, 148);
+            this.measTimeLbl.Location = new System.Drawing.Point(3, 207);
             this.measTimeLbl.Name = "measTimeLbl";
             this.measTimeLbl.Size = new System.Drawing.Size(45, 16);
             this.measTimeLbl.TabIndex = 15;
@@ -546,15 +550,6 @@ namespace NormaMeasure.Teraohmmeter
             this.midStatMeasValLbl.TabIndex = 14;
             this.midStatMeasValLbl.Text = "промежуточное значение: 0.0 ГОм";
             this.midStatMeasValLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // serviceParameters
-            // 
-            this.serviceParameters.AutoSize = true;
-            this.serviceParameters.Location = new System.Drawing.Point(207, 117);
-            this.serviceParameters.Name = "serviceParameters";
-            this.serviceParameters.Size = new System.Drawing.Size(177, 13);
-            this.serviceParameters.TabIndex = 15;
-            this.serviceParameters.Text = "Значение параметров испытания";
             // 
             // label6
             // 
@@ -645,7 +640,7 @@ namespace NormaMeasure.Teraohmmeter
             // isDegreeViewCheckBox
             // 
             this.isDegreeViewCheckBox.AutoSize = true;
-            this.isDegreeViewCheckBox.Location = new System.Drawing.Point(210, 317);
+            this.isDegreeViewCheckBox.Location = new System.Drawing.Point(196, 380);
             this.isDegreeViewCheckBox.Name = "isDegreeViewCheckBox";
             this.isDegreeViewCheckBox.Size = new System.Drawing.Size(257, 17);
             this.isDegreeViewCheckBox.TabIndex = 24;
@@ -659,11 +654,12 @@ namespace NormaMeasure.Teraohmmeter
             this.tabControl1.Location = new System.Drawing.Point(2, 9);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(783, 426);
+            this.tabControl1.Size = new System.Drawing.Size(783, 493);
             this.tabControl1.TabIndex = 26;
             // 
             // handMeasureTabPage
             // 
+            this.handMeasureTabPage.Controls.Add(this.tabControl2);
             this.handMeasureTabPage.Controls.Add(this.measureSettingsGroup);
             this.handMeasureTabPage.Controls.Add(this.startHandMeasureBut);
             this.handMeasureTabPage.Controls.Add(this.isDegreeViewCheckBox);
@@ -680,13 +676,11 @@ namespace NormaMeasure.Teraohmmeter
             this.handMeasureTabPage.Controls.Add(this.bringingTypeCB);
             this.handMeasureTabPage.Controls.Add(this.label6);
             this.handMeasureTabPage.Controls.Add(this.materialLengthLbl);
-            this.handMeasureTabPage.Controls.Add(this.serviceParameters);
             this.handMeasureTabPage.Controls.Add(this.materialLength);
-            this.handMeasureTabPage.Controls.Add(this.panel1);
             this.handMeasureTabPage.Location = new System.Drawing.Point(4, 22);
             this.handMeasureTabPage.Name = "handMeasureTabPage";
             this.handMeasureTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.handMeasureTabPage.Size = new System.Drawing.Size(775, 400);
+            this.handMeasureTabPage.Size = new System.Drawing.Size(775, 467);
             this.handMeasureTabPage.TabIndex = 0;
             this.handMeasureTabPage.Text = "Ручные испытания";
             this.handMeasureTabPage.UseVisualStyleBackColor = true;
@@ -725,11 +719,42 @@ namespace NormaMeasure.Teraohmmeter
             // 
             this.MeasureTimer.Interval = 1000;
             // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.tabPage1);
+            this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Location = new System.Drawing.Point(196, 105);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(574, 269);
+            this.tabControl2.TabIndex = 25;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.panel1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(566, 243);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(192, 74);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
             // TeraForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(788, 439);
+            this.ClientSize = new System.Drawing.Size(788, 508);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -757,6 +782,8 @@ namespace NormaMeasure.Teraohmmeter
             this.handMeasureTabPage.PerformLayout();
             this.calibrationTabPage.ResumeLayout(false);
             this.calibrationTabPage.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -798,7 +825,6 @@ namespace NormaMeasure.Teraohmmeter
         private System.Windows.Forms.NumericUpDown materialLength;
         private System.Windows.Forms.Label measureResultLbl;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label serviceParameters;
         private System.Windows.Forms.Label statMeasNumbOfLbl;
         private System.Windows.Forms.Label cycleCounterLbl;
         private System.Windows.Forms.Label measTimeLbl;
@@ -820,5 +846,8 @@ namespace NormaMeasure.Teraohmmeter
         private Timer MeasureTimer;
         private Label selectEtalonMapLbl;
         private ComboBox teraEtalonMapComboBox;
+        private TabControl tabControl2;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
     }
 }

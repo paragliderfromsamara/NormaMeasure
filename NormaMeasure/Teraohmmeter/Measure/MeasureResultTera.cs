@@ -12,12 +12,15 @@ namespace NormaMeasure.Teraohmmeter
     {
         public TeraDevice teraDevice;
         public TeraMeasure measure;
+
+
         public bool IsCompleted; // статус результата принято или нет
         public int Range; //Диапазон
         public int Status; //Статус
         public int MeasureTime; //Время измерения
         public int FirstMeasure; //Начальное состояние интегратора
         private int lastMeasure;
+
         public int LastMeasure //Конечное состояние интегратора
         {
             get
@@ -40,6 +43,9 @@ namespace NormaMeasure.Teraohmmeter
         {
             this.measure = m;
             this.teraDevice = d;
+            this.CycleNumber = m.CycleNumber;
+            this.MeasureNumber = m.Number;
+            this.StatCycleNumber = m.StatCycleNumber;
         }
 
         /// <summary>

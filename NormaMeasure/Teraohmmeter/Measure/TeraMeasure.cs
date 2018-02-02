@@ -24,7 +24,7 @@ namespace NormaMeasure.Teraohmmeter
     public class TeraMeasure : MeasureBase
     {
         TeraDevice teraDevice;
-        List<TeraMeasure> MeasureList = new List<TeraMeasure>();
+
         IsolationMaterial material;
         private TeraEtalonMap etalonMap;
         private int temperature = 20;
@@ -48,6 +48,9 @@ namespace NormaMeasure.Teraohmmeter
         public double EtalonVal = 10000;
         public double MaxDeviationPercent = 5;
 
+        
+        
+ 
         public double BringingCoeff
         {
             get
@@ -432,7 +435,7 @@ namespace NormaMeasure.Teraohmmeter
 
         public TeraMeasure() : base()
         {
-
+            MeasureResultCollection rCollection = new MeasureResultCollection();
         }
 
         public TeraMeasure(TeraDevice tera, MEASURE_TYPE t) : base(t)
@@ -476,7 +479,6 @@ namespace NormaMeasure.Teraohmmeter
             this.materialId = file.ReadOrWrite("MaterialId", sect, this.materialId.ToString());
             this.bringingLength = ServiceFunctions.convertToInt16(file.ReadOrWrite("BringingLength", sect, this.bringingLength.ToString()));
             this.bringingLengthMeasureId = ServiceFunctions.convertToInt16(file.ReadOrWrite("BringingLengthMeasureId", sect, this.bringingLengthMeasureId.ToString()));
-
         }
 
         private void polarisation()
@@ -505,34 +507,28 @@ namespace NormaMeasure.Teraohmmeter
 
         private void measure()
         {
-            int cycleCount = 0;
-            int mCountLimit = this.AveragingTimes;
-            int cycleCountLimit = this.CycleTimes;
-            MeasureResultCollection rCollection = new MeasureResultCollection();
+            //int cycleCount = 0;
+            //int mCountLimit = this.AveragingTimes;
+            //int cycleCountLimit = this.CycleTimes;
             resetTime();
             this.MeasureStatus = MEASURE_STATUS.IS_GOING;
-            this.updateResultFieldText("подождите...");
+            //this.updateResultFieldText("подождите...");
             do
             {
+                //this.teraDevice.DeviceForm.updateResultField();
+                this.teraDevice.DeviceForm.updateResultField();
                 MeasureResultTera result = new MeasureResultTera(this, this.teraDevice);
-                this.teraDevice.DeviceForm.updateCycleNumberField((cycleCount + 1).ToString());
-                //this.teraDevice.StartIntegrator();
                 this.teraDevice.DoMeasure(ref result);
                 if (!result.IsCompleted) { TeraMeasure.measureError("Превышено время ожидания результата"); break; }
+                result.SecondsFromStart = measSeconds;
                 if (result.Status > 0) break;
                 if (Properties.Settings.Default.IsTestApp) Thread.Sleep(2000);
-                rCollection.Add(result);
-
-                if (this.IsStatistic) this.updateStatMeasInfo(new string[] { String.Format("{0} из {1}", rCollection.Count, mCountLimit), this.teraDevice.DeviceForm.absoluteResultView(result.AbsoluteResult) });
-                if (rCollection.Count < mCountLimit) continue;
-
-                this.teraDevice.DeviceForm.updateResultField(result);
-                rCollection.Clear();
-                cycleCount++;
-                if (!this.IsCyclicMeasure && cycleCount == this.CycleTimes) break;
-                //счетчик циклов
-                this.teraDevice.DeviceForm.updateResultField(result);
-                //this.pause();
+                ResultCollectionsList[this.Number-1].Add(result);
+                StatCycleNumber++;
+                if (StatCycleNumber <= this.AveragingTimes) continue; //Если статистическое испытание, то уходим на следующий подцикл
+                this.teraDevice.DeviceForm.updateResultField();
+                this.CycleNumber++;
+                if (!this.IsCyclicMeasure && this.CycleNumber >= this.CycleTimes) break;
             } while (true);
         }
 
@@ -581,7 +577,7 @@ namespace NormaMeasure.Teraohmmeter
 
         protected override void verificationMeasureThreadFunction()
         {
-            if (MeasureList.Count == 0) return;
+            if (ResultCollectionsList.Count == 0) return;
         }
 
         public static string StatusString(MEASURE_STATUS sts)
@@ -622,7 +618,7 @@ namespace NormaMeasure.Teraohmmeter
                         sec = (this.PolarizationDelay * 60) - measSeconds;
                         if (sec == 0)
                         {
-                            this.StopWithStatus(MEASURE_STATUS.DISCHARGE);
+                            this.StopWithStatus(this.DischargeDelay > 0 ? MEASURE_STATUS.DISCHARGE : MEASURE_STATUS.FINISHED);
                         }
                     }
                     else sec = measSeconds;
