@@ -34,7 +34,7 @@ namespace NormaMeasure.Teraohmmeter
         protected delegate void updateMeasureStatusDelegate(MEASURE_STATUS status);
 
         TeraDevice teraDevice;
-        TeraMeasure handMeasure;
+        TeraMeasure measure;
         public TeraForm(TeraDevice tera_device, MainForm f)
         {
             InitializeComponent();
@@ -46,8 +46,12 @@ namespace NormaMeasure.Teraohmmeter
 
         public void InitAndShow()
         {
-            initHandMeasurePage();
-            initVerificationPage();
+            this.Width = this.Width - verificationCalibrationPanel.Width;
+            verificationCalibrationPanel.Parent = handMeasurePanel.Parent;
+            verificationCalibrationPanel.Location = handMeasurePanel.Location;
+            comboBoxMode.SelectedIndex = 0;
+            //initHandMeasurePage();
+            //initVerificationPage();
             this.Show();
         }
 
@@ -65,43 +69,44 @@ namespace NormaMeasure.Teraohmmeter
             da.Dispose();
         }
 
-        private void initHandMeasurePage()
+        private void initPage()
         {
-            this.handMeasure = new TeraMeasure(teraDevice, MEASURE_TYPE.HAND);
+            this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.HAND);
             fillHandMeasureParameters();
             buildIsolationMaterialArr();
             switchBringingParams();
             getCameraDiametersByCameraId();
-            cleanHandMeasInfo();
+            cleanMeasInfo();
+  
         }
 
         private void fillHandMeasureParameters()
         {
 
             //Заполняем поля значениями по умолчанию
-            temperatureField.Value = handMeasure.Temperature;
-            voltageComboBox.Text = handMeasure.Voltage.ToString();
-            dischargeDelay.Value = handMeasure.DischargeDelay;
-            polarizationDelay.Value = handMeasure.PolarizationDelay;
-            cycleTimes.Value = handMeasure.CycleTimes;
-            averagingTimes.Value = handMeasure.AveragingTimes;
-            bringingLengthMeasCb.SelectedIndex = handMeasure.BringingLengthMeasureId;
-            materialHeight.Value = handMeasure.MaterialHeight;
-            isDegreeViewCheckBox.Checked = handMeasure.IsDegreeViewMode;
+            temperatureField.Value = measure.Temperature;
+            voltageComboBox.Text = measure.Voltage.ToString();
+            dischargeDelay.Value = measure.DischargeDelay;
+            polarizationDelay.Value = measure.PolarizationDelay;
+            cycleTimes.Value = measure.CycleTimes;
+            averagingTimes.Value = measure.AveragingTimes;
+            bringingLengthMeasCb.Text = measure.BringingLengthMeasure;
+            materialHeight.Value = measure.MaterialHeight;
+            isDegreeViewCheckBox.Checked = measure.IsDegreeViewMode;
             //minTimeToNorm.Value = handMeasure.MinTimeToNorm;
-            normaField.Value = handMeasure.NormaValue;
-            materialLength.Value = handMeasure.BringingLength;
+            normaField.Value = measure.NormaValue;
+            materialLength.Value = measure.BringingLength;
             foreach (DataRow r in camera_types.Rows)
             {
-                if (r["internal_diameter"].ToString() == handMeasure.InternalCamDiam.ToString() && r["external_diameter"].ToString() == handMeasure.ExternalCamDiam.ToString())
+                if (r["internal_diameter"].ToString() == measure.InternalCamDiam.ToString() && r["external_diameter"].ToString() == measure.ExternalCamDiam.ToString())
                 {
                     cameraTypesCB.Text = r["name"].ToString();
                     break;
                 }
             }
             if (String.IsNullOrEmpty(cameraTypesCB.Text)) cameraTypesCB.Text = camera_types.Rows[0]["name"].ToString();
-            bringingTypeCB.SelectedValue = handMeasure.BringingTypeId;
-            materialTypes.SelectedValue = handMeasure.MaterialId;
+            bringingTypeCB.SelectedValue = measure.BringingTypeId;
+            materialTypes.SelectedValue = measure.MaterialId;
         }
 
         /// <summary>
@@ -145,8 +150,8 @@ namespace NormaMeasure.Teraohmmeter
 
         private void normaField_ValueChanged(object sender, EventArgs e)
         {
-            int v = Convert.ToInt32(this.normaField.Value);
-            this.polTime.Text = (v > 0) ? "Достижение, мин" : "Поляризация, мин";
+            //int v = Convert.ToInt32(this.normaField.Value);
+            //this.polTime.Text = (v > 0) ? "Выдержка, мин" : "Поляризация, мин";
         }
 
         private void isCyclicMeasure_CheckedChanged(object sender, EventArgs e)
@@ -166,8 +171,8 @@ namespace NormaMeasure.Teraohmmeter
             {
                 if (r["id"].ToString() == cId)
                 {
-                    this.handMeasure.InternalCamDiam = Convert.ToInt16(r["internal_diameter"].ToString());
-                    this.handMeasure.ExternalCamDiam = Convert.ToInt16(r["external_diameter"].ToString());
+                    this.measure.InternalCamDiam = Convert.ToInt16(r["internal_diameter"].ToString());
+                    this.measure.ExternalCamDiam = Convert.ToInt16(r["external_diameter"].ToString());
                     break;
                 }
             }
@@ -204,7 +209,7 @@ namespace NormaMeasure.Teraohmmeter
             }
         }
 
-        private void cleanHandMeasInfo()
+        private void cleanMeasInfo()
         {
             this.measureStatus.Text = TeraMeasure.StatusString(MEASURE_STATUS.NOT_STARTED);
             this.measTimeLbl.Text = this.normaLbl.Text = this.cycleCounterLbl.Text = this.statMeasNumbOfLbl.Text = this.midStatMeasValLbl.Text = this.measTimeLbl.Text = "";
@@ -215,29 +220,29 @@ namespace NormaMeasure.Teraohmmeter
         {
             //MessageBox.Show(this.teraMeas.isOnMeasure().ToString());
 
-            if (!this.handMeasure.IsStarted)
+            if (!this.measure.IsStarted)
             {
                 this.teraDevice.OpenPort();
-                handMeasure.Temperature = (int)temperatureField.Value;
-                handMeasure.Voltage = Convert.ToInt32(voltageComboBox.Text);
-                handMeasure.DischargeDelay = Convert.ToInt16(dischargeDelay.Value);
-                handMeasure.PolarizationDelay = Convert.ToInt32(this.polarizationDelay.Value);
-                handMeasure.IsCyclicMeasure = isCyclicMeasure.Checked;
-                handMeasure.CycleTimes = Convert.ToInt32(cycleTimes.Value);
-                handMeasure.AveragingTimes = Convert.ToInt32(this.averagingTimes.Value);
-                handMeasure.BringingTypeId = bringingTypeCB.SelectedValue.ToString();
-                handMeasure.MaterialHeight = Convert.ToInt32(this.materialHeight.Value);
-                handMeasure.IsDegreeViewMode = isDegreeViewCheckBox.Checked;
+                measure.Temperature = (int)temperatureField.Value;
+                measure.Voltage = Convert.ToInt32(voltageComboBox.Text);
+                measure.DischargeDelay = Convert.ToInt16(dischargeDelay.Value);
+                measure.PolarizationDelay = Convert.ToInt32(this.polarizationDelay.Value);
+                measure.IsCyclicMeasure = isCyclicMeasure.Checked;
+                measure.CycleTimes = Convert.ToInt32(cycleTimes.Value);
+                measure.AveragingTimes = Convert.ToInt32(this.averagingTimes.Value);
+                measure.BringingTypeId = bringingTypeCB.SelectedValue.ToString();
+                measure.MaterialHeight = Convert.ToInt32(this.materialHeight.Value);
+                measure.IsDegreeViewMode = isDegreeViewCheckBox.Checked;
                // handMeasure.MinTimeToNorm = Convert.ToInt32(minTimeToNorm.Value);
-                handMeasure.NormaValue = Convert.ToInt32(this.normaField.Value);
-                handMeasure.MaterialId = materialTypes.SelectedValue.ToString();
-                handMeasure.BringingLength = Convert.ToInt16(materialLength.Value);
-                handMeasure.BringingLengthMeasureId = this.bringingLengthMeasCb.SelectedIndex;
-                this.switchFieldsMeasureOnOff(this.handMeasure.IsStarted);
+                measure.NormaValue = Convert.ToInt32(this.normaField.Value);
+                measure.MaterialId = materialTypes.SelectedValue.ToString();
+                measure.BringingLength = Convert.ToInt16(materialLength.Value);
+                measure.BringingLengthMeasure = this.bringingLengthMeasCb.SelectedText;
+                this.switchFieldsMeasureOnOff(this.measure.IsStarted);
 
             }else
                 {
-                     handMeasure.StopWithStatus(MEASURE_STATUS.STOPED);
+                     measure.StopWithStatus(MEASURE_STATUS.STOPED);
                      Thread.Sleep(300);
                      if (!Properties.Settings.Default.IsTestApp)
                      {
@@ -259,17 +264,18 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                MeasureResultCollection resultList = handMeasure.ResultCollectionsList[this.handMeasure.Number-1];
-                this.cycleCounterLbl.Text = String.Format("Измерение {0}  Цикл {1}", this.handMeasure.Number, this.handMeasure.CycleNumber);
+                MeasureResultCollection resultList = this.measure.ResultCollectionsList[this.measure.Number-1];
+                refreshResultsPage();
+                this.cycleCounterLbl.Text = String.Format("Измерение {0}  Цикл {1}", this.measure.Number, this.measure.CycleNumber);
                 //Отрисовка для статистических испытаний
-                if (handMeasure.IsStatistic)  
+                if (measure.IsStatistic)  
                 {
-                    this.statMeasNumbOfLbl.Text = String.Format("измерено {0} из {1}", handMeasure.StatCycleNumber, handMeasure.AveragingTimes);
+                    this.statMeasNumbOfLbl.Text = String.Format("измерено {0} из {1}", measure.StatCycleNumber, measure.AveragingTimes);
                     if (resultList.Count > 0)
                     {
                         MeasureResultTera result = resultList.Last() as MeasureResultTera;
                         this.midStatMeasValLbl.Text = String.Format("промежуточное значение: {0}", isDegreeViewCheckBox.Checked ? absoluteResultView(result.BringingResult) : deegreeResultView(result.BringingResult));
-                        if (handMeasure.StatCycleNumber == handMeasure.AveragingTimes)
+                        if (measure.StatCycleNumber == measure.AveragingTimes)
                         {
                             double avVal = resultList.AverageBringing();
                             if (isDegreeViewCheckBox.Checked)
@@ -292,7 +298,7 @@ namespace NormaMeasure.Teraohmmeter
                     if (resultList.Count > 0)
                     {
                         MeasureResultTera result = resultList.Last() as MeasureResultTera;
-                        if (handMeasure.StatCycleNumber == this.handMeasure.AveragingTimes)
+                        if (measure.StatCycleNumber == this.measure.AveragingTimes)
                         {
                             if (isDegreeViewCheckBox.Checked)
                             {
@@ -342,7 +348,7 @@ namespace NormaMeasure.Teraohmmeter
                 }
                 else
                 {
-                    handMeasure.Start();
+                    measure.Start();
                 }
             }
         }
@@ -435,7 +441,7 @@ namespace NormaMeasure.Teraohmmeter
         }
         private string getBringingName()
         {
-            switch (handMeasure.BringingTypeId)
+            switch (measure.BringingTypeId)
             {
                 case "2":
                     return "∙" + bringingLengthMeasCb.Text;
@@ -459,7 +465,6 @@ namespace NormaMeasure.Teraohmmeter
         private void initVerificationPage()
         {
             fillEtalonMapComboBox();
-
         }
 
         /// <summary>
@@ -495,13 +500,115 @@ namespace NormaMeasure.Teraohmmeter
         private void temperatureField_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown n = sender as NumericUpDown;
-            this.handMeasure.Temperature = Convert.ToInt16(n.Value);
+            this.measure.Temperature = Convert.ToInt16(n.Value);
         }
 
         private void materialTypes_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox cb = sender as ComboBox;
-            this.handMeasure.MaterialId = cb.SelectedValue.ToString();
+            this.measure.MaterialId = cb.SelectedValue.ToString();
         }
+
+        private void comboBoxMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            switch(cb.SelectedIndex)
+            {
+                case 0:
+                    this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.HAND);
+                    verificationCalibrationPanel.Visible = false;
+                    handMeasurePanel.Visible = true;
+                    measureSettingsGroup.Enabled = true;
+                    initPage();
+
+                    break;
+                case 1:
+                    this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.VERIFICATION);
+                    verificationCalibrationPanel.Visible = true;
+                    handMeasurePanel.Visible = false;
+                    measureSettingsGroup.Enabled = false;
+                    fillEtalonMapComboBox();
+                    break;
+                case 2:
+                    this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.CALIBRATION);
+                    verificationCalibrationPanel.Visible = true;
+                    measureSettingsGroup.Enabled = false;
+                    handMeasurePanel.Visible = false;
+                    fillEtalonMapComboBox();
+                    break;
+            }
+        }
+
+        private void refreshResultsPage()
+        {
+            foreach(MeasureResultCollection c in measure.ResultCollectionsList)
+            {
+                if (!measResultsListComboBox.Items.Contains(c.Name))
+                {
+                    measResultsListComboBox.Items.Add(c.Name);
+                }
+            }
+            if (measResultsListComboBox.SelectedIndex == -1 && measResultsListComboBox.Items.Count > 0) measResultsListComboBox.SelectedIndex = 0;
+            if (measResultsListComboBox.SelectedIndex == measResultsListComboBox.Items.Count-1)
+            {
+                if (measureResultDataGridView1.Rows.Count != measure.ResultCollectionsList.Last().Count)
+                {
+                    MeasureResultCollection col = measure.ResultCollectionsList.Last();
+                    int dif =col.Count - measureResultDataGridView1.Rows.Count;
+                    for(int i = dif; i > 0; i--)
+                    {
+                        MeasureResult mr = col.ResultsList[col.Count - i];
+                        addRowToDataGrid(mr);
+                    }
+                }
+            }
+        }
+
+
+        private void measResultsListComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            MeasureResultCollection col = this.measure.ResultCollectionsList[cb.SelectedIndex];
+            measureResultDataGridView1.Rows.Clear();
+            foreach (MeasureResult r in col.ResultsList)
+            {
+                addRowToDataGrid(r);
+            }
+        }
+
+        private void addRowToDataGrid(MeasureResult r)
+        {
+            MeasureResultTera mr = r as MeasureResultTera;
+            int num = measureResultDataGridView1.Rows.Add(1);
+            measureResultDataGridView1.Rows[num].Cells["cycle_number"].Value = mr.CycleNumber;
+            measureResultDataGridView1.Rows[num].Cells["stat_measure_number"].Value = mr.StatCycleNumber;
+            measureResultDataGridView1.Rows[num].Cells["voltage"].Value = mr.Voltage;
+            measureResultDataGridView1.Rows[num].Cells["result"].Value = mr.BringingResult;
+        }
+
+        private void teraEtalonMapComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            if (cb.SelectedIndex == -1 || (this.mainForm.TeraEtalonMaps.Length == 0)) return;
+            this.measure.EtalonMap = this.mainForm.TeraEtalonMaps[cb.SelectedIndex];
+            comboBoxResistance.Items.Clear();
+            if (this.measure.MeasureType == MEASURE_TYPE.CALIBRATION)
+            {
+                int range = 0;
+                foreach(int i in this.measure.EtalonMap.CalibrationEtalonNumbers)
+                {
+                    range++;
+                    comboBoxResistance.Items.Add(String.Format("{0} Диапазон ({1})", range, MeasureResultTera.AbsResultViewWithMeasure((double)this.measure.EtalonMap.Etalons[i]/1000)));
+                }
+            }else
+            {
+                foreach (int i in this.measure.EtalonMap.Etalons)
+                {
+                    comboBoxResistance.Items.Add(MeasureResultTera.AbsResultViewWithMeasure((double)i /(double)1000));
+                }
+            }
+            comboBoxResistance.SelectedIndex = 0;
+        }
+
     }
 }

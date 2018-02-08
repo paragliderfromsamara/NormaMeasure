@@ -35,6 +35,17 @@ namespace NormaMeasure.BaseClasses
     }
     public class MeasureResultCollection
     {
+        private string name = String.Empty;
+        public string Name
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(this.name)) return "Измерение " + this.MeasureNumber.ToString();
+                else return name;
+            }
+            set { this.name = value; }
+        }
+        public MEASURE_TYPE MeasureType;
         private int measureNumber;
         public int MeasureNumber { get { return measureNumber; } }
         public int Count
@@ -78,9 +89,10 @@ namespace NormaMeasure.BaseClasses
         /// Создаём коллекцию результатов с номером испытания
         /// </summary>
         /// <param name="measure_number"></param>
-        public MeasureResultCollection(int measure_number) : this()
+        public MeasureResultCollection(int measure_number, MEASURE_TYPE mType) : this()
         {
             this.measureNumber = measure_number;
+            this.MeasureType = mType;
         }
 
         public void Add(MeasureResult result)

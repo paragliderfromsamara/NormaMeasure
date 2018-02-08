@@ -83,14 +83,26 @@ namespace NormaMeasure.Teraohmmeter
             this.materialHeight = new System.Windows.Forms.NumericUpDown();
             this.isDegreeViewCheckBox = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.handMeasureTabPage = new System.Windows.Forms.TabPage();
-            this.calibrationTabPage = new System.Windows.Forms.TabPage();
+            this.measureTabPage = new System.Windows.Forms.TabPage();
+            this.handMeasurePanel = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
+            this.TestedMaterialId = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBoxMode = new System.Windows.Forms.ComboBox();
+            this.resultTabPage = new System.Windows.Forms.TabPage();
+            this.measureResultDataGridView1 = new System.Windows.Forms.DataGridView();
+            this.cycle_number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.stat_measure_number = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.voltage = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.result = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label8 = new System.Windows.Forms.Label();
+            this.measResultsListComboBox = new System.Windows.Forms.ComboBox();
             this.selectEtalonMapLbl = new System.Windows.Forms.Label();
             this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.verificationCalibrationPanel = new System.Windows.Forms.Panel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.comboBoxResistance = new System.Windows.Forms.ComboBox();
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.averagingTimes)).BeginInit();
@@ -106,10 +118,11 @@ namespace NormaMeasure.Teraohmmeter
             ((System.ComponentModel.ISupportInitialize)(this.temperatureField)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.materialHeight)).BeginInit();
             this.tabControl1.SuspendLayout();
-            this.handMeasureTabPage.SuspendLayout();
-            this.calibrationTabPage.SuspendLayout();
-            this.tabControl2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.measureTabPage.SuspendLayout();
+            this.handMeasurePanel.SuspendLayout();
+            this.resultTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.measureResultDataGridView1)).BeginInit();
+            this.verificationCalibrationPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // voltageComboBox
@@ -138,9 +151,9 @@ namespace NormaMeasure.Teraohmmeter
             // startHandMeasureBut
             // 
             this.startHandMeasureBut.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.startHandMeasureBut.Location = new System.Drawing.Point(196, 403);
+            this.startHandMeasureBut.Location = new System.Drawing.Point(196, 364);
             this.startHandMeasureBut.Name = "startHandMeasureBut";
-            this.startHandMeasureBut.Size = new System.Drawing.Size(574, 46);
+            this.startHandMeasureBut.Size = new System.Drawing.Size(570, 46);
             this.startHandMeasureBut.TabIndex = 2;
             this.startHandMeasureBut.Text = "ПУСК ИЗМЕРЕНИЯ";
             this.startHandMeasureBut.UseVisualStyleBackColor = false;
@@ -252,9 +265,9 @@ namespace NormaMeasure.Teraohmmeter
             this.polTime.AutoSize = true;
             this.polTime.Location = new System.Drawing.Point(281, 25);
             this.polTime.Name = "polTime";
-            this.polTime.Size = new System.Drawing.Size(101, 13);
+            this.polTime.Size = new System.Drawing.Size(86, 13);
             this.polTime.TabIndex = 3;
-            this.polTime.Text = "Поляризация, мин";
+            this.polTime.Text = "Выдержка, мин";
             // 
             // polarizationDelay
             // 
@@ -354,7 +367,7 @@ namespace NormaMeasure.Teraohmmeter
             this.materialTypes.DisplayMember = "isolation_materials.name";
             this.materialTypes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.materialTypes.FormattingEnabled = true;
-            this.materialTypes.Location = new System.Drawing.Point(24, 184);
+            this.materialTypes.Location = new System.Drawing.Point(3, 69);
             this.materialTypes.Name = "materialTypes";
             this.materialTypes.Size = new System.Drawing.Size(148, 21);
             this.materialTypes.TabIndex = 4;
@@ -364,7 +377,7 @@ namespace NormaMeasure.Teraohmmeter
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 168);
+            this.label5.Location = new System.Drawing.Point(0, 53);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(57, 13);
             this.label5.TabIndex = 5;
@@ -373,7 +386,7 @@ namespace NormaMeasure.Teraohmmeter
             // cameraLbl
             // 
             this.cameraLbl.AutoSize = true;
-            this.cameraLbl.Location = new System.Drawing.Point(18, 267);
+            this.cameraLbl.Location = new System.Drawing.Point(-6, 200);
             this.cameraLbl.Name = "cameraLbl";
             this.cameraLbl.Size = new System.Drawing.Size(151, 13);
             this.cameraLbl.TabIndex = 6;
@@ -385,7 +398,7 @@ namespace NormaMeasure.Teraohmmeter
             this.cameraTypesCB.DisplayMember = "camera_types.name";
             this.cameraTypesCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cameraTypesCB.FormattingEnabled = true;
-            this.cameraTypesCB.Location = new System.Drawing.Point(24, 282);
+            this.cameraTypesCB.Location = new System.Drawing.Point(0, 215);
             this.cameraTypesCB.Name = "cameraTypesCB";
             this.cameraTypesCB.Size = new System.Drawing.Size(148, 21);
             this.cameraTypesCB.TabIndex = 7;
@@ -395,7 +408,7 @@ namespace NormaMeasure.Teraohmmeter
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(21, 216);
+            this.label7.Location = new System.Drawing.Point(-3, 149);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(89, 13);
             this.label7.TabIndex = 8;
@@ -407,7 +420,7 @@ namespace NormaMeasure.Teraohmmeter
             this.bringingTypeCB.DisplayMember = "bringing_types.name";
             this.bringingTypeCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.bringingTypeCB.FormattingEnabled = true;
-            this.bringingTypeCB.Location = new System.Drawing.Point(24, 232);
+            this.bringingTypeCB.Location = new System.Drawing.Point(0, 165);
             this.bringingTypeCB.Name = "bringingTypeCB";
             this.bringingTypeCB.Size = new System.Drawing.Size(148, 21);
             this.bringingTypeCB.TabIndex = 9;
@@ -417,7 +430,7 @@ namespace NormaMeasure.Teraohmmeter
             // materialLengthLbl
             // 
             this.materialLengthLbl.AutoSize = true;
-            this.materialLengthLbl.Location = new System.Drawing.Point(18, 265);
+            this.materialLengthLbl.Location = new System.Drawing.Point(-6, 198);
             this.materialLengthLbl.Name = "materialLengthLbl";
             this.materialLengthLbl.Size = new System.Drawing.Size(93, 13);
             this.materialLengthLbl.TabIndex = 10;
@@ -430,7 +443,7 @@ namespace NormaMeasure.Teraohmmeter
             0,
             0,
             0});
-            this.materialLength.Location = new System.Drawing.Point(24, 281);
+            this.materialLength.Location = new System.Drawing.Point(0, 214);
             this.materialLength.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -473,9 +486,9 @@ namespace NormaMeasure.Teraohmmeter
             this.panel1.Controls.Add(this.measTimeLbl);
             this.panel1.Controls.Add(this.midStatMeasValLbl);
             this.panel1.Controls.Add(this.measureResultLbl);
-            this.panel1.Location = new System.Drawing.Point(6, 9);
+            this.panel1.Location = new System.Drawing.Point(196, 107);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(555, 228);
+            this.panel1.Size = new System.Drawing.Size(570, 228);
             this.panel1.TabIndex = 14;
             // 
             // measureStatus
@@ -544,7 +557,7 @@ namespace NormaMeasure.Teraohmmeter
             this.midStatMeasValLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.midStatMeasValLbl.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.midStatMeasValLbl.ForeColor = System.Drawing.Color.SteelBlue;
-            this.midStatMeasValLbl.Location = new System.Drawing.Point(252, 6);
+            this.midStatMeasValLbl.Location = new System.Drawing.Point(267, 6);
             this.midStatMeasValLbl.Name = "midStatMeasValLbl";
             this.midStatMeasValLbl.Size = new System.Drawing.Size(298, 23);
             this.midStatMeasValLbl.TabIndex = 14;
@@ -554,7 +567,7 @@ namespace NormaMeasure.Teraohmmeter
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(21, 117);
+            this.label6.Location = new System.Drawing.Point(0, 2);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(91, 13);
             this.label6.TabIndex = 18;
@@ -562,7 +575,7 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // temperatureField
             // 
-            this.temperatureField.Location = new System.Drawing.Point(24, 135);
+            this.temperatureField.Location = new System.Drawing.Point(3, 20);
             this.temperatureField.Maximum = new decimal(new int[] {
             35,
             0,
@@ -592,7 +605,7 @@ namespace NormaMeasure.Teraohmmeter
             "дм",
             "м",
             "км"});
-            this.bringingLengthMeasCb.Location = new System.Drawing.Point(105, 326);
+            this.bringingLengthMeasCb.Location = new System.Drawing.Point(81, 259);
             this.bringingLengthMeasCb.Name = "bringingLengthMeasCb";
             this.bringingLengthMeasCb.Size = new System.Drawing.Size(67, 21);
             this.bringingLengthMeasCb.TabIndex = 20;
@@ -600,7 +613,7 @@ namespace NormaMeasure.Teraohmmeter
             // bringingToLbl
             // 
             this.bringingToLbl.AutoSize = true;
-            this.bringingToLbl.Location = new System.Drawing.Point(21, 329);
+            this.bringingToLbl.Location = new System.Drawing.Point(-3, 262);
             this.bringingToLbl.Name = "bringingToLbl";
             this.bringingToLbl.Size = new System.Drawing.Size(78, 13);
             this.bringingToLbl.TabIndex = 21;
@@ -609,7 +622,7 @@ namespace NormaMeasure.Teraohmmeter
             // materialHeightLbl
             // 
             this.materialHeightLbl.AutoSize = true;
-            this.materialHeightLbl.Location = new System.Drawing.Point(21, 312);
+            this.materialHeightLbl.Location = new System.Drawing.Point(-3, 245);
             this.materialHeightLbl.Name = "materialHeightLbl";
             this.materialHeightLbl.Size = new System.Drawing.Size(139, 13);
             this.materialHeightLbl.TabIndex = 22;
@@ -617,7 +630,7 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // materialHeight
             // 
-            this.materialHeight.Location = new System.Drawing.Point(24, 327);
+            this.materialHeight.Location = new System.Drawing.Point(0, 260);
             this.materialHeight.Maximum = new decimal(new int[] {
             20000,
             0,
@@ -640,7 +653,7 @@ namespace NormaMeasure.Teraohmmeter
             // isDegreeViewCheckBox
             // 
             this.isDegreeViewCheckBox.AutoSize = true;
-            this.isDegreeViewCheckBox.Location = new System.Drawing.Point(196, 380);
+            this.isDegreeViewCheckBox.Location = new System.Drawing.Point(196, 341);
             this.isDegreeViewCheckBox.Name = "isDegreeViewCheckBox";
             this.isDegreeViewCheckBox.Size = new System.Drawing.Size(257, 17);
             this.isDegreeViewCheckBox.TabIndex = 24;
@@ -649,58 +662,167 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.handMeasureTabPage);
-            this.tabControl1.Controls.Add(this.calibrationTabPage);
+            this.tabControl1.Controls.Add(this.measureTabPage);
+            this.tabControl1.Controls.Add(this.resultTabPage);
             this.tabControl1.Location = new System.Drawing.Point(2, 9);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(783, 493);
             this.tabControl1.TabIndex = 26;
             // 
-            // handMeasureTabPage
+            // measureTabPage
             // 
-            this.handMeasureTabPage.Controls.Add(this.tabControl2);
-            this.handMeasureTabPage.Controls.Add(this.measureSettingsGroup);
-            this.handMeasureTabPage.Controls.Add(this.startHandMeasureBut);
-            this.handMeasureTabPage.Controls.Add(this.isDegreeViewCheckBox);
-            this.handMeasureTabPage.Controls.Add(this.materialTypes);
-            this.handMeasureTabPage.Controls.Add(this.materialHeight);
-            this.handMeasureTabPage.Controls.Add(this.label5);
-            this.handMeasureTabPage.Controls.Add(this.materialHeightLbl);
-            this.handMeasureTabPage.Controls.Add(this.cameraLbl);
-            this.handMeasureTabPage.Controls.Add(this.bringingToLbl);
-            this.handMeasureTabPage.Controls.Add(this.cameraTypesCB);
-            this.handMeasureTabPage.Controls.Add(this.bringingLengthMeasCb);
-            this.handMeasureTabPage.Controls.Add(this.label7);
-            this.handMeasureTabPage.Controls.Add(this.temperatureField);
-            this.handMeasureTabPage.Controls.Add(this.bringingTypeCB);
-            this.handMeasureTabPage.Controls.Add(this.label6);
-            this.handMeasureTabPage.Controls.Add(this.materialLengthLbl);
-            this.handMeasureTabPage.Controls.Add(this.materialLength);
-            this.handMeasureTabPage.Location = new System.Drawing.Point(4, 22);
-            this.handMeasureTabPage.Name = "handMeasureTabPage";
-            this.handMeasureTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.handMeasureTabPage.Size = new System.Drawing.Size(775, 467);
-            this.handMeasureTabPage.TabIndex = 0;
-            this.handMeasureTabPage.Text = "Ручные испытания";
-            this.handMeasureTabPage.UseVisualStyleBackColor = true;
+            this.measureTabPage.Controls.Add(this.handMeasurePanel);
+            this.measureTabPage.Controls.Add(this.label2);
+            this.measureTabPage.Controls.Add(this.comboBoxMode);
+            this.measureTabPage.Controls.Add(this.panel1);
+            this.measureTabPage.Controls.Add(this.measureSettingsGroup);
+            this.measureTabPage.Controls.Add(this.startHandMeasureBut);
+            this.measureTabPage.Controls.Add(this.isDegreeViewCheckBox);
+            this.measureTabPage.Location = new System.Drawing.Point(4, 22);
+            this.measureTabPage.Name = "measureTabPage";
+            this.measureTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.measureTabPage.Size = new System.Drawing.Size(775, 467);
+            this.measureTabPage.TabIndex = 0;
+            this.measureTabPage.Text = "Измерение";
+            this.measureTabPage.UseVisualStyleBackColor = true;
             // 
-            // calibrationTabPage
+            // handMeasurePanel
             // 
-            this.calibrationTabPage.Controls.Add(this.selectEtalonMapLbl);
-            this.calibrationTabPage.Controls.Add(this.teraEtalonMapComboBox);
-            this.calibrationTabPage.Location = new System.Drawing.Point(4, 22);
-            this.calibrationTabPage.Name = "calibrationTabPage";
-            this.calibrationTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.calibrationTabPage.Size = new System.Drawing.Size(775, 400);
-            this.calibrationTabPage.TabIndex = 1;
-            this.calibrationTabPage.Text = "Поверка";
-            this.calibrationTabPage.UseVisualStyleBackColor = true;
+            this.handMeasurePanel.Controls.Add(this.label9);
+            this.handMeasurePanel.Controls.Add(this.TestedMaterialId);
+            this.handMeasurePanel.Controls.Add(this.temperatureField);
+            this.handMeasurePanel.Controls.Add(this.materialLength);
+            this.handMeasurePanel.Controls.Add(this.materialLengthLbl);
+            this.handMeasurePanel.Controls.Add(this.label6);
+            this.handMeasurePanel.Controls.Add(this.bringingTypeCB);
+            this.handMeasurePanel.Controls.Add(this.label7);
+            this.handMeasurePanel.Controls.Add(this.materialTypes);
+            this.handMeasurePanel.Controls.Add(this.bringingLengthMeasCb);
+            this.handMeasurePanel.Controls.Add(this.materialHeight);
+            this.handMeasurePanel.Controls.Add(this.cameraTypesCB);
+            this.handMeasurePanel.Controls.Add(this.label5);
+            this.handMeasurePanel.Controls.Add(this.bringingToLbl);
+            this.handMeasurePanel.Controls.Add(this.materialHeightLbl);
+            this.handMeasurePanel.Controls.Add(this.cameraLbl);
+            this.handMeasurePanel.Location = new System.Drawing.Point(18, 172);
+            this.handMeasurePanel.Name = "handMeasurePanel";
+            this.handMeasurePanel.Size = new System.Drawing.Size(151, 289);
+            this.handMeasurePanel.TabIndex = 27;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(0, 102);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(132, 13);
+            this.label9.TabIndex = 25;
+            this.label9.Text = "Идентификатор образца";
+            // 
+            // TestedMaterialId
+            // 
+            this.TestedMaterialId.Location = new System.Drawing.Point(0, 118);
+            this.TestedMaterialId.Name = "TestedMaterialId";
+            this.TestedMaterialId.Size = new System.Drawing.Size(151, 20);
+            this.TestedMaterialId.TabIndex = 24;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(15, 114);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(84, 13);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Тип испытания";
+            // 
+            // comboBoxMode
+            // 
+            this.comboBoxMode.FormattingEnabled = true;
+            this.comboBoxMode.Items.AddRange(new object[] {
+            "Ручные испытания",
+            "Поверка",
+            "Калибровка"});
+            this.comboBoxMode.Location = new System.Drawing.Point(18, 132);
+            this.comboBoxMode.Name = "comboBoxMode";
+            this.comboBoxMode.Size = new System.Drawing.Size(151, 21);
+            this.comboBoxMode.TabIndex = 25;
+            this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxMode_SelectedIndexChanged);
+            // 
+            // resultTabPage
+            // 
+            this.resultTabPage.Controls.Add(this.measureResultDataGridView1);
+            this.resultTabPage.Controls.Add(this.label8);
+            this.resultTabPage.Controls.Add(this.measResultsListComboBox);
+            this.resultTabPage.Location = new System.Drawing.Point(4, 22);
+            this.resultTabPage.Name = "resultTabPage";
+            this.resultTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.resultTabPage.Size = new System.Drawing.Size(775, 467);
+            this.resultTabPage.TabIndex = 1;
+            this.resultTabPage.Text = "Результаты";
+            this.resultTabPage.UseVisualStyleBackColor = true;
+            // 
+            // measureResultDataGridView1
+            // 
+            this.measureResultDataGridView1.AllowUserToAddRows = false;
+            this.measureResultDataGridView1.AllowUserToDeleteRows = false;
+            this.measureResultDataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.measureResultDataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cycle_number,
+            this.stat_measure_number,
+            this.voltage,
+            this.result});
+            this.measureResultDataGridView1.Location = new System.Drawing.Point(6, 95);
+            this.measureResultDataGridView1.Name = "measureResultDataGridView1";
+            this.measureResultDataGridView1.ReadOnly = true;
+            this.measureResultDataGridView1.Size = new System.Drawing.Size(763, 366);
+            this.measureResultDataGridView1.TabIndex = 2;
+            // 
+            // cycle_number
+            // 
+            this.cycle_number.HeaderText = "Цикл №";
+            this.cycle_number.Name = "cycle_number";
+            this.cycle_number.ReadOnly = true;
+            // 
+            // stat_measure_number
+            // 
+            this.stat_measure_number.HeaderText = "Измерение №";
+            this.stat_measure_number.Name = "stat_measure_number";
+            this.stat_measure_number.ReadOnly = true;
+            // 
+            // voltage
+            // 
+            this.voltage.HeaderText = "Напряжение, Вольт";
+            this.voltage.Name = "voltage";
+            this.voltage.ReadOnly = true;
+            // 
+            // result
+            // 
+            this.result.HeaderText = "Результат";
+            this.result.Name = "result";
+            this.result.ReadOnly = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 22);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(103, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "Список измерений";
+            // 
+            // measResultsListComboBox
+            // 
+            this.measResultsListComboBox.FormattingEnabled = true;
+            this.measResultsListComboBox.Location = new System.Drawing.Point(6, 41);
+            this.measResultsListComboBox.Name = "measResultsListComboBox";
+            this.measResultsListComboBox.Size = new System.Drawing.Size(233, 21);
+            this.measResultsListComboBox.TabIndex = 0;
+            this.measResultsListComboBox.SelectedIndexChanged += new System.EventHandler(this.measResultsListComboBox_SelectedIndexChanged);
             // 
             // selectEtalonMapLbl
             // 
             this.selectEtalonMapLbl.AutoSize = true;
-            this.selectEtalonMapLbl.Location = new System.Drawing.Point(15, 9);
+            this.selectEtalonMapLbl.Location = new System.Drawing.Point(-3, 3);
             this.selectEtalonMapLbl.Name = "selectEtalonMapLbl";
             this.selectEtalonMapLbl.Size = new System.Drawing.Size(87, 13);
             this.selectEtalonMapLbl.TabIndex = 1;
@@ -710,51 +832,51 @@ namespace NormaMeasure.Teraohmmeter
             // 
             this.teraEtalonMapComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.teraEtalonMapComboBox.FormattingEnabled = true;
-            this.teraEtalonMapComboBox.Location = new System.Drawing.Point(18, 25);
+            this.teraEtalonMapComboBox.Location = new System.Drawing.Point(0, 19);
             this.teraEtalonMapComboBox.Name = "teraEtalonMapComboBox";
-            this.teraEtalonMapComboBox.Size = new System.Drawing.Size(197, 21);
+            this.teraEtalonMapComboBox.Size = new System.Drawing.Size(151, 21);
             this.teraEtalonMapComboBox.TabIndex = 0;
+            this.teraEtalonMapComboBox.SelectedIndexChanged += new System.EventHandler(this.teraEtalonMapComboBox_SelectedIndexChanged);
             // 
             // MeasureTimer
             // 
             this.MeasureTimer.Interval = 1000;
             // 
-            // tabControl2
+            // verificationCalibrationPanel
             // 
-            this.tabControl2.Controls.Add(this.tabPage1);
-            this.tabControl2.Controls.Add(this.tabPage2);
-            this.tabControl2.Location = new System.Drawing.Point(196, 105);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(574, 269);
-            this.tabControl2.TabIndex = 25;
+            this.verificationCalibrationPanel.Controls.Add(this.label10);
+            this.verificationCalibrationPanel.Controls.Add(this.comboBoxResistance);
+            this.verificationCalibrationPanel.Controls.Add(this.teraEtalonMapComboBox);
+            this.verificationCalibrationPanel.Controls.Add(this.selectEtalonMapLbl);
+            this.verificationCalibrationPanel.Location = new System.Drawing.Point(791, 62);
+            this.verificationCalibrationPanel.Name = "verificationCalibrationPanel";
+            this.verificationCalibrationPanel.Size = new System.Drawing.Size(158, 122);
+            this.verificationCalibrationPanel.TabIndex = 27;
             // 
-            // tabPage1
+            // label10
             // 
-            this.tabPage1.Controls.Add(this.panel1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(566, 243);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(-3, 53);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(55, 13);
+            this.label10.TabIndex = 3;
+            this.label10.Text = "Резистор";
             // 
-            // tabPage2
+            // comboBoxResistance
             // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(192, 74);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.comboBoxResistance.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxResistance.FormattingEnabled = true;
+            this.comboBoxResistance.Location = new System.Drawing.Point(0, 69);
+            this.comboBoxResistance.Name = "comboBoxResistance";
+            this.comboBoxResistance.Size = new System.Drawing.Size(151, 21);
+            this.comboBoxResistance.TabIndex = 2;
             // 
             // TeraForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(788, 508);
+            this.ClientSize = new System.Drawing.Size(953, 508);
+            this.Controls.Add(this.verificationCalibrationPanel);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -778,12 +900,15 @@ namespace NormaMeasure.Teraohmmeter
             ((System.ComponentModel.ISupportInitialize)(this.temperatureField)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.materialHeight)).EndInit();
             this.tabControl1.ResumeLayout(false);
-            this.handMeasureTabPage.ResumeLayout(false);
-            this.handMeasureTabPage.PerformLayout();
-            this.calibrationTabPage.ResumeLayout(false);
-            this.calibrationTabPage.PerformLayout();
-            this.tabControl2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.measureTabPage.ResumeLayout(false);
+            this.measureTabPage.PerformLayout();
+            this.handMeasurePanel.ResumeLayout(false);
+            this.handMeasurePanel.PerformLayout();
+            this.resultTabPage.ResumeLayout(false);
+            this.resultTabPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.measureResultDataGridView1)).EndInit();
+            this.verificationCalibrationPanel.ResumeLayout(false);
+            this.verificationCalibrationPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -841,13 +966,25 @@ namespace NormaMeasure.Teraohmmeter
         private System.Windows.Forms.CheckBox isDegreeViewCheckBox;
         private System.Windows.Forms.Label measureStatus;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage handMeasureTabPage;
-        private System.Windows.Forms.TabPage calibrationTabPage;
+        private System.Windows.Forms.TabPage measureTabPage;
+        private System.Windows.Forms.TabPage resultTabPage;
         private Timer MeasureTimer;
         private Label selectEtalonMapLbl;
         private ComboBox teraEtalonMapComboBox;
-        private TabControl tabControl2;
-        private TabPage tabPage1;
-        private TabPage tabPage2;
+        private Label label2;
+        private ComboBox comboBoxMode;
+        private Panel handMeasurePanel;
+        private Panel verificationCalibrationPanel;
+        private DataGridView measureResultDataGridView1;
+        private Label label8;
+        private ComboBox measResultsListComboBox;
+        private DataGridViewTextBoxColumn cycle_number;
+        private DataGridViewTextBoxColumn stat_measure_number;
+        private DataGridViewTextBoxColumn voltage;
+        private DataGridViewTextBoxColumn result;
+        private Label label9;
+        private TextBox TestedMaterialId;
+        private Label label10;
+        private ComboBox comboBoxResistance;
     }
 }

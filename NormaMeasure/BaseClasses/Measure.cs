@@ -23,15 +23,17 @@ namespace NormaMeasure.BaseClasses
 
     public enum MEASURE_TYPE : byte
     {
-        HAND = 1,
-        AUTO = 2,
-        VERIFICATION = 3
+        HAND = 0,
+        AUTO = 1,
+        VERIFICATION = 2,
+        CALIBRATION = 3
     }
     public class MeasureBase
     {
         protected int number = 0;
         protected int cycleNumber;
         protected int statCycleNumber;
+        public string Name = String.Empty;
         public List<MeasureResultCollection> ResultCollectionsList = new List<MeasureResultCollection>();
         /// <summary>
         /// Номер испытания в данном цикле
@@ -51,7 +53,7 @@ namespace NormaMeasure.BaseClasses
             {
                 this.number = value;
                 CycleNumber = 1;
-                ResultCollectionsList.Add(new MeasureResultCollection(CycleNumber));
+                ResultCollectionsList.Add(new MeasureResultCollection(this.number, this.MeasureType));
             }
         }
         public int CycleNumber

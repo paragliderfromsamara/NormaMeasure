@@ -43,21 +43,18 @@ namespace NormaMeasure.Teraohmmeter
         private int normaValue = 0;
         private string materialId = "1";
         private int bringingLength = 1000;
-        private int bringingLengthMeasureId = 0;
+        private string bringingLengthMeasure = "м";
         public byte voltageId = 0;
         public double EtalonVal = 10000;
         public double MaxDeviationPercent = 5;
-
+        private string materialName = String.Empty;
+        private string testedMaterialId = String.Empty;
+        //------для режима коррекции-----------------
+        public float VoltageCoeff = 1;
+        public float RangeCoeff = 1;
+        public float AdditionalCoeff = 0;
+        //-------------------------------------------
         
-        
- 
-        public double BringingCoeff
-        {
-            get
-            {
-                return calculateCoeff();
-            }
-        }
         public TeraEtalonMap EtalonMap
         {
             get { return this.etalonMap; }
@@ -280,6 +277,45 @@ namespace NormaMeasure.Teraohmmeter
                 }
             }
         }
+
+        /// <summary>
+        /// Название материала
+        /// </summary>
+        public string MaterialName
+        {
+            get
+            {
+                return materialName;
+            }
+            set
+            {
+                if (materialName != value)
+                {
+                    writeToIni("MaterialName", value.ToString());
+                    materialName = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Идентификатор испытуемого образца
+        /// </summary>
+        public string TestedMaterialId
+        {
+            get
+            {
+                return testedMaterialId;
+            }
+            set
+            {
+                if (testedMaterialId != value)
+                {
+                    writeToIni("TestedMaterialId", value.ToString());
+                    testedMaterialId = value;
+                }
+            }
+        }
+
         /// <summary>
         /// Степенной вид результата
         /// </summary>
@@ -381,18 +417,18 @@ namespace NormaMeasure.Teraohmmeter
         /// <summary>
         /// Мера длины приведения
         /// </summary>
-        public int BringingLengthMeasureId
+        public string BringingLengthMeasure
         {
             get
             {
-                return bringingLengthMeasureId;
+                return bringingLengthMeasure;
             }
             set
             {
-                if (bringingLengthMeasureId != value)
+                if (bringingLengthMeasure != value)
                 {
-                    writeToIni("BringingLengthMeasureId", value.ToString());
-                    bringingLengthMeasureId = value;
+                    writeToIni("BringingLengthMeasure", value.ToString());
+                    bringingLengthMeasure = value;
                 }
             }
         }
@@ -478,7 +514,7 @@ namespace NormaMeasure.Teraohmmeter
             this.normaValue = ServiceFunctions.convertToInt32(file.ReadOrWrite("NormaValue", sect, this.NormaValue.ToString()));
             this.materialId = file.ReadOrWrite("MaterialId", sect, this.materialId.ToString());
             this.bringingLength = ServiceFunctions.convertToInt16(file.ReadOrWrite("BringingLength", sect, this.bringingLength.ToString()));
-            this.bringingLengthMeasureId = ServiceFunctions.convertToInt16(file.ReadOrWrite("BringingLengthMeasureId", sect, this.bringingLengthMeasureId.ToString()));
+            this.bringingLengthMeasure = file.ReadOrWrite("BringingLengthMeasure", sect, this.bringingLengthMeasure);
         }
 
         private void polarisation()
@@ -507,15 +543,10 @@ namespace NormaMeasure.Teraohmmeter
 
         private void measure()
         {
-            //int cycleCount = 0;
-            //int mCountLimit = this.AveragingTimes;
-            //int cycleCountLimit = this.CycleTimes;
             resetTime();
             this.MeasureStatus = MEASURE_STATUS.IS_GOING;
-            //this.updateResultFieldText("подождите...");
             do
             {
-                //this.teraDevice.DeviceForm.updateResultField();
                 this.teraDevice.DeviceForm.updateResultField();
                 MeasureResultTera result = new MeasureResultTera(this, this.teraDevice);
                 this.teraDevice.DoMeasure(ref result);
@@ -528,7 +559,7 @@ namespace NormaMeasure.Teraohmmeter
                 if (StatCycleNumber <= this.AveragingTimes) continue; //Если статистическое испытание, то уходим на следующий подцикл
                 this.teraDevice.DeviceForm.updateResultField();
                 this.CycleNumber++;
-                if (!this.IsCyclicMeasure && this.CycleNumber >= this.CycleTimes) break;
+                if (!this.IsCyclicMeasure && this.CycleNumber > this.CycleTimes) break;
             } while (true);
         }
 
@@ -577,8 +608,9 @@ namespace NormaMeasure.Teraohmmeter
 
         protected override void verificationMeasureThreadFunction()
         {
-            if (ResultCollectionsList.Count == 0) return;
+            if (ResultCollectionsList.Count > 0) return;
         }
+
 
         public static string StatusString(MEASURE_STATUS sts)
         {
@@ -643,41 +675,7 @@ namespace NormaMeasure.Teraohmmeter
         }
 
 
-        private double calculateCoeff()
-        {
-            double coeff = (double)this.material.GetCoefficient(this.Temperature);
-            switch (this.BringingTypeId)
-            {
-                case "1": //без приведения
-                    break;
-                case "2": //к длине
-                    double length = this.BringingLength;
-                    switch (this.BringingLengthMeasureId)
-                    {
-                        case 0:
-                            length *= 100;
-                            break;
-                        case 1:
-                            length *= 10;
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            length /= 1000;
-                            break;
-                    }
-                    coeff *= length;
-                    break;
-                case "3": //объёмное
-                    double sumDiamHalf = (this.ExternalCamDiam + this.InternalCamDiam) / 2;
-                    coeff *= (Math.PI * Math.Pow(sumDiamHalf, 2)) / (this.MaterialHeight * 4);
-                    break;
-                case "4": //поверхностное
-                    coeff *= Math.PI * (this.ExternalCamDiam + this.InternalCamDiam) / (this.ExternalCamDiam - this.InternalCamDiam);
-                    break;
-            }
-            return coeff;
-        }
+        
 
     }
 
