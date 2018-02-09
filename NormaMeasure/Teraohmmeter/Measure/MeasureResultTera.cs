@@ -101,7 +101,7 @@ namespace NormaMeasure.Teraohmmeter
         private void convertAdcResult()
         {
             float rangeCoeff, voltCoeff, additionalRangeCoeff;
-            if (this.Measure.MeasureType != MEASURE_TYPE.CALIBRATION)
+            if (this.Measure.Type != MEASURE_TYPE.CALIBRATION)
             {
                 rangeCoeff = this.TeraDevice.rangeCoeffs[this.Range];
                 voltCoeff = this.Voltage > 10 ? this.TeraDevice.voltageCoeffs[this.Measure.VoltageId - 2] : 1;

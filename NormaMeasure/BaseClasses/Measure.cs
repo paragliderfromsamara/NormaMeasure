@@ -30,6 +30,7 @@ namespace NormaMeasure.BaseClasses
     }
     public class MeasureBase
     {
+        public MEASURE_TYPE Type;
         protected int number = 0;
         protected int cycleNumber;
         protected int statCycleNumber;
@@ -53,7 +54,9 @@ namespace NormaMeasure.BaseClasses
             {
                 this.number = value;
                 CycleNumber = 1;
-                ResultCollectionsList.Add(new MeasureResultCollection(this.number, this.MeasureType));
+                MeasureResultCollection col = new MeasureResultCollection(this.number, this.Type);
+                if (this.Type == MEASURE_TYPE.CALIBRATION) col.Name = "Калибровка " + this.Number.ToString();
+                ResultCollectionsList.Add(col);
             }
         }
         public int CycleNumber
@@ -68,7 +71,7 @@ namespace NormaMeasure.BaseClasses
 
 
 
-        public MEASURE_TYPE MeasureType = MEASURE_TYPE.HAND;
+
         protected MEASURE_STATUS measureStatus;
         public MEASURE_STATUS MeasureStatus
         {
@@ -100,6 +103,13 @@ namespace NormaMeasure.BaseClasses
         /// </summary>
         protected virtual void autoMeasureThreadFunction() { }
 
+
+
+        /// <summary>
+        /// Калибровка
+        /// </summary>
+        protected virtual void calibrationMeasureThreadFunction() { }
+
         /// <summary>
         /// Поверочные испытания
         /// </summary>
@@ -115,13 +125,13 @@ namespace NormaMeasure.BaseClasses
 
         public MeasureBase()
         {
-            this.MeasureType = MEASURE_TYPE.AUTO;
+            this.Type = MEASURE_TYPE.AUTO;
             this.MeasureStatus = MEASURE_STATUS.NOT_STARTED;
         }
 
         public MeasureBase(MEASURE_TYPE type)
         {
-            this.MeasureType = type;
+            this.Type = type;
             this.MeasureStatus = MEASURE_STATUS.NOT_STARTED;
             initByMeasureType();
             initTimer();
@@ -153,7 +163,7 @@ namespace NormaMeasure.BaseClasses
         {
             if (!this.IsStarted)
             {
-                switch(MeasureType)
+                switch(Type)
                 {
                     case MEASURE_TYPE.AUTO:
                         measureThread = new Thread(autoMeasureThreadFunction);
@@ -164,6 +174,10 @@ namespace NormaMeasure.BaseClasses
                         break;
                     case MEASURE_TYPE.VERIFICATION:
                         measureThread = new Thread(verificationMeasureThreadFunction);
+                        break;
+                    case MEASURE_TYPE.CALIBRATION:
+                        this.Number++;
+                        measureThread = new Thread(calibrationMeasureThreadFunction);
                         break;
                 }
                 if (measureThread == null)
@@ -180,6 +194,7 @@ namespace NormaMeasure.BaseClasses
             }
             return IsStarted;
         }
+
 
         protected virtual bool stop()
         {

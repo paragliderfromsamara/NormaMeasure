@@ -23,7 +23,7 @@ namespace NormaMeasure.DBClasses
             try
             {
                 dbCon = new MySqlConnection(connString); //Устанавливаем соединение
-                dropDBTera();                             //Удаляем бд (необходимо на стадии настройки)
+                //dropDBTera();                             //Удаляем бд (необходимо на стадии настройки)
                 checkAndCreateDBTera();                   //Создаем бд (если нет её)
                 createTables();
             }

@@ -222,22 +222,26 @@ namespace NormaMeasure.Teraohmmeter
 
             if (!this.measure.IsStarted)
             {
+                if (!checkMeasurePossibility()) return;
                 this.teraDevice.OpenPort();
-                measure.Temperature = (int)temperatureField.Value;
-                measure.Voltage = Convert.ToInt32(voltageComboBox.Text);
-                measure.DischargeDelay = Convert.ToInt16(dischargeDelay.Value);
-                measure.PolarizationDelay = Convert.ToInt32(this.polarizationDelay.Value);
-                measure.IsCyclicMeasure = isCyclicMeasure.Checked;
-                measure.CycleTimes = Convert.ToInt32(cycleTimes.Value);
-                measure.AveragingTimes = Convert.ToInt32(this.averagingTimes.Value);
-                measure.BringingTypeId = bringingTypeCB.SelectedValue.ToString();
-                measure.MaterialHeight = Convert.ToInt32(this.materialHeight.Value);
-                measure.IsDegreeViewMode = isDegreeViewCheckBox.Checked;
-               // handMeasure.MinTimeToNorm = Convert.ToInt32(minTimeToNorm.Value);
-                measure.NormaValue = Convert.ToInt32(this.normaField.Value);
-                measure.MaterialId = materialTypes.SelectedValue.ToString();
-                measure.BringingLength = Convert.ToInt16(materialLength.Value);
-                measure.BringingLengthMeasure = this.bringingLengthMeasCb.SelectedText;
+                if (this.measure.Type == MEASURE_TYPE.HAND)
+                {
+                    measure.Temperature = (int)temperatureField.Value;
+                    measure.Voltage = Convert.ToInt32(voltageComboBox.Text);
+                    measure.DischargeDelay = Convert.ToInt16(dischargeDelay.Value);
+                    measure.PolarizationDelay = Convert.ToInt32(this.polarizationDelay.Value);
+                    measure.IsCyclicMeasure = isCyclicMeasure.Checked;
+                    measure.CycleTimes = Convert.ToInt32(cycleTimes.Value);
+                    measure.AveragingTimes = Convert.ToInt32(this.averagingTimes.Value);
+                    measure.BringingTypeId = bringingTypeCB.SelectedValue.ToString();
+                    measure.MaterialHeight = Convert.ToInt32(this.materialHeight.Value);
+                    measure.IsDegreeViewMode = isDegreeViewCheckBox.Checked;
+                    // handMeasure.MinTimeToNorm = Convert.ToInt32(minTimeToNorm.Value);
+                    measure.NormaValue = Convert.ToInt32(this.normaField.Value);
+                    measure.MaterialId = materialTypes.SelectedValue.ToString();
+                    measure.BringingLength = Convert.ToInt16(materialLength.Value);
+                    measure.BringingLengthMeasure = this.bringingLengthMeasCb.SelectedText;
+                }
                 this.switchFieldsMeasureOnOff(this.measure.IsStarted);
 
             }else
@@ -255,6 +259,29 @@ namespace NormaMeasure.Teraohmmeter
                 //else { this.mForm.currentDevice.stopMeasure();}//this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
                 //this.switchFieldsMeasureOnOff(this.teraMeas.isOnMeasure());
             }
+
+        /// <summary>
+        /// Проверяет возможность проведения измерения перед запуском
+        /// </summary>
+        /// <returns></returns>
+        private bool checkMeasurePossibility()
+        {
+            switch(measure.Type)
+            {
+                case MEASURE_TYPE.CALIBRATION:
+                case MEASURE_TYPE.VERIFICATION:
+                    if (this.measure.EtalonMap == null)
+                    {
+                        string m = (measure.Type == MEASURE_TYPE.CALIBRATION) ? "калибровку" : "поверку";
+                        MessageBox.Show("Чтобы произвести " + m + " необходимо выбрать карту эталонов", "Не выбрана карта эталонов", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return false;
+                    }
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
         public void updateResultField() //Для обновления поля результата из другого потока в котором проходит испытание
         {
             if (InvokeRequired)
@@ -519,20 +546,29 @@ namespace NormaMeasure.Teraohmmeter
                     verificationCalibrationPanel.Visible = false;
                     handMeasurePanel.Visible = true;
                     measureSettingsGroup.Enabled = true;
+                    cycleTimes.Enabled = polarizationDelay.Enabled = isCyclicMeasure.Enabled = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = true;
                     initPage();
-
                     break;
                 case 1:
                     this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.VERIFICATION);
                     verificationCalibrationPanel.Visible = true;
                     handMeasurePanel.Visible = false;
-                    measureSettingsGroup.Enabled = false;
+                    isCyclicMeasure.Enabled = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = false;
+                    cycleTimes.Enabled = polarizationDelay.Enabled = true;
+                    cycleTimes.Value = 10;
+                    isCyclicMeasure.Checked = false;
+                    handMeasurePanel.Visible = false;
+                    //measureSettingsGroup.Enabled = false;
                     fillEtalonMapComboBox();
                     break;
                 case 2:
                     this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.CALIBRATION);
                     verificationCalibrationPanel.Visible = true;
-                    measureSettingsGroup.Enabled = false;
+                    //measureSettingsGroup.Enabled = false;
+                    isCyclicMeasure.Enabled = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = false;
+                    cycleTimes.Enabled = polarizationDelay.Enabled = true;
+                    cycleTimes.Value = 10;
+                    isCyclicMeasure.Checked = false;
                     handMeasurePanel.Visible = false;
                     fillEtalonMapComboBox();
                     break;
@@ -592,7 +628,7 @@ namespace NormaMeasure.Teraohmmeter
             if (cb.SelectedIndex == -1 || (this.mainForm.TeraEtalonMaps.Length == 0)) return;
             this.measure.EtalonMap = this.mainForm.TeraEtalonMaps[cb.SelectedIndex];
             comboBoxResistance.Items.Clear();
-            if (this.measure.MeasureType == MEASURE_TYPE.CALIBRATION)
+            if (this.measure.Type == MEASURE_TYPE.CALIBRATION)
             {
                 int range = 0;
                 foreach(int i in this.measure.EtalonMap.CalibrationEtalonNumbers)
@@ -610,5 +646,10 @@ namespace NormaMeasure.Teraohmmeter
             comboBoxResistance.SelectedIndex = 0;
         }
 
+        private void comboBoxResistance_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            measure.EtalonId = cb.SelectedIndex;
+        }
     }
 }

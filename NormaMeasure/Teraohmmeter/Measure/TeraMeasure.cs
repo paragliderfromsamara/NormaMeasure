@@ -20,13 +20,14 @@ namespace NormaMeasure.Teraohmmeter
     }
 
 
-
     public class TeraMeasure : MeasureBase
     {
         TeraDevice teraDevice;
 
         IsolationMaterial material;
         private TeraEtalonMap etalonMap;
+        private int etalonId;
+        private int rangeId;
         private int temperature = 20;
         private int voltage = 10;
         private int dischargeDelay = 0;
@@ -55,6 +56,22 @@ namespace NormaMeasure.Teraohmmeter
         public float AdditionalCoeff = 0;
         //-------------------------------------------
         
+        /// <summary>
+        /// Индекс эталона в массиве значений карты эталонов
+        /// </summary>
+        public int EtalonId
+        {
+            get
+            {
+                return this.etalonId;
+            }
+            set
+            {
+                this.etalonId = (this.Type == MEASURE_TYPE.CALIBRATION) ? this.EtalonMap.CalibrationEtalonNumbers[value] : value;
+                this.rangeId = value;
+            }
+        }
+
         public TeraEtalonMap EtalonMap
         {
             get { return this.etalonMap; }
@@ -463,7 +480,7 @@ namespace NormaMeasure.Teraohmmeter
         }
         private void writeToIni(string key, string val)
         {
-            if (teraDevice == null || MeasureType == MEASURE_TYPE.AUTO) return;
+            if (teraDevice == null || Type == MEASURE_TYPE.AUTO) return;
             IniFile file = new IniFile(Properties.Settings.Default.DeviceSettingsFileName);
             string sect = teraDevice.IniSectionName();
             file.Write(key, val, sect);
@@ -471,7 +488,7 @@ namespace NormaMeasure.Teraohmmeter
 
         public TeraMeasure() : base()
         {
-            MeasureResultCollection rCollection = new MeasureResultCollection();
+            
         }
 
         public TeraMeasure(TeraDevice tera, MEASURE_TYPE t) : base(t)
@@ -482,15 +499,19 @@ namespace NormaMeasure.Teraohmmeter
         protected override void initByMeasureType()
         {
             base.initByMeasureType();
-            switch (MeasureType)
+            switch (Type)
             {
                 case MEASURE_TYPE.HAND:
                     fillDataFromIniFile();
                     return;
                 case MEASURE_TYPE.AUTO:
                     return;
+                case MEASURE_TYPE.CALIBRATION:
+                    return;
             }
         }
+
+
 
         private void fillDataFromIniFile()
         {
@@ -573,6 +594,18 @@ namespace NormaMeasure.Teraohmmeter
             this.MeasureStatus = MEASURE_STATUS.FINISHED;
         }
 
+        protected override void calibrationMeasureThreadFunction()
+        {
+            //this.RangeCoeff = this.teraDevice.rangeCoeffs[this.rangeId];
+            //this.normaValue = Convert.ToInt32(this.EtalonMap.ResistanceList[this.EtalonId][0]);
+            System.Windows.Forms.MessageBox.Show("ffff");
+            this.teraDevice.setVoltage(this.VoltageId);
+            Thread.Sleep(500);
+            if (this.PolarizationDelay > 0) polarisation();
+            measure();
+            this.MeasureStatus = MEASURE_STATUS.FINISHED;
+        }
+
         /// <summary>
         /// Обновляет поле статуса испытания
         /// </summary>
@@ -589,7 +622,7 @@ namespace NormaMeasure.Teraohmmeter
         /// <param name="txt"></param>
         private void updateResultFieldText(string txt)
         {
-            if (this.MeasureType == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateResultFieldText(txt);
+            if (this.Type == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateResultFieldText(txt);
         }
 
         /// <summary>
@@ -598,7 +631,7 @@ namespace NormaMeasure.Teraohmmeter
         /// <param name="txt"></param>
         private void updateStatMeasInfo(string[] txt)
         {
-            if (this.MeasureType == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateStatMeasInfo(txt);
+            if (this.Type == MEASURE_TYPE.HAND) this.teraDevice.DeviceForm.updateStatMeasInfo(txt);
         }
 
         protected override void autoMeasureThreadFunction()

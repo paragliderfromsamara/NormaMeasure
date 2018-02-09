@@ -870,6 +870,7 @@ namespace NormaMeasure.Teraohmmeter
             this.comboBoxResistance.Name = "comboBoxResistance";
             this.comboBoxResistance.Size = new System.Drawing.Size(151, 21);
             this.comboBoxResistance.TabIndex = 2;
+            this.comboBoxResistance.SelectedIndexChanged += new System.EventHandler(this.comboBoxResistance_SelectedIndexChanged);
             // 
             // TeraForm
             // 
