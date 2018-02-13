@@ -106,7 +106,6 @@ namespace NormaMeasure.Teraohmmeter
                 rangeCoeff = this.TeraDevice.rangeCoeffs[this.Range];
                 voltCoeff = this.Voltage > 10 ? this.TeraDevice.voltageCoeffs[this.Measure.VoltageId - 2] : 1;
                 additionalRangeCoeff = this.TeraDevice.rangeCoeffs[4];
-                
             }else
             {
                 rangeCoeff = this.Measure.RangeCoeff;
@@ -114,6 +113,10 @@ namespace NormaMeasure.Teraohmmeter
                 additionalRangeCoeff = this.Measure.AdditionalCoeff;
             }
             this.convertAdcResult(rangeCoeff, voltCoeff, additionalRangeCoeff);
+            if (this.Measure.NormaValue > 0)
+            {
+                this.DeviationPercent = Math.Round(100*(this.BringingResult*1000 - (double)this.Measure.NormaValue) / (double)this.Measure.NormaValue, 1);
+            }
         }
 
 
@@ -169,6 +172,7 @@ namespace NormaMeasure.Teraohmmeter
 
         private double calculateMaterialCoeff()
         {
+            if (this.Measure.Type == MEASURE_TYPE.CALIBRATION || this.Measure.Type == MEASURE_TYPE.VERIFICATION) return 1;
             double coeff = (double)this.Material.GetCoefficient(this.Temperature);
             switch (this.BringingTypeId)
             {

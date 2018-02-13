@@ -36,6 +36,15 @@ namespace NormaMeasure.BaseClasses
         protected int statCycleNumber;
         public string Name = String.Empty;
         public List<MeasureResultCollection> ResultCollectionsList = new List<MeasureResultCollection>();
+        protected int curResultListId = -1;
+        public MeasureResultCollection CurrentCollection
+        {
+            get
+            {
+                if (curResultListId > -1 && ResultCollectionsList.Count > curResultListId) return ResultCollectionsList[curResultListId];
+                else return null;
+            }
+        }
         /// <summary>
         /// Номер испытания в данном цикле
         /// </summary>
@@ -45,7 +54,8 @@ namespace NormaMeasure.BaseClasses
             set { this.statCycleNumber = value; }
         }
         /// <summary>
-        /// Номер испытания в текущем сеансе
+        /// Номер испытания в текущем списке результатов. Инкрементируется для каждого последующего нажатия кнопки запуска измерения
+        /// Сбрасывается когда добавляется новый лист результатов
         /// </summary>
         public int Number
         {
@@ -54,9 +64,6 @@ namespace NormaMeasure.BaseClasses
             {
                 this.number = value;
                 CycleNumber = 1;
-                MeasureResultCollection col = new MeasureResultCollection(this.number, this.Type);
-                if (this.Type == MEASURE_TYPE.CALIBRATION) col.Name = "Калибровка " + this.Number.ToString();
-                ResultCollectionsList.Add(col);
             }
         }
         public int CycleNumber
@@ -163,20 +170,20 @@ namespace NormaMeasure.BaseClasses
         {
             if (!this.IsStarted)
             {
-                switch(Type)
+                this.Number++;
+                if (!this.setResultList()) return false;
+                switch (Type)
                 {
                     case MEASURE_TYPE.AUTO:
                         measureThread = new Thread(autoMeasureThreadFunction);
                         break;
                     case MEASURE_TYPE.HAND:
-                        this.Number++;
                         measureThread = new Thread(handMeasureThreadFunction);
                         break;
                     case MEASURE_TYPE.VERIFICATION:
                         measureThread = new Thread(verificationMeasureThreadFunction);
                         break;
                     case MEASURE_TYPE.CALIBRATION:
-                        this.Number++;
                         measureThread = new Thread(calibrationMeasureThreadFunction);
                         break;
                 }
@@ -216,6 +223,42 @@ namespace NormaMeasure.BaseClasses
         public static void measureError(string m)
         {
             MessageBox.Show("Ошибка испытания", m, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        protected int getMeasureIndexByName(string name)
+        {
+            for (int i = 0; i < ResultCollectionsList.Count; i++) if (name == ResultCollectionsList[i].Name) return i;
+            return -1;
+        }
+
+        protected virtual string getName()
+        {
+            return Name;
+        }
+
+        protected bool setResultList()
+        {
+            string mName = getName();
+            curResultListId = getMeasureIndexByName(mName);
+            if (curResultListId == -1)
+            {
+                this.ResultCollectionsList.Add(new MeasureResultCollection(mName));
+                this.curResultListId = this.ResultCollectionsList.Count - 1;
+            }else
+            {
+                switch (this.Type)
+                {
+                    case MEASURE_TYPE.HAND:
+                        DialogResult r = MessageBox.Show(String.Format("Список результатов с идентификатором \"{0}\" уже существует, Вы хотите очистить предыдущие результаты?", mName), "Вопрос", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                        if (r == DialogResult.Yes) this.ResultCollectionsList[curResultListId].Clear();
+                        else if (r == DialogResult.Cancel) return false;
+                        break;
+                    case MEASURE_TYPE.CALIBRATION:
+                        this.ResultCollectionsList[curResultListId].Clear();
+                        break;
+                }
+            }
+            return true;
         }
 
         ~MeasureBase()

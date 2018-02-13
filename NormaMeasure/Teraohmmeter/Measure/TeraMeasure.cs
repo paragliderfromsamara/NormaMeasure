@@ -54,6 +54,7 @@ namespace NormaMeasure.Teraohmmeter
         public float VoltageCoeff = 1;
         public float RangeCoeff = 1;
         public float AdditionalCoeff = 0;
+        public MEASURE_TYPE CorrectionMode = MEASURE_TYPE.AUTO; //режим коррекции, автоматический или ручной
         //-------------------------------------------
         
         /// <summary>
@@ -575,7 +576,7 @@ namespace NormaMeasure.Teraohmmeter
                 result.SecondsFromStart = measSeconds;
                 if (result.Status > 0) break;
                 if (Properties.Settings.Default.IsTestApp) Thread.Sleep(2000);
-                ResultCollectionsList[this.Number-1].Add(result);
+                ResultCollectionsList[this.curResultListId].Add(result);
                 StatCycleNumber++;
                 if (StatCycleNumber <= this.AveragingTimes) continue; //Если статистическое испытание, то уходим на следующий подцикл
                 this.teraDevice.DeviceForm.updateResultField();
@@ -596,13 +597,22 @@ namespace NormaMeasure.Teraohmmeter
 
         protected override void calibrationMeasureThreadFunction()
         {
-            //this.RangeCoeff = this.teraDevice.rangeCoeffs[this.rangeId];
-            //this.normaValue = Convert.ToInt32(this.EtalonMap.ResistanceList[this.EtalonId][0]);
-            System.Windows.Forms.MessageBox.Show("ffff");
+            this.normaValue = Convert.ToInt32(this.EtalonMap.ResistanceList[this.EtalonId][0]);
             this.teraDevice.setVoltage(this.VoltageId);
+            if (this.CorrectionMode == MEASURE_TYPE.AUTO) this.RangeCoeff = 1;
             Thread.Sleep(500);
             if (this.PolarizationDelay > 0) polarisation();
             measure();
+            if (this.CorrectionMode == MEASURE_TYPE.AUTO)
+            {
+                double coeff = 0;
+                foreach(MeasureResult r in CurrentCollection.ResultsList)
+                {
+                    coeff += this.normaValue / (r.BringingResult * 1000) ; 
+                }
+                coeff = Math.Round(coeff / CurrentCollection.Count, 2);
+                this.teraDevice.DeviceForm.updateCoeffField(coeff);
+            }
             this.MeasureStatus = MEASURE_STATUS.FINISHED;
         }
 
@@ -708,7 +718,16 @@ namespace NormaMeasure.Teraohmmeter
         }
 
 
-        
+        protected override string getName()
+        {
+            switch(this.Type)
+            {
+                case MEASURE_TYPE.CALIBRATION:
+                    return String.Format("Калибровка - Диапазон {0}", this.rangeId+1);
+                default:
+                    return base.getName();
+            }
+        }
 
     }
 

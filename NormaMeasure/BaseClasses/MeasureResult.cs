@@ -32,6 +32,10 @@ namespace NormaMeasure.BaseClasses
         /// Номер подцикла испытаний (для статистических измерений)
         /// </summary>
         public int StatCycleNumber = 0;
+        /// <summary>
+        /// Отклонение от нормы
+        /// </summary>
+        public double DeviationPercent = 0;
     }
     public class MeasureResultCollection
     {
@@ -40,14 +44,10 @@ namespace NormaMeasure.BaseClasses
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(this.name)) return "Измерение " + this.MeasureNumber.ToString();
-                else return name;
+                return name;
             }
             set { this.name = value; }
         }
-        public MEASURE_TYPE MeasureType;
-        private int measureNumber;
-        public int MeasureNumber { get { return measureNumber; } }
         public int Count
         {
             get
@@ -82,17 +82,15 @@ namespace NormaMeasure.BaseClasses
         public MeasureResultCollection()
         {
             resultsList = new List<MeasureResult>();
-            this.measureNumber = 1;
         }
 
         /// <summary>
         /// Создаём коллекцию результатов с номером испытания
         /// </summary>
         /// <param name="measure_number"></param>
-        public MeasureResultCollection(int measure_number, MEASURE_TYPE mType) : this()
+        public MeasureResultCollection(string name) : this()
         {
-            this.measureNumber = measure_number;
-            this.MeasureType = mType;
+            this.Name = name;
         }
 
         public void Add(MeasureResult result)

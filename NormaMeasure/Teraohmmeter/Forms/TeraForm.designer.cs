@@ -85,8 +85,8 @@ namespace NormaMeasure.Teraohmmeter
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.measureTabPage = new System.Windows.Forms.TabPage();
             this.handMeasurePanel = new System.Windows.Forms.Panel();
-            this.label9 = new System.Windows.Forms.Label();
-            this.TestedMaterialId = new System.Windows.Forms.TextBox();
+            this.measureIdLabel = new System.Windows.Forms.Label();
+            this.MeasureTitle = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxMode = new System.Windows.Forms.ComboBox();
             this.resultTabPage = new System.Windows.Forms.TabPage();
@@ -101,6 +101,11 @@ namespace NormaMeasure.Teraohmmeter
             this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
             this.verificationCalibrationPanel = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.autoCorrCb = new System.Windows.Forms.CheckBox();
+            this.saveCoeffButton = new System.Windows.Forms.Button();
+            this.corrCoeffLbl = new System.Windows.Forms.Label();
+            this.rangeCoeffTextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.comboBoxResistance = new System.Windows.Forms.ComboBox();
             this.measureSettingsGroup.SuspendLayout();
@@ -123,6 +128,7 @@ namespace NormaMeasure.Teraohmmeter
             this.resultTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.measureResultDataGridView1)).BeginInit();
             this.verificationCalibrationPanel.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // voltageComboBox
@@ -664,7 +670,7 @@ namespace NormaMeasure.Teraohmmeter
             // 
             this.tabControl1.Controls.Add(this.measureTabPage);
             this.tabControl1.Controls.Add(this.resultTabPage);
-            this.tabControl1.Location = new System.Drawing.Point(2, 9);
+            this.tabControl1.Location = new System.Drawing.Point(2, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(783, 493);
@@ -689,8 +695,8 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // handMeasurePanel
             // 
-            this.handMeasurePanel.Controls.Add(this.label9);
-            this.handMeasurePanel.Controls.Add(this.TestedMaterialId);
+            this.handMeasurePanel.Controls.Add(this.measureIdLabel);
+            this.handMeasurePanel.Controls.Add(this.MeasureTitle);
             this.handMeasurePanel.Controls.Add(this.temperatureField);
             this.handMeasurePanel.Controls.Add(this.materialLength);
             this.handMeasurePanel.Controls.Add(this.materialLengthLbl);
@@ -710,21 +716,22 @@ namespace NormaMeasure.Teraohmmeter
             this.handMeasurePanel.Size = new System.Drawing.Size(151, 289);
             this.handMeasurePanel.TabIndex = 27;
             // 
-            // label9
+            // measureIdLabel
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(0, 102);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(132, 13);
-            this.label9.TabIndex = 25;
-            this.label9.Text = "Идентификатор образца";
+            this.measureIdLabel.AutoSize = true;
+            this.measureIdLabel.Location = new System.Drawing.Point(0, 102);
+            this.measureIdLabel.Name = "measureIdLabel";
+            this.measureIdLabel.Size = new System.Drawing.Size(132, 13);
+            this.measureIdLabel.TabIndex = 25;
+            this.measureIdLabel.Text = "Идентификатор образца";
             // 
-            // TestedMaterialId
+            // MeasureTitle
             // 
-            this.TestedMaterialId.Location = new System.Drawing.Point(0, 118);
-            this.TestedMaterialId.Name = "TestedMaterialId";
-            this.TestedMaterialId.Size = new System.Drawing.Size(151, 20);
-            this.TestedMaterialId.TabIndex = 24;
+            this.MeasureTitle.Location = new System.Drawing.Point(0, 118);
+            this.MeasureTitle.Name = "MeasureTitle";
+            this.MeasureTitle.Size = new System.Drawing.Size(151, 20);
+            this.MeasureTitle.TabIndex = 24;
+            this.MeasureTitle.Text = "Измерение 1";
             // 
             // label2
             // 
@@ -844,14 +851,63 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // verificationCalibrationPanel
             // 
+            this.verificationCalibrationPanel.Controls.Add(this.panel2);
             this.verificationCalibrationPanel.Controls.Add(this.label10);
             this.verificationCalibrationPanel.Controls.Add(this.comboBoxResistance);
             this.verificationCalibrationPanel.Controls.Add(this.teraEtalonMapComboBox);
             this.verificationCalibrationPanel.Controls.Add(this.selectEtalonMapLbl);
             this.verificationCalibrationPanel.Location = new System.Drawing.Point(791, 62);
             this.verificationCalibrationPanel.Name = "verificationCalibrationPanel";
-            this.verificationCalibrationPanel.Size = new System.Drawing.Size(158, 122);
+            this.verificationCalibrationPanel.Size = new System.Drawing.Size(158, 242);
             this.verificationCalibrationPanel.TabIndex = 27;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.autoCorrCb);
+            this.panel2.Controls.Add(this.saveCoeffButton);
+            this.panel2.Controls.Add(this.corrCoeffLbl);
+            this.panel2.Controls.Add(this.rangeCoeffTextBox);
+            this.panel2.Location = new System.Drawing.Point(-4, 102);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(161, 128);
+            this.panel2.TabIndex = 4;
+            // 
+            // autoCorrCb
+            // 
+            this.autoCorrCb.AutoSize = true;
+            this.autoCorrCb.Location = new System.Drawing.Point(4, 50);
+            this.autoCorrCb.Name = "autoCorrCb";
+            this.autoCorrCb.Size = new System.Drawing.Size(104, 17);
+            this.autoCorrCb.TabIndex = 8;
+            this.autoCorrCb.Text = "Автоматически";
+            this.autoCorrCb.UseVisualStyleBackColor = true;
+            this.autoCorrCb.CheckedChanged += new System.EventHandler(this.autoCorrCb_CheckedChanged);
+            // 
+            // saveCoeffButton
+            // 
+            this.saveCoeffButton.Location = new System.Drawing.Point(4, 73);
+            this.saveCoeffButton.Name = "saveCoeffButton";
+            this.saveCoeffButton.Size = new System.Drawing.Size(75, 23);
+            this.saveCoeffButton.TabIndex = 7;
+            this.saveCoeffButton.Text = "Сохранить";
+            this.saveCoeffButton.UseVisualStyleBackColor = true;
+            // 
+            // corrCoeffLbl
+            // 
+            this.corrCoeffLbl.AutoSize = true;
+            this.corrCoeffLbl.Location = new System.Drawing.Point(1, 8);
+            this.corrCoeffLbl.Name = "corrCoeffLbl";
+            this.corrCoeffLbl.Size = new System.Drawing.Size(134, 13);
+            this.corrCoeffLbl.TabIndex = 5;
+            this.corrCoeffLbl.Text = "Коэффициент коррекции";
+            // 
+            // rangeCoeffTextBox
+            // 
+            this.rangeCoeffTextBox.Location = new System.Drawing.Point(4, 24);
+            this.rangeCoeffTextBox.Name = "rangeCoeffTextBox";
+            this.rangeCoeffTextBox.Size = new System.Drawing.Size(148, 20);
+            this.rangeCoeffTextBox.TabIndex = 4;
+            this.rangeCoeffTextBox.TextChanged += new System.EventHandler(this.rangeCoeffTextBox_TextChanged);
             // 
             // label10
             // 
@@ -910,6 +966,8 @@ namespace NormaMeasure.Teraohmmeter
             ((System.ComponentModel.ISupportInitialize)(this.measureResultDataGridView1)).EndInit();
             this.verificationCalibrationPanel.ResumeLayout(false);
             this.verificationCalibrationPanel.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -983,9 +1041,14 @@ namespace NormaMeasure.Teraohmmeter
         private DataGridViewTextBoxColumn stat_measure_number;
         private DataGridViewTextBoxColumn voltage;
         private DataGridViewTextBoxColumn result;
-        private Label label9;
-        private TextBox TestedMaterialId;
+        private Label measureIdLabel;
+        private TextBox MeasureTitle;
         private Label label10;
         private ComboBox comboBoxResistance;
+        private Panel panel2;
+        private CheckBox autoCorrCb;
+        private Button saveCoeffButton;
+        private Label corrCoeffLbl;
+        private TextBox rangeCoeffTextBox;
     }
 }

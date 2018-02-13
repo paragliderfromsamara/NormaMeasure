@@ -32,6 +32,8 @@ namespace NormaMeasure.Teraohmmeter
         protected delegate void switchFieldsMeasureOnOffDelegate(bool flag);
         protected delegate void updateResultFieldTextDelegate(string text);
         protected delegate void updateMeasureStatusDelegate(MEASURE_STATUS status);
+        protected delegate void updateCorrCoeffFieldDelegate(double coeff);
+
 
         TeraDevice teraDevice;
         TeraMeasure measure;
@@ -219,13 +221,12 @@ namespace NormaMeasure.Teraohmmeter
         private void startHandMeasureBut_Click(object sender, EventArgs e)
         {
             //MessageBox.Show(this.teraMeas.isOnMeasure().ToString());
-
+            
             if (!this.measure.IsStarted)
             {
                 if (!checkMeasurePossibility()) return;
                 this.teraDevice.OpenPort();
-                if (this.measure.Type == MEASURE_TYPE.HAND)
-                {
+                    measure.Name = MeasureTitle.Text;
                     measure.Temperature = (int)temperatureField.Value;
                     measure.Voltage = Convert.ToInt32(voltageComboBox.Text);
                     measure.DischargeDelay = Convert.ToInt16(dischargeDelay.Value);
@@ -241,9 +242,9 @@ namespace NormaMeasure.Teraohmmeter
                     measure.MaterialId = materialTypes.SelectedValue.ToString();
                     measure.BringingLength = Convert.ToInt16(materialLength.Value);
                     measure.BringingLengthMeasure = this.bringingLengthMeasCb.SelectedText;
-                }
-                this.switchFieldsMeasureOnOff(this.measure.IsStarted);
-
+                    measure.CorrectionMode = autoCorrCb.Checked ? MEASURE_TYPE.AUTO : MEASURE_TYPE.HAND;
+                    measure.RangeCoeff = autoCorrCb.Checked ? 1 : ServiceFunctions.convertToFloat(rangeCoeffTextBox.Text);
+                    this.switchFieldsMeasureOnOff(this.measure.IsStarted);
             }else
                 {
                      measure.StopWithStatus(MEASURE_STATUS.STOPED);
@@ -276,7 +277,14 @@ namespace NormaMeasure.Teraohmmeter
                         MessageBox.Show("Чтобы произвести " + m + " необходимо выбрать карту эталонов", "Не выбрана карта эталонов", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return false;
                     }
-                    return false;
+                    return true;
+                case MEASURE_TYPE.HAND:
+                    if (String.IsNullOrWhiteSpace(MeasureTitle.Text))
+                    {
+                        MessageBox.Show("Введите " + measureIdLabel.Text.ToLower() + " чтобы начать измерение", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                    else return true;
                 default:
                     return true;
             }
@@ -291,9 +299,9 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                MeasureResultCollection resultList = this.measure.ResultCollectionsList[this.measure.Number-1];
+                MeasureResultCollection resultList = this.measure.CurrentCollection;
                 refreshResultsPage();
-                this.cycleCounterLbl.Text = String.Format("Измерение {0}  Цикл {1}", this.measure.Number, this.measure.CycleNumber);
+                this.cycleCounterLbl.Text = String.Format("{0}  Цикл {1}", resultList.Name, this.measure.CycleNumber);
                 //Отрисовка для статистических испытаний
                 if (measure.IsStatistic)  
                 {
@@ -327,16 +335,26 @@ namespace NormaMeasure.Teraohmmeter
                         MeasureResultTera result = resultList.Last() as MeasureResultTera;
                         if (measure.StatCycleNumber == this.measure.AveragingTimes)
                         {
-                            if (isDegreeViewCheckBox.Checked)
+                            if (this.measure.Type == MEASURE_TYPE.CALIBRATION || this.measure.Type == MEASURE_TYPE.VERIFICATION)
                             {
-                                this.updateResultFieldText(deegreeResultView(result.BringingResult)); //absoluteResultView(result);
-                                this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + deegreeResultView((double)this.normaField.Value / 1000) : "";
+                               this.updateResultFieldText(absoluteResultView(result.BringingResult)); //absoluteResultView(result);
+                               this.normaLbl.Text = (this.measure.NormaValue > 0) ? "эталон: " + absoluteResultView((double)this.measure.NormaValue / 1000) + " " + result.DeviationPercent.ToString() + "%" : "";
                             }
                             else
                             {
-                                this.updateResultFieldText(absoluteResultView(result.BringingResult)); //absoluteResultView(result);
-                                this.normaLbl.Text = (this.normaField.Value > 0) ? "норма: " + absoluteResultView((double)this.normaField.Value / 1000) : "";
+                                if (isDegreeViewCheckBox.Checked)
+                                {
+                                    this.updateResultFieldText(deegreeResultView(result.BringingResult)); //absoluteResultView(result);
+                                    this.normaLbl.Text = (this.measure.NormaValue > 0) ? "норма: " + deegreeResultView((double)this.measure.NormaValue / 1000) : "";
+                                }
+                                else
+                                {
+                                    this.updateResultFieldText(absoluteResultView(result.BringingResult)); //absoluteResultView(result);
+                                    this.normaLbl.Text = (this.measure.NormaValue > 0) ? "норма: " + absoluteResultView((double)this.measure.NormaValue / 1000) : "";
+                                }
                             }
+
+                           
                         }
                         else
                         {
@@ -423,6 +441,20 @@ namespace NormaMeasure.Teraohmmeter
             {
                 this.cycleCounterLbl.Text = "Цикл: " + cycleNumb;
 
+            }
+        }
+
+        public void updateCoeffField(double coeff) //Для обновления поля коэффициента коррекции
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new updateCorrCoeffFieldDelegate(updateCoeffField), new object[] { coeff });
+                return;
+            }
+            else
+            {
+                rangeCoeffTextBox.Text = ((float)coeff).ToString();
+                corrCoeffLbl.Text = BitConverter.GetBytes((float)coeff).Length.ToString();
             }
         }
 
@@ -546,7 +578,7 @@ namespace NormaMeasure.Teraohmmeter
                     verificationCalibrationPanel.Visible = false;
                     handMeasurePanel.Visible = true;
                     measureSettingsGroup.Enabled = true;
-                    cycleTimes.Enabled = polarizationDelay.Enabled = isCyclicMeasure.Enabled = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = true;
+                    averagingTimes.Enabled = cycleTimes.Enabled = polarizationDelay.Enabled = isCyclicMeasure.Enabled = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = true;
                     initPage();
                     break;
                 case 1:
@@ -565,10 +597,10 @@ namespace NormaMeasure.Teraohmmeter
                     this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.CALIBRATION);
                     verificationCalibrationPanel.Visible = true;
                     //measureSettingsGroup.Enabled = false;
-                    isCyclicMeasure.Enabled = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = false;
-                    cycleTimes.Enabled = polarizationDelay.Enabled = true;
-                    cycleTimes.Value = 10;
-                    isCyclicMeasure.Checked = false;
+                    isCyclicMeasure.Enabled = averagingTimes.Enabled = isCyclicMeasure.Checked = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = false;
+                    setCorrField(autoCorrCb.Checked);
+                    averagingTimes.Value = 1;
+                    voltageComboBox.SelectedText = "10";
                     handMeasurePanel.Visible = false;
                     fillEtalonMapComboBox();
                     break;
@@ -650,6 +682,43 @@ namespace NormaMeasure.Teraohmmeter
         {
             ComboBox cb = sender as ComboBox;
             measure.EtalonId = cb.SelectedIndex;
+            if (this.measure.Type == MEASURE_TYPE.CALIBRATION)
+            {
+                rangeCoeffTextBox.Text = this.teraDevice.rangeCoeffs[cb.SelectedIndex].ToString();
+            }
+        }
+
+        private void autoCorrCb_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox cb = sender as CheckBox;
+            bool f = cb.Checked;
+            setCorrField(f);
+        }
+
+        private void setCorrField(bool f)
+        {
+            cycleTimes.Enabled = polarizationDelay.Enabled = f;
+            //isCyclicMeasure.Enabled = !f;
+            rangeCoeffTextBox.Enabled = !f;
+            isCyclicMeasure.Checked = !f;
+            polarizationDelay.Value = !f ? 0 : 3;
+            cycleTimes.Value = f ? 10 : 1;
+            averagingTimes.Value = 1;
+
+        }
+
+        private void rangeCoeffTextBox_TextChanged(object sender, EventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            float c;
+            try
+            {
+                c = float.Parse(tb.Text);
+            }catch(Exception)
+            {
+                c= 1;
+            }
+            measure.RangeCoeff = c;
         }
     }
 }
