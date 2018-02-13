@@ -179,7 +179,7 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-
+                float coeffs
             }
         }
 
@@ -288,6 +288,7 @@ namespace NormaMeasure.Teraohmmeter
         {
             this.setVoltage(0);
         }
+
 
         public void DoMeasure(ref MeasureResultTera result)
         {

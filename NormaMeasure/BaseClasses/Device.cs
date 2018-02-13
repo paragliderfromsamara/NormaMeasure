@@ -244,6 +244,12 @@ namespace NormaMeasure.BaseClasses
             return y + "-" + n;
         }
 
+        protected void sendDouble(float v)
+        {
+            byte[] arr = BitConverter.GetBytes(v);
+            MessageBox.Show(arr.Length.ToString());
+        }
+
         protected float receiveDouble()
         {
             float val = 0;

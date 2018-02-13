@@ -472,6 +472,8 @@ namespace NormaMeasure.Teraohmmeter
                 this.startHandMeasureBut.Enabled = !(status == MEASURE_STATUS.DISCHARGE);
                 this.measureIsActive = isActive;
                 this.measureSettingsGroup.Enabled = !isActive;
+                autoCorrCb.Enabled = this.comboBoxResistance.Enabled = saveCoeffButton.Enabled = this.teraEtalonMapComboBox.Enabled = this.comboBoxMode.Enabled = !isActive;
+                
                 startHandMeasureBut.Text = !isActive ? "ПУСК ИЗМЕРЕНИЯ" : "ОСТАНОВИТЬ ИЗМЕРЕНИЯ";
             }
         }
