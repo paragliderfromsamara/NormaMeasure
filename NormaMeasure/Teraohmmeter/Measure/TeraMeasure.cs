@@ -12,12 +12,7 @@ using NormaMeasure.Teraohmmeter.DBClasses;
 
 namespace NormaMeasure.Teraohmmeter
 {
-    public enum TERA_RESULT_STATUS : byte
-    {
-        SUCC = 0, //0-испытание окончено успешно
-        INTEGRATOR_IS_ON_NEGATIVE = 1,          //1-интегратор находится в отрицательной области
-        SHORT_CIRCUIT = 2 //2-короткое замыкание
-    }
+
 
 
     public class TeraMeasure : MeasureBase
@@ -541,6 +536,7 @@ namespace NormaMeasure.Teraohmmeter
 
         private void polarisation()
         {
+            if (this.PolarizationDelay == 0) return;
             this.MeasureStatus = MEASURE_STATUS.POLAR;
             int delay = this.PolarizationDelay * 60;
             resetTime();
@@ -553,6 +549,8 @@ namespace NormaMeasure.Teraohmmeter
 
         private void discharge()
         {
+            this.teraDevice.setVoltage(0);
+            if (this.DischargeDelay == 0) return;
             resetTime();
             MEASURE_STATUS was = MeasureStatus;
             this.MeasureStatus = MEASURE_STATUS.DISCHARGE;
@@ -566,54 +564,109 @@ namespace NormaMeasure.Teraohmmeter
         private void measure()
         {
             resetTime();
+            MeasureResultTera result;
             this.MeasureStatus = MEASURE_STATUS.IS_GOING;
             do
             {
                 this.teraDevice.DeviceForm.updateResultField();
-                MeasureResultTera result = new MeasureResultTera(this, this.teraDevice);
+                Thread.Sleep(700);
+                result = new MeasureResultTera(this, this.teraDevice);
                 this.teraDevice.DoMeasure(ref result);
                 if (!result.IsCompleted) { TeraMeasure.measureError("Превышено время ожидания результата"); break; }
                 result.SecondsFromStart = measSeconds;
                 if (result.Status > 0) break;
-                if (Properties.Settings.Default.IsTestApp) Thread.Sleep(2000);
+
                 ResultCollectionsList[this.curResultListId].Add(result);
-                StatCycleNumber++;
-                if (StatCycleNumber <= this.AveragingTimes) continue; //Если статистическое испытание, то уходим на следующий подцикл
+
+
+                if (StatCycleNumber < this.AveragingTimes) { StatCycleNumber++; continue; } //Если статистическое испытание, то уходим на следующий подциклa
                 this.teraDevice.DeviceForm.updateResultField();
+                if (!this.IsCyclicMeasure && this.CycleNumber == this.CycleTimes) break;
                 this.CycleNumber++;
-                if (!this.IsCyclicMeasure && this.CycleNumber > this.CycleTimes) break;
+
             } while (true);
+
+            if (result.Status != TERA_RESULT_STATUS.SUCC && result.Status != TERA_RESULT_STATUS.INTERRUPTED && result.Status != TERA_RESULT_STATUS.STATUS_VOLTAGE_SOURCE_IS_OFF)
+            {
+                string errMessage = "Неизвестная ошибка измерения";
+                if (result.Status == TERA_RESULT_STATUS.INTEGRATOR_IS_ON_NEGATIVE) errMessage = "Интегратор находится в отрицательной области";
+                else if (result.Status == TERA_RESULT_STATUS.LOST_CIRCUIT_CORR_ERR_CODE) errMessage = "Не удалось произвести коррекцию токов утечки";
+                else if (result.Status == TERA_RESULT_STATUS.SHORT_CIRCUIT) errMessage = "Подключенный образец имеет слишком маленькое сопротивление.";
+                System.Windows.Forms.MessageBox.Show(errMessage, "Ошибка измерения", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+            }
+            else if (result.Status == TERA_RESULT_STATUS.INTERRUPTED || result.Status == TERA_RESULT_STATUS.STATUS_VOLTAGE_SOURCE_IS_OFF) this.MeasureStatus = MEASURE_STATUS.STOPED;
         }
 
         protected override void handMeasureThreadFunction()
         {
             this.teraDevice.setVoltage(this.VoltageId);
             Thread.Sleep(500);
-            if (this.PolarizationDelay > 0 && NormaValue == 0) polarisation();
+            polarisation();
             measure();
-            if (this.DischargeDelay > 0) discharge();
+            discharge();
             this.MeasureStatus = MEASURE_STATUS.FINISHED;
         }
 
         protected override void calibrationMeasureThreadFunction()
         {
-            this.normaValue = Convert.ToInt32(this.EtalonMap.ResistanceList[this.EtalonId][0]);
+            bool isFirst = true;
+            repeat:
+            this.Number=1;
+            setResultList();
+            this.normaValue = Convert.ToInt32(this.EtalonMap.ResistanceList[this.EtalonId][this.VoltageId-1]);
             this.teraDevice.setVoltage(this.VoltageId);
-            if (this.CorrectionMode == MEASURE_TYPE.AUTO) this.RangeCoeff = 1;
-            Thread.Sleep(500);
-            if (this.PolarizationDelay > 0) polarisation();
-            measure();
             if (this.CorrectionMode == MEASURE_TYPE.AUTO)
             {
-                double coeff = 0;
-                foreach(MeasureResult r in CurrentCollection.ResultsList)
+                if (this.VoltageId > 1)
                 {
-                    coeff += this.normaValue / (r.BringingResult * 1000) ; 
+                    this.VoltageCoeff = 1;
+                    this.RangeCoeff = teraDevice.rangeCoeffs[rangeId];
                 }
-                coeff = Math.Round(coeff / CurrentCollection.Count, 2);
-                this.teraDevice.DeviceForm.updateCoeffField(coeff);
+                else
+                {
+                    this.VoltageCoeff = 1;
+                    this.RangeCoeff = 1;
+                }
+            }
+            Thread.Sleep(500);
+            if (isFirst)polarisation();
+            isFirst = false;
+            measure();
+            discharge();
+            Thread.Sleep(500);
+            if (this.CorrectionMode == MEASURE_TYPE.AUTO)
+            {
+                if (this.Voltage == 10)
+                {
+                    double coeff = 0;
+                    foreach (MeasureResult r in CurrentCollection.ResultsList)
+                    {
+                        coeff += this.normaValue / (r.BringingResult * 1000);
+                    }
+                    coeff = Math.Round(coeff / CurrentCollection.Count, 7);
+                    this.teraDevice.rangeCoeffs[rangeId] = (float)coeff;
+                    this.teraDevice.DeviceForm.updateCoeffField(coeff);
+                }
+                if (this.MeasureStatus == MEASURE_STATUS.STOPED) return;
+                
+                if (this.Voltage == 10)
+                {
+                    this.Voltage = 100;
+                    goto repeat;
+                }
+                else if (this.Voltage == 100)
+                {
+                    this.Voltage = 500;
+                    goto repeat;
+                }
+                else if (this.Voltage == 500)
+                {
+                    this.Voltage = 1000;
+                    goto repeat;
+                }
             }
             this.MeasureStatus = MEASURE_STATUS.FINISHED;
+
         }
 
         /// <summary>
@@ -687,17 +740,17 @@ namespace NormaMeasure.Teraohmmeter
                 case MEASURE_STATUS.DISCHARGE:
                     sec = this.DischargeDelay - measSeconds;
                     break;
-                case MEASURE_STATUS.IS_GOING:
-                    if (this.PolarizationDelay > 0 && this.NormaValue > 0)
-                    {
-                        sec = (this.PolarizationDelay * 60) - measSeconds;
-                        if (sec == 0)
-                        {
-                            this.StopWithStatus(this.DischargeDelay > 0 ? MEASURE_STATUS.DISCHARGE : MEASURE_STATUS.FINISHED);
-                        }
-                    }
-                    else sec = measSeconds;
-                    break;
+                //case MEASURE_STATUS.IS_GOING:
+                //    if (this.PolarizationDelay > 0 && this.NormaValue > 0)
+                //    {
+                //        sec = (this.PolarizationDelay * 60) - measSeconds;
+                //        if (sec == 0)
+                //        {
+                //            this.StopWithStatus(this.DischargeDelay > 0 ? MEASURE_STATUS.DISCHARGE : MEASURE_STATUS.FINISHED);
+                //        }
+                //    }
+                //    else sec = measSeconds;
+                //    break;
                 default:
                     sec = measSeconds;
                     break;
@@ -707,6 +760,7 @@ namespace NormaMeasure.Teraohmmeter
 
         public override void StopWithStatus(MEASURE_STATUS status)
         {
+            this.teraDevice.setVoltage(0);
             base.StopWithStatus(status);
             if (DischargeDelay > 0)
             {
@@ -717,15 +771,25 @@ namespace NormaMeasure.Teraohmmeter
             }
         }
 
+        /// <summary>
+        /// Формирует имя списка результатов калибровки из диапазона и напряжения
+        /// </summary>
+        /// <param name="rId"></param>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        protected string calibrationMeasureName(int rId, int v)
+        {
+            return String.Format("Калибровка - Диапазон {0} - {1}В", rId, v);
+        }
 
         protected override string getName()
         {
             switch(this.Type)
             {
                 case MEASURE_TYPE.CALIBRATION:
-                    return String.Format("Калибровка - Диапазон {0}", this.rangeId+1);
+                    return calibrationMeasureName(rangeId+1, this.Voltage);
                 default:
-                    return base.getName();
+                    return String.Format("{0} - {1}В", base.getName(), this.Voltage);
             }
         }
 

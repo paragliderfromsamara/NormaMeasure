@@ -9,16 +9,56 @@ using NormaMeasure.DBClasses;
 
 namespace NormaMeasure.Teraohmmeter
 {
+    public enum TERA_RESULT_STATUS : byte
+    {
+        SUCC = 0, //0-испытание окончено успешно
+        INTERRUPTED = 1,
+        INTEGRATOR_IS_ON_NEGATIVE = 2,          //2-интегратор находится в отрицательной области
+        SHORT_CIRCUIT = 3,  //3-короткое замыкание
+        LOST_CIRCUIT_CORR_ERR_CODE = 4,
+        STATUS_VOLTAGE_SOURCE_IS_OFF = 5
+    }
     public class MeasureResultTera : MeasureResult
     {
         public TeraDevice TeraDevice;
         public TeraMeasure Measure;
         public IsolationMaterial Material;
+        private TERA_RESULT_STATUS status;
 
+        public TERA_RESULT_STATUS Status { get { return status; } }
         public int Voltage;
         public bool IsCompleted; // статус результата принято или нет
         public int Range; //Диапазон
-        public int Status; //Статус
+        public int StatusId
+        {
+            set
+            {
+                switch (value)
+                {
+                    case 0:
+                        status = TERA_RESULT_STATUS.SUCC;
+                    break;
+                    case 1:
+                        status = TERA_RESULT_STATUS.INTERRUPTED;
+                        break;
+                    case 2:
+                        status = TERA_RESULT_STATUS.INTEGRATOR_IS_ON_NEGATIVE;
+                        break;
+                    case 3:
+                        status = TERA_RESULT_STATUS.SHORT_CIRCUIT;
+                        break;
+                    case 4:
+                        status = TERA_RESULT_STATUS.LOST_CIRCUIT_CORR_ERR_CODE;
+                        break;
+                    case 5:
+                        status = TERA_RESULT_STATUS.STATUS_VOLTAGE_SOURCE_IS_OFF;
+                        break;
+                    default:
+                        status = TERA_RESULT_STATUS.SUCC;
+                        break;
+                }
+            }
+        }
         public int MeasureTime; //Время измерения
         public int FirstMeasure; //Начальное состояние интегратора
         private int lastMeasure;
@@ -84,7 +124,7 @@ namespace NormaMeasure.Teraohmmeter
             {
                 _R = 0;
             }
-            if ((mTime == Convert.ToDouble(1499)) && (_R < (limit[Measure.VoltageId])) && (_R > 0))
+            if ((mTime == Convert.ToDouble(1499)) && (_R < (limit[Measure.VoltageId-1])) && (_R > 0))
                 if (integratorDifference > 0) _R = (2048.0 * v * (double)(this.MeasureTime)) / (this.TeraDevice.refVoltage * (integratorDifference - (double)additionalRangeCoeff) * capacity);
 
             _R *= (double)rangeCoeff;      			                    // Умножаем на коэф. коррекции от диапазона.
@@ -104,7 +144,7 @@ namespace NormaMeasure.Teraohmmeter
             if (this.Measure.Type != MEASURE_TYPE.CALIBRATION)
             {
                 rangeCoeff = this.TeraDevice.rangeCoeffs[this.Range];
-                voltCoeff = this.Voltage > 10 ? this.TeraDevice.voltageCoeffs[this.Measure.VoltageId - 2] : 1;
+                voltCoeff = this.Voltage > 10 ? this.TeraDevice.voltageCoeffs[this.Measure.VoltageId-2] : 1;
                 additionalRangeCoeff = this.TeraDevice.rangeCoeffs[4];
             }else
             {

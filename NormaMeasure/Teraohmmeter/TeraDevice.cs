@@ -36,16 +36,15 @@ namespace NormaMeasure.Teraohmmeter
         byte[] retentionVoltageCmd;//удержание напряжения при установленном времени поляризации, иначе при установленном времени поляризации через 4 секунды произойдёт отключение источника напряжения
         byte[] setVoltageCmd; //запуск источника напряжения, в зависимости от выставляемого напряжения второй байт будет принимать значения для 10В - 0 
         byte[] turnOffVoltage; //Выключает напряжение
+        byte[] sendCoeffsCmd;
 
-        public TeraDevice()
+        public TeraDevice() : base()
         {
-            InitDevice();
+            
         }
-        public TeraDevice(string port_name)
+        public TeraDevice(string port_name) : base(port_name)
         {
-            InitDevice();
-            this.DevicePortName = port_name;
-            getSerial();
+           
         }
 
         protected override void InitDevice()
@@ -61,7 +60,7 @@ namespace NormaMeasure.Teraohmmeter
             this.DevicePort.ReadBufferSize = 4096;
             this.DevicePort.ReceivedBytesThreshold = 1;
             this.DevicePort.DiscardNull = false;
-
+           
             
             //this.devicePort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(DevicePort_DataReceived);
         }
@@ -96,11 +95,16 @@ namespace NormaMeasure.Teraohmmeter
             this.disconnectCmd = new byte[] { serviceCmdHeader, 0x02 }; //отключение устройства
             this.getCoeffs = new byte[] { serviceCmdHeader, 0x03 }; //Запрос коэффициентов
             this.getCheckSumCmd = new byte[] { serviceCmdHeader, 0x04 }; //Запрос серийного номера контрольной суммы
+            this.sendCoeffsCmd = new byte[] { serviceCmdHeader, 0x05 }; //Запись коэффициентов в прибор
+
+
 
             this.startIntegratorCmd = new byte[] { measureCmdHeader, 0x22 }; //запуск интегрирования
             this.retentionVoltageCmd = new byte[] { measureCmdHeader, 0x00 }; //удержание напряжения при установленном времени поляризации, иначе при установленном времени поляризации через 4 секунды произойдёт отключение источника напряжения
             this.setVoltageCmd = new byte[] { voltageControlCmdHeader, 0xC0 }; //запуск источника напряжения, в зависимости от выставляемого напряжения второй байт будет принимать значения для 10В - 0, 100 - 1, 500 - 2, 1000 - 3 
-            this.turnOffVoltage = new byte[] { voltageControlCmdHeader, 0x00 }; 
+            this.turnOffVoltage = new byte[] { voltageControlCmdHeader, 0x00 };
+
+            
         }
 
         /// <summary>
@@ -140,12 +144,14 @@ namespace NormaMeasure.Teraohmmeter
             base.disconnect();
             this.DeviceForm.Dispose();
             this.DeviceForm = null;
+
         }
 
 
         private void deviceFormClosedEvent(object sender, System.Windows.Forms.FormClosedEventArgs arg)
         {
             if (IsConnected) this.disconnect();
+            Thread.Sleep(600);
         }
 
 
@@ -179,7 +185,38 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                float coeffs
+                List<byte> list = new List<byte>();
+                byte[] arrToDev;
+                byte[] tmp; 
+                byte length = 0;
+                foreach (byte b in sendCoeffsCmd) list.Add(b);
+                foreach (float f in rangeCoeffs)
+                {
+                    byte[] fByte = BitConverter.GetBytes(f);
+                    tmp = new byte[] { fByte[1], fByte[2], fByte[3], fByte[0] };
+                    length++;
+                    foreach (byte b in tmp) list.Add(b);
+                }
+                foreach (float f in voltageCoeffs)
+                {
+                    byte[] fByte = BitConverter.GetBytes(f);
+                    tmp = new byte[] { fByte[1], fByte[2], fByte[3], fByte[0] };
+                    length++;
+                    foreach (byte b in tmp) list.Add(b);
+                }
+                arrToDev = list.ToArray();
+                if (length <= 16)
+                {
+                    arrToDev[0] |= length;
+                    this.writePort(arrToDev);
+                    Thread.Sleep(600);
+                    this.ClosePort();
+                }
+                string s = "";
+                foreach (byte b in arrToDev) s += " " + b + " \n";
+                System.Windows.Forms.MessageBox.Show(s);
+                stsForm.Close();
+                //float coeffs
             }
         }
 
@@ -197,15 +234,19 @@ namespace NormaMeasure.Teraohmmeter
                 //если приложение не в тестовом режиме
                 for (int j = 0; j < this.rangeCoeffs.Length; j++)
                 {
-                    range_coeffs[j] = (float)receiveDouble();
+                    range_coeffs[j] = (float)receiveFloat();
                 }
                 for (int j = 0; j < this.voltageCoeffs.Length; j++)
                 {
-                    voltage_coeffs[j] = (float)receiveDouble();
+                    voltage_coeffs[j] = (float)receiveFloat();
                 }
                 this.rangeCoeffs = range_coeffs;
                 this.voltageCoeffs = voltage_coeffs;
             }
+        }
+
+        private void sendCoeffs()
+        {
 
         }
 
@@ -216,9 +257,9 @@ namespace NormaMeasure.Teraohmmeter
         {
             string query = String.Format(TeraSettings.Default.selectDeviceBySerial, this.SerialNumber);
             DataSet data_set = new DataSet();
-            DBControl dc = new DBControl(TeraSettings.Default.dbName);
+            DBControl dc = new DBControl(DBSettings.Default.DBName);
             MySqlDataAdapter da = new MySqlDataAdapter(query, dc.MyConn);
-
+            
             da.Fill(data_set);
             if (data_set.Tables[0].Rows.Count > 0)
             {
@@ -281,7 +322,9 @@ namespace NormaMeasure.Teraohmmeter
         /// </summary>
         internal void StartIntegrator()
         {
+            if (!Properties.Settings.Default.IsTestApp) this.DevicePort.DiscardInBuffer();
             this.writePort(startIntegratorCmd);
+
         }
 
         internal void StopMeasure()
@@ -301,7 +344,7 @@ namespace NormaMeasure.Teraohmmeter
                 {
                     if (this.DevicePort.BytesToRead == 8)
                     {
-                        result.Status = 0x0F & this.DevicePort.ReadByte();
+                        result.StatusId = 0x0F & this.DevicePort.ReadByte();
                         result.Range = this.DevicePort.ReadByte();
                         result.MeasureTime = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
                         result.FirstMeasure = this.DevicePort.ReadByte() + this.DevicePort.ReadByte() * 256;
@@ -311,7 +354,7 @@ namespace NormaMeasure.Teraohmmeter
                 else
                 {
                     Random r = new Random();
-                    result.Status = 0;
+                    result.StatusId = 0;
                     result.Range = 2;
                     result.MeasureTime = r.Next(130, 133);
                     Thread.Sleep(50);

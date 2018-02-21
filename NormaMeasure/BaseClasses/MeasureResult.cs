@@ -100,7 +100,7 @@ namespace NormaMeasure.BaseClasses
 
         public void Clear()
         {
-            resultsList.Clear();
+           resultsList.Clear();
         }
 
         public MeasureResult Last()

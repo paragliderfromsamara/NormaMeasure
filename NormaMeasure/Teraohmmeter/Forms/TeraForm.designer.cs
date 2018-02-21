@@ -95,6 +95,9 @@ namespace NormaMeasure.Teraohmmeter
             this.stat_measure_number = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.voltage = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.result = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.first_measure = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.last_measure = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.time = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label8 = new System.Windows.Forms.Label();
             this.measResultsListComboBox = new System.Windows.Forms.ComboBox();
             this.selectEtalonMapLbl = new System.Windows.Forms.Label();
@@ -144,6 +147,7 @@ namespace NormaMeasure.Teraohmmeter
             this.voltageComboBox.Name = "voltageComboBox";
             this.voltageComboBox.Size = new System.Drawing.Size(94, 21);
             this.voltageComboBox.TabIndex = 0;
+            this.voltageComboBox.SelectedIndexChanged += new System.EventHandler(this.voltageComboBox_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -721,9 +725,9 @@ namespace NormaMeasure.Teraohmmeter
             this.measureIdLabel.AutoSize = true;
             this.measureIdLabel.Location = new System.Drawing.Point(0, 102);
             this.measureIdLabel.Name = "measureIdLabel";
-            this.measureIdLabel.Size = new System.Drawing.Size(132, 13);
+            this.measureIdLabel.Size = new System.Drawing.Size(146, 13);
             this.measureIdLabel.TabIndex = 25;
-            this.measureIdLabel.Text = "Идентификатор образца";
+            this.measureIdLabel.Text = "Идентификатор измерения";
             // 
             // MeasureTitle
             // 
@@ -777,7 +781,10 @@ namespace NormaMeasure.Teraohmmeter
             this.cycle_number,
             this.stat_measure_number,
             this.voltage,
-            this.result});
+            this.result,
+            this.first_measure,
+            this.last_measure,
+            this.time});
             this.measureResultDataGridView1.Location = new System.Drawing.Point(6, 95);
             this.measureResultDataGridView1.Name = "measureResultDataGridView1";
             this.measureResultDataGridView1.ReadOnly = true;
@@ -807,6 +814,24 @@ namespace NormaMeasure.Teraohmmeter
             this.result.HeaderText = "Результат";
             this.result.Name = "result";
             this.result.ReadOnly = true;
+            // 
+            // first_measure
+            // 
+            this.first_measure.HeaderText = "Начальное состояние";
+            this.first_measure.Name = "first_measure";
+            this.first_measure.ReadOnly = true;
+            // 
+            // last_measure
+            // 
+            this.last_measure.HeaderText = "Конечное состояние";
+            this.last_measure.Name = "last_measure";
+            this.last_measure.ReadOnly = true;
+            // 
+            // time
+            // 
+            this.time.HeaderText = "Время";
+            this.time.Name = "time";
+            this.time.ReadOnly = true;
             // 
             // label8
             // 
@@ -891,6 +916,7 @@ namespace NormaMeasure.Teraohmmeter
             this.saveCoeffButton.TabIndex = 7;
             this.saveCoeffButton.Text = "Сохранить";
             this.saveCoeffButton.UseVisualStyleBackColor = true;
+            this.saveCoeffButton.Click += new System.EventHandler(this.saveCoeffButton_Click);
             // 
             // corrCoeffLbl
             // 
@@ -1037,10 +1063,6 @@ namespace NormaMeasure.Teraohmmeter
         private DataGridView measureResultDataGridView1;
         private Label label8;
         private ComboBox measResultsListComboBox;
-        private DataGridViewTextBoxColumn cycle_number;
-        private DataGridViewTextBoxColumn stat_measure_number;
-        private DataGridViewTextBoxColumn voltage;
-        private DataGridViewTextBoxColumn result;
         private Label measureIdLabel;
         private TextBox MeasureTitle;
         private Label label10;
@@ -1050,5 +1072,12 @@ namespace NormaMeasure.Teraohmmeter
         private Button saveCoeffButton;
         private Label corrCoeffLbl;
         private TextBox rangeCoeffTextBox;
+        private DataGridViewTextBoxColumn cycle_number;
+        private DataGridViewTextBoxColumn stat_measure_number;
+        private DataGridViewTextBoxColumn voltage;
+        private DataGridViewTextBoxColumn result;
+        private DataGridViewTextBoxColumn first_measure;
+        private DataGridViewTextBoxColumn last_measure;
+        private DataGridViewTextBoxColumn time;
     }
 }

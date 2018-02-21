@@ -243,7 +243,7 @@ namespace NormaMeasure.Teraohmmeter
                     measure.BringingLength = Convert.ToInt16(materialLength.Value);
                     measure.BringingLengthMeasure = this.bringingLengthMeasCb.SelectedText;
                     measure.CorrectionMode = autoCorrCb.Checked ? MEASURE_TYPE.AUTO : MEASURE_TYPE.HAND;
-                    measure.RangeCoeff = autoCorrCb.Checked ? 1 : ServiceFunctions.convertToFloat(rangeCoeffTextBox.Text);
+                    //measure.RangeCoeff = autoCorrCb.Checked ? 1 : ServiceFunctions.convertToFloat(rangeCoeffTextBox.Text);
                     this.switchFieldsMeasureOnOff(this.measure.IsStarted);
             }else
                 {
@@ -309,8 +309,8 @@ namespace NormaMeasure.Teraohmmeter
                     if (resultList.Count > 0)
                     {
                         MeasureResultTera result = resultList.Last() as MeasureResultTera;
-                        this.midStatMeasValLbl.Text = String.Format("промежуточное значение: {0}", isDegreeViewCheckBox.Checked ? absoluteResultView(result.BringingResult) : deegreeResultView(result.BringingResult));
-                        if (measure.StatCycleNumber == measure.AveragingTimes)
+                        this.midStatMeasValLbl.Text = String.Format("промежуточное значение: {0}", !isDegreeViewCheckBox.Checked ? absoluteResultView(result.BringingResult) : deegreeResultView(result.BringingResult));
+                        if (result.StatCycleNumber == measure.AveragingTimes)
                         {
                             double avVal = resultList.AverageBringing();
                             if (isDegreeViewCheckBox.Checked)
@@ -319,7 +319,7 @@ namespace NormaMeasure.Teraohmmeter
                             }
                             else
                             {
-                                this.updateResultFieldText(deegreeResultView(avVal));
+                                this.updateResultFieldText(absoluteResultView(avVal));
                             }
                                 
                         }else
@@ -333,7 +333,7 @@ namespace NormaMeasure.Teraohmmeter
                     if (resultList.Count > 0)
                     {
                         MeasureResultTera result = resultList.Last() as MeasureResultTera;
-                        if (measure.StatCycleNumber == this.measure.AveragingTimes)
+                        if (result.StatCycleNumber == this.measure.AveragingTimes)
                         {
                             if (this.measure.Type == MEASURE_TYPE.CALIBRATION || this.measure.Type == MEASURE_TYPE.VERIFICATION)
                             {
@@ -389,6 +389,7 @@ namespace NormaMeasure.Teraohmmeter
             {
                 if (flag)
                 {
+                    this.teraDevice.StopMeasure();
                     this.teraDevice.ClosePort();
                 }
                 else
@@ -454,7 +455,6 @@ namespace NormaMeasure.Teraohmmeter
             else
             {
                 rangeCoeffTextBox.Text = ((float)coeff).ToString();
-                corrCoeffLbl.Text = BitConverter.GetBytes((float)coeff).Length.ToString();
             }
         }
 
@@ -597,9 +597,9 @@ namespace NormaMeasure.Teraohmmeter
                     break;
                 case 2:
                     this.measure = new TeraMeasure(teraDevice, MEASURE_TYPE.CALIBRATION);
-                    verificationCalibrationPanel.Visible = true;
+                    voltageComboBox.Enabled = verificationCalibrationPanel.Visible = true;
                     //measureSettingsGroup.Enabled = false;
-                    isCyclicMeasure.Enabled = averagingTimes.Enabled = isCyclicMeasure.Checked = dischargeDelay.Enabled = voltageComboBox.Enabled = normaField.Enabled = false;
+                    isCyclicMeasure.Enabled = averagingTimes.Enabled = isCyclicMeasure.Checked = dischargeDelay.Enabled = normaField.Enabled = false;
                     setCorrField(autoCorrCb.Checked);
                     averagingTimes.Value = 1;
                     voltageComboBox.SelectedText = "10";
@@ -624,8 +624,13 @@ namespace NormaMeasure.Teraohmmeter
                 if (measureResultDataGridView1.Rows.Count != measure.ResultCollectionsList.Last().Count)
                 {
                     MeasureResultCollection col = measure.ResultCollectionsList.Last();
-                    int dif =col.Count - measureResultDataGridView1.Rows.Count;
-                    for(int i = dif; i > 0; i--)
+                    if(col.Count < measureResultDataGridView1.Rows.Count)
+                    {
+                        measureResultDataGridView1.Rows.Clear();
+                    }
+                    int dif = col.Count - measureResultDataGridView1.Rows.Count;
+
+                    for (int i = dif; i > 0; i--)
                     {
                         MeasureResult mr = col.ResultsList[col.Count - i];
                         addRowToDataGrid(mr);
@@ -654,6 +659,9 @@ namespace NormaMeasure.Teraohmmeter
             measureResultDataGridView1.Rows[num].Cells["stat_measure_number"].Value = mr.StatCycleNumber;
             measureResultDataGridView1.Rows[num].Cells["voltage"].Value = mr.Voltage;
             measureResultDataGridView1.Rows[num].Cells["result"].Value = mr.BringingResult;
+            measureResultDataGridView1.Rows[num].Cells["first_measure"].Value = mr.FirstMeasure;
+            measureResultDataGridView1.Rows[num].Cells["last_measure"].Value = mr.LastMeasure;
+            measureResultDataGridView1.Rows[num].Cells["time"].Value = mr.MeasureTime;
         }
 
         private void teraEtalonMapComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -684,10 +692,7 @@ namespace NormaMeasure.Teraohmmeter
         {
             ComboBox cb = sender as ComboBox;
             measure.EtalonId = cb.SelectedIndex;
-            if (this.measure.Type == MEASURE_TYPE.CALIBRATION)
-            {
-                rangeCoeffTextBox.Text = this.teraDevice.rangeCoeffs[cb.SelectedIndex].ToString();
-            }
+            changeCoefflblAndValue();
         }
 
         private void autoCorrCb_CheckedChanged(object sender, EventArgs e)
@@ -720,7 +725,54 @@ namespace NormaMeasure.Teraohmmeter
             {
                 c= 1;
             }
-            measure.RangeCoeff = c;
+            if (voltageComboBox.SelectedIndex > 0) measure.VoltageCoeff = c;
+            else measure.RangeCoeff = c;
+        }
+
+        private void saveCoeffButton_Click(object sender, EventArgs e)
+        {
+            DialogResult r;
+            if (measure.VoltageId > 1)
+            {
+                teraDevice.voltageCoeffs[voltageComboBox.SelectedIndex - 1] = this.measure.VoltageCoeff;
+            }
+            else
+            {
+                teraDevice.rangeCoeffs[comboBoxResistance.SelectedIndex] = this.measure.RangeCoeff;
+            }
+            r = MessageBox.Show("Коэффициент был изменен. Обновить коэффициенты в приборе?", "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (r==DialogResult.Yes)
+            {
+                this.teraDevice.syncCoeffs(false);
+            }
+        }
+
+        private void voltageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            changeCoefflblAndValue();
+        }
+
+        /// <summary>
+        /// Вставляет значение коэффициента 
+        /// </summary>
+        private void changeCoefflblAndValue()
+        {
+            if (measure.Type == MEASURE_TYPE.CALIBRATION)
+            {
+                this.measure.RangeCoeff = this.teraDevice.rangeCoeffs[comboBoxResistance.SelectedIndex];
+                if (voltageComboBox.SelectedIndex > 0)
+                {
+                    corrCoeffLbl.Text = String.Format("Коэффициент: {0}В", voltageComboBox.Text);
+                    rangeCoeffTextBox.Text = this.teraDevice.voltageCoeffs[voltageComboBox.SelectedIndex-1].ToString();
+                    this.measure.VoltageCoeff = this.teraDevice.voltageCoeffs[voltageComboBox.SelectedIndex - 1];
+                }
+                else
+                {
+                    corrCoeffLbl.Text = String.Format("Коэффициент: диапазон {0}", comboBoxResistance.SelectedIndex + 1);
+                    rangeCoeffTextBox.Text = this.measure.RangeCoeff.ToString();
+                    this.measure.VoltageCoeff = 1;
+                }
+            }
         }
     }
 }

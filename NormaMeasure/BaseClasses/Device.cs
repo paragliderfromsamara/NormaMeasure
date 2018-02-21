@@ -18,15 +18,21 @@ namespace NormaMeasure.BaseClasses
         SAK = 2,
         MICRO = 3
     }                                                                                                                          
-    public abstract class Device
+    public class Device
     {
         public string DevicePortName
         {
-            get { return devPortName; }
+            get { return this.DevicePort.PortName; }
             set
             {
-                this.devPortName = value;
-                renamePort(value);
+                try
+                {
+                    this.DevicePort.PortName = value;
+                }catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                
             }
         }
         /// <summary>
@@ -91,7 +97,6 @@ namespace NormaMeasure.BaseClasses
         
         protected bool isTestApp = Properties.Settings.Default.IsTestApp;
         protected bool isLoadedFromDB = false;
-        protected string devPortName = "COM1";
         protected DataRow deviceDataRow
         {
             set
@@ -101,15 +106,29 @@ namespace NormaMeasure.BaseClasses
             }
         }
 
-        protected abstract void fillFromDataRow(DataRow dataRow);
+        protected virtual void fillFromDataRow(DataRow dataRow) { }
 
         protected byte[] serialCmd;
         protected byte[] connectCmd;
         protected byte[] disconnectCmd;
         protected string typeName;
 
-        protected abstract void setVariables();
-        public abstract bool ConnectToDevice(MainForm form);
+        protected virtual void setVariables() { }
+
+        public Device()
+        {
+            InitDevice();
+        }
+
+        public Device(string port_name) : base()
+        {
+            InitDevice();
+            this.DevicePortName = port_name;
+            System.Windows.Forms.MessageBox.Show(DevicePortName);
+            getSerial();
+        }
+
+        public virtual bool ConnectToDevice(MainForm form) { return true; }
 
         public void Dispose()
         {
@@ -244,13 +263,14 @@ namespace NormaMeasure.BaseClasses
             return y + "-" + n;
         }
 
-        protected void sendDouble(float v)
+        protected void sendFloat(float v)
         {
             byte[] arr = BitConverter.GetBytes(v);
-            MessageBox.Show(arr.Length.ToString());
+            byte[] sArr = new byte[] { 0x11, 0x12, 0x13, 0x14};// { arr[1], arr[2], arr[3], arr[0] };
+            this.writePort(sArr);
         }
 
-        protected float receiveDouble()
+        protected float receiveFloat()
         {
             float val = 0;
             Single v = 0;

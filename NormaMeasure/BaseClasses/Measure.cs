@@ -86,6 +86,7 @@ namespace NormaMeasure.BaseClasses
             set
             {
                 MEASURE_STATUS was = measureStatus;
+                if (was == MEASURE_STATUS.STOPED && value == MEASURE_STATUS.FINISHED) return;
                 this.measureStatus = value;
                 if (was != value) updatedMeasureStatusHandle();
             }
@@ -151,7 +152,7 @@ namespace NormaMeasure.BaseClasses
 
         private void initTimer()
         {
-            MeasureTimer = new System.Timers.Timer(300);
+            MeasureTimer = new System.Timers.Timer(1000);
             MeasureTimer.AutoReset = true;
             MeasureTimer.Elapsed += MeasureTimer_Elapsed;
             resetTime();
@@ -217,7 +218,9 @@ namespace NormaMeasure.BaseClasses
 
         public virtual void StopWithStatus(MEASURE_STATUS status)
         {
-            if (this.stop()) this.MeasureStatus = status;
+            if (Properties.Settings.Default.IsTestApp) if (this.stop()) this.MeasureStatus = status;
+                else this.MeasureStatus = status;
+
         }
 
         public static void measureError(string m)
@@ -243,15 +246,15 @@ namespace NormaMeasure.BaseClasses
             if (curResultListId == -1)
             {
                 this.ResultCollectionsList.Add(new MeasureResultCollection(mName));
-                this.curResultListId = this.ResultCollectionsList.Count - 1;
+                this.curResultListId = this.ResultCollectionsList.Count() - 1;
             }else
             {
                 switch (this.Type)
                 {
                     case MEASURE_TYPE.HAND:
-                        DialogResult r = MessageBox.Show(String.Format("Список результатов с идентификатором \"{0}\" уже существует, Вы хотите очистить предыдущие результаты?", mName), "Вопрос", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                        DialogResult r = MessageBox.Show(String.Format("Список результатов с идентификатором \"{0}\" уже существует, при запуске нового испытания сотрутся предыдущие результаты. Вы согласны?", mName), "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (r == DialogResult.Yes) this.ResultCollectionsList[curResultListId].Clear();
-                        else if (r == DialogResult.Cancel) return false;
+                        else if (r == DialogResult.No) return false;
                         break;
                     case MEASURE_TYPE.CALIBRATION:
                         this.ResultCollectionsList[curResultListId].Clear();
