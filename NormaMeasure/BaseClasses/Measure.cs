@@ -35,16 +35,9 @@ namespace NormaMeasure.BaseClasses
         protected int cycleNumber;
         protected int statCycleNumber;
         public string Name = String.Empty;
-        public List<MeasureResultCollection> ResultCollectionsList = new List<MeasureResultCollection>();
-        protected int curResultListId = -1;
-        public MeasureResultCollection CurrentCollection
-        {
-            get
-            {
-                if (curResultListId > -1 && ResultCollectionsList.Count > curResultListId) return ResultCollectionsList[curResultListId];
-                else return null;
-            }
-        }
+        public MeasureResultCollection ResultCollectionsList;
+        private Device device;
+
         /// <summary>
         /// Номер испытания в данном цикле
         /// </summary>
@@ -137,10 +130,12 @@ namespace NormaMeasure.BaseClasses
             this.MeasureStatus = MEASURE_STATUS.NOT_STARTED;
         }
 
-        public MeasureBase(MEASURE_TYPE type)
+        public MeasureBase(MEASURE_TYPE type, Device device)
         {
+            this.device = device;
             this.Type = type;
             this.MeasureStatus = MEASURE_STATUS.NOT_STARTED;
+            this.ResultCollectionsList = new MeasureResultCollection(getName(), this.Type, device);
             initByMeasureType();
             initTimer();
         }
@@ -171,8 +166,15 @@ namespace NormaMeasure.BaseClasses
         {
             if (!this.IsStarted)
             {
+                string newName = getName();
                 this.Number++;
-                if (!this.setResultList()) return false;
+                if (newName == this.ResultCollectionsList.Name && this.Type == MEASURE_TYPE.HAND)
+                {
+                    DialogResult dr = MessageBox.Show(String.Format("Испытание c названием \"{0}\" уже произведено. При запуске нового измерения результат будет удалён. Вы согласны?", newName), "Вопрос", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                    if (dr == DialogResult.OK) this.ResultCollectionsList.Clear();
+                    else return false;
+                }
+                this.ResultCollectionsList.Name = newName;
                 switch (Type)
                 {
                     case MEASURE_TYPE.AUTO:
@@ -228,41 +230,13 @@ namespace NormaMeasure.BaseClasses
             MessageBox.Show("Ошибка испытания", m, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        protected int getMeasureIndexByName(string name)
-        {
-            for (int i = 0; i < ResultCollectionsList.Count; i++) if (name == ResultCollectionsList[i].Name) return i;
-            return -1;
-        }
 
         protected virtual string getName()
         {
             return Name;
         }
 
-        protected bool setResultList()
-        {
-            string mName = getName();
-            curResultListId = getMeasureIndexByName(mName);
-            if (curResultListId == -1)
-            {
-                this.ResultCollectionsList.Add(new MeasureResultCollection(mName));
-                this.curResultListId = this.ResultCollectionsList.Count() - 1;
-            }else
-            {
-                switch (this.Type)
-                {
-                    case MEASURE_TYPE.HAND:
-                        DialogResult r = MessageBox.Show(String.Format("Список результатов с идентификатором \"{0}\" уже существует, при запуске нового испытания сотрутся предыдущие результаты. Вы согласны?", mName), "Вопрос", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                        if (r == DialogResult.Yes) this.ResultCollectionsList[curResultListId].Clear();
-                        else if (r == DialogResult.No) return false;
-                        break;
-                    case MEASURE_TYPE.CALIBRATION:
-                        this.ResultCollectionsList[curResultListId].Clear();
-                        break;
-                }
-            }
-            return true;
-        }
+
 
         ~MeasureBase()
         {

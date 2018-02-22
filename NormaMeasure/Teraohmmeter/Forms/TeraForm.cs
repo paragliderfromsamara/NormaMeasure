@@ -20,6 +20,7 @@ namespace NormaMeasure.Teraohmmeter
     public partial class TeraForm : Form
     {
         private MainForm mainForm; 
+        private NormaMeasure.Teraohmmeter.Forms.TeraResultsForm resultForm;
         double[][] isolationMaterialCoeffsArr;
         private bool measureIsActive = false;
         private string curEtalonMapId = String.Empty; 
@@ -35,7 +36,7 @@ namespace NormaMeasure.Teraohmmeter
         protected delegate void updateCorrCoeffFieldDelegate(double coeff);
 
 
-        TeraDevice teraDevice;
+        public TeraDevice teraDevice;
         TeraMeasure measure;
         public TeraForm(TeraDevice tera_device, MainForm f)
         {
@@ -43,6 +44,9 @@ namespace NormaMeasure.Teraohmmeter
             this.mainForm = f;
             this.teraDevice = tera_device;
             this.Text = teraDevice.NameWithSerial();
+            this.resultForm = new Forms.TeraResultsForm(this);
+            this.resultForm.MdiParent = f;
+            resultForm.Hide();
             fillTeraDS();
         }
 
@@ -299,8 +303,9 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                MeasureResultCollection resultList = this.measure.CurrentCollection;
-                refreshResultsPage();
+                MeasureResultCollection resultList = this.measure.ResultCollectionsList;
+                //refreshResultsPage();
+                resultForm.refreshResultsPage(resultList);
                 this.cycleCounterLbl.Text = String.Format("{0}  Цикл {1}", resultList.Name, this.measure.CycleNumber);
                 //Отрисовка для статистических испытаний
                 if (measure.IsStatistic)  
@@ -607,8 +612,16 @@ namespace NormaMeasure.Teraohmmeter
                     fillEtalonMapComboBox();
                     break;
             }
+            resetResultPage();
         }
 
+        private void resetResultPage()
+        {
+            measResultsListComboBox.Items.Clear();
+            measureResultDataGridView1.Rows.Clear();
+            this.measureResultDataGridView1.Columns["range"].Visible = this.measureResultDataGridView1.Columns["time"].Visible = this.measureResultDataGridView1.Columns["last_measure"].Visible = this.measureResultDataGridView1.Columns["first_measure"].Visible = this.measure.Type == MEASURE_TYPE.CALIBRATION;
+        }
+        /*
         private void refreshResultsPage()
         {
             foreach(MeasureResultCollection c in measure.ResultCollectionsList)
@@ -638,17 +651,18 @@ namespace NormaMeasure.Teraohmmeter
                 }
             }
         }
-
+        */
 
         private void measResultsListComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox cb = sender as ComboBox;
-            MeasureResultCollection col = this.measure.ResultCollectionsList[cb.SelectedIndex];
-            measureResultDataGridView1.Rows.Clear();
-            foreach (MeasureResult r in col.ResultsList)
-            {
-                addRowToDataGrid(r);
-            }
+           // MessageBox.Show(String.Format("{0} {1}", cb.SelectedIndex, this.measure.ResultCollectionsList.Count));
+           // MeasureResultCollection col = this.measure.ResultCollectionsList[cb.SelectedIndex];
+           // measureResultDataGridView1.Rows.Clear();
+           // foreach (MeasureResult r in col.ResultsList)
+           // {
+           //     addRowToDataGrid(r);
+           // }
         }
 
         private void addRowToDataGrid(MeasureResult r)
@@ -662,6 +676,7 @@ namespace NormaMeasure.Teraohmmeter
             measureResultDataGridView1.Rows[num].Cells["first_measure"].Value = mr.FirstMeasure;
             measureResultDataGridView1.Rows[num].Cells["last_measure"].Value = mr.LastMeasure;
             measureResultDataGridView1.Rows[num].Cells["time"].Value = mr.MeasureTime;
+            measureResultDataGridView1.Rows[num].Cells["range"].Value = mr.MeasureTime;
         }
 
         private void teraEtalonMapComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -773,6 +788,12 @@ namespace NormaMeasure.Teraohmmeter
                     this.measure.VoltageCoeff = 1;
                 }
             }
+        }
+
+        private void showResultsButton_Click(object sender, EventArgs e)
+        {
+            if (this.resultForm.Visible) this.resultForm.Hide();
+            else this.resultForm.Show();
         }
     }
 }

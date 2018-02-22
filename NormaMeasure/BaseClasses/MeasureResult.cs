@@ -40,14 +40,21 @@ namespace NormaMeasure.BaseClasses
     public class MeasureResultCollection
     {
         private string name = String.Empty;
+        public MEASURE_TYPE MeasureType = MEASURE_TYPE.AUTO;
+        private Device Device;
+
         public string Name
         {
             get
             {
                 return name;
             }
-            set { this.name = value; }
+            set {
+                    this.name = value;
+                    if (this.Count > 0) this.Clear();
+                }
         }
+
         public int Count
         {
             get
@@ -91,6 +98,13 @@ namespace NormaMeasure.BaseClasses
         public MeasureResultCollection(string name) : this()
         {
             this.Name = name;
+        }
+
+        public MeasureResultCollection(string name, MEASURE_TYPE measure_type, Device device) : this()
+        {
+            this.Name = name;
+            this.MeasureType = measure_type;
+            this.Device = device;
         }
 
         public void Add(MeasureResult result)

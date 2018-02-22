@@ -487,7 +487,7 @@ namespace NormaMeasure.Teraohmmeter
             
         }
 
-        public TeraMeasure(TeraDevice tera, MEASURE_TYPE t) : base(t)
+        public TeraMeasure(TeraDevice tera, MEASURE_TYPE t) : base(t, tera)
         {
             this.teraDevice = tera;
         }
@@ -576,7 +576,7 @@ namespace NormaMeasure.Teraohmmeter
                 result.SecondsFromStart = measSeconds;
                 if (result.Status > 0) break;
 
-                ResultCollectionsList[this.curResultListId].Add(result);
+                ResultCollectionsList.Add(result);
 
 
                 if (StatCycleNumber < this.AveragingTimes) { StatCycleNumber++; continue; } //Если статистическое испытание, то уходим на следующий подциклa
@@ -610,10 +610,11 @@ namespace NormaMeasure.Teraohmmeter
         protected override void calibrationMeasureThreadFunction()
         {
             bool isFirst = true;
+            
             repeat:
             this.Number=1;
-            setResultList();
             this.normaValue = Convert.ToInt32(this.EtalonMap.ResistanceList[this.EtalonId][this.VoltageId-1]);
+            if (!isFirst) this.ResultCollectionsList.Name = getName(); 
             this.teraDevice.setVoltage(this.VoltageId);
             if (this.CorrectionMode == MEASURE_TYPE.AUTO)
             {
@@ -639,11 +640,11 @@ namespace NormaMeasure.Teraohmmeter
                 if (this.Voltage == 10)
                 {
                     double coeff = 0;
-                    foreach (MeasureResult r in CurrentCollection.ResultsList)
+                    foreach (MeasureResult r in this.ResultCollectionsList.ResultsList)
                     {
                         coeff += this.normaValue / (r.BringingResult * 1000);
                     }
-                    coeff = Math.Round(coeff / CurrentCollection.Count, 7);
+                    coeff = Math.Round(coeff / this.ResultCollectionsList.Count, 7);
                     this.teraDevice.rangeCoeffs[rangeId] = (float)coeff;
                     this.teraDevice.DeviceForm.updateCoeffField(coeff);
                 }
