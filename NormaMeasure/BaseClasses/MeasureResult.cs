@@ -107,6 +107,14 @@ namespace NormaMeasure.BaseClasses
             this.Device = device;
         }
 
+
+        public MeasureResultCollection Clone()
+        {
+            MeasureResultCollection mrc = new MeasureResultCollection(this.Name, this.MeasureType, this.Device);
+            mrc.resultsList = this.resultsList;
+            return mrc;
+        }
+
         public void Add(MeasureResult result)
         {
             resultsList.Add(result);
@@ -114,7 +122,7 @@ namespace NormaMeasure.BaseClasses
 
         public void Clear()
         {
-           resultsList.Clear();
+           resultsList = new List<MeasureResult>();
         }
 
         public MeasureResult Last()

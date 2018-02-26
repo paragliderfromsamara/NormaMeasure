@@ -32,7 +32,6 @@ namespace NormaMeasure.Teraohmmeter
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.voltageComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.startHandMeasureBut = new System.Windows.Forms.Button();
@@ -83,25 +82,12 @@ namespace NormaMeasure.Teraohmmeter
             this.materialHeightLbl = new System.Windows.Forms.Label();
             this.materialHeight = new System.Windows.Forms.NumericUpDown();
             this.isDegreeViewCheckBox = new System.Windows.Forms.CheckBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.measureTabPage = new System.Windows.Forms.TabPage();
+            this.showResultsButton = new System.Windows.Forms.Button();
             this.handMeasurePanel = new System.Windows.Forms.Panel();
             this.measureIdLabel = new System.Windows.Forms.Label();
             this.MeasureTitle = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxMode = new System.Windows.Forms.ComboBox();
-            this.resultTabPage = new System.Windows.Forms.TabPage();
-            this.measureResultDataGridView1 = new System.Windows.Forms.DataGridView();
-            this.cycle_number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.stat_measure_number = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.voltage = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.result = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.range = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.first_measure = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.last_measure = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.time = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label8 = new System.Windows.Forms.Label();
-            this.measResultsListComboBox = new System.Windows.Forms.ComboBox();
             this.selectEtalonMapLbl = new System.Windows.Forms.Label();
             this.teraEtalonMapComboBox = new System.Windows.Forms.ComboBox();
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
@@ -113,7 +99,6 @@ namespace NormaMeasure.Teraohmmeter
             this.rangeCoeffTextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.comboBoxResistance = new System.Windows.Forms.ComboBox();
-            this.showResultsButton = new System.Windows.Forms.Button();
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.averagingTimes)).BeginInit();
@@ -128,11 +113,7 @@ namespace NormaMeasure.Teraohmmeter
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.temperatureField)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.materialHeight)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.measureTabPage.SuspendLayout();
             this.handMeasurePanel.SuspendLayout();
-            this.resultTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.measureResultDataGridView1)).BeginInit();
             this.verificationCalibrationPanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -164,7 +145,7 @@ namespace NormaMeasure.Teraohmmeter
             // startHandMeasureBut
             // 
             this.startHandMeasureBut.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.startHandMeasureBut.Location = new System.Drawing.Point(196, 364);
+            this.startHandMeasureBut.Location = new System.Drawing.Point(202, 365);
             this.startHandMeasureBut.Name = "startHandMeasureBut";
             this.startHandMeasureBut.Size = new System.Drawing.Size(570, 46);
             this.startHandMeasureBut.TabIndex = 2;
@@ -187,7 +168,7 @@ namespace NormaMeasure.Teraohmmeter
             this.measureSettingsGroup.Controls.Add(this.normaField);
             this.measureSettingsGroup.Controls.Add(this.normaFieldLbl);
             this.measureSettingsGroup.Controls.Add(this.label1);
-            this.measureSettingsGroup.Location = new System.Drawing.Point(6, 6);
+            this.measureSettingsGroup.Location = new System.Drawing.Point(12, 7);
             this.measureSettingsGroup.Name = "measureSettingsGroup";
             this.measureSettingsGroup.Size = new System.Drawing.Size(760, 95);
             this.measureSettingsGroup.TabIndex = 3;
@@ -499,7 +480,7 @@ namespace NormaMeasure.Teraohmmeter
             this.panel1.Controls.Add(this.measTimeLbl);
             this.panel1.Controls.Add(this.midStatMeasValLbl);
             this.panel1.Controls.Add(this.measureResultLbl);
-            this.panel1.Location = new System.Drawing.Point(196, 107);
+            this.panel1.Location = new System.Drawing.Point(202, 108);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(570, 228);
             this.panel1.TabIndex = 14;
@@ -666,40 +647,22 @@ namespace NormaMeasure.Teraohmmeter
             // isDegreeViewCheckBox
             // 
             this.isDegreeViewCheckBox.AutoSize = true;
-            this.isDegreeViewCheckBox.Location = new System.Drawing.Point(196, 341);
+            this.isDegreeViewCheckBox.Location = new System.Drawing.Point(202, 342);
             this.isDegreeViewCheckBox.Name = "isDegreeViewCheckBox";
             this.isDegreeViewCheckBox.Size = new System.Drawing.Size(257, 17);
             this.isDegreeViewCheckBox.TabIndex = 24;
             this.isDegreeViewCheckBox.Text = "Отображать результат в степенном формате";
             this.isDegreeViewCheckBox.UseVisualStyleBackColor = true;
             // 
-            // tabControl1
+            // showResultsButton
             // 
-            this.tabControl1.Controls.Add(this.measureTabPage);
-            this.tabControl1.Controls.Add(this.resultTabPage);
-            this.tabControl1.Location = new System.Drawing.Point(2, 3);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(783, 493);
-            this.tabControl1.TabIndex = 26;
-            // 
-            // measureTabPage
-            // 
-            this.measureTabPage.Controls.Add(this.showResultsButton);
-            this.measureTabPage.Controls.Add(this.handMeasurePanel);
-            this.measureTabPage.Controls.Add(this.label2);
-            this.measureTabPage.Controls.Add(this.comboBoxMode);
-            this.measureTabPage.Controls.Add(this.panel1);
-            this.measureTabPage.Controls.Add(this.measureSettingsGroup);
-            this.measureTabPage.Controls.Add(this.startHandMeasureBut);
-            this.measureTabPage.Controls.Add(this.isDegreeViewCheckBox);
-            this.measureTabPage.Location = new System.Drawing.Point(4, 22);
-            this.measureTabPage.Name = "measureTabPage";
-            this.measureTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.measureTabPage.Size = new System.Drawing.Size(775, 467);
-            this.measureTabPage.TabIndex = 0;
-            this.measureTabPage.Text = "Измерение";
-            this.measureTabPage.UseVisualStyleBackColor = true;
+            this.showResultsButton.Location = new System.Drawing.Point(202, 425);
+            this.showResultsButton.Name = "showResultsButton";
+            this.showResultsButton.Size = new System.Drawing.Size(177, 23);
+            this.showResultsButton.TabIndex = 28;
+            this.showResultsButton.Text = "Показать результаты";
+            this.showResultsButton.UseVisualStyleBackColor = true;
+            this.showResultsButton.Click += new System.EventHandler(this.showResultsButton_Click);
             // 
             // handMeasurePanel
             // 
@@ -719,7 +682,7 @@ namespace NormaMeasure.Teraohmmeter
             this.handMeasurePanel.Controls.Add(this.bringingToLbl);
             this.handMeasurePanel.Controls.Add(this.materialHeightLbl);
             this.handMeasurePanel.Controls.Add(this.cameraLbl);
-            this.handMeasurePanel.Location = new System.Drawing.Point(18, 172);
+            this.handMeasurePanel.Location = new System.Drawing.Point(24, 173);
             this.handMeasurePanel.Name = "handMeasurePanel";
             this.handMeasurePanel.Size = new System.Drawing.Size(151, 289);
             this.handMeasurePanel.TabIndex = 27;
@@ -744,7 +707,7 @@ namespace NormaMeasure.Teraohmmeter
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 114);
+            this.label2.Location = new System.Drawing.Point(21, 115);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(84, 13);
             this.label2.TabIndex = 26;
@@ -757,130 +720,11 @@ namespace NormaMeasure.Teraohmmeter
             "Ручные испытания",
             "Поверка",
             "Калибровка"});
-            this.comboBoxMode.Location = new System.Drawing.Point(18, 132);
+            this.comboBoxMode.Location = new System.Drawing.Point(24, 133);
             this.comboBoxMode.Name = "comboBoxMode";
             this.comboBoxMode.Size = new System.Drawing.Size(151, 21);
             this.comboBoxMode.TabIndex = 25;
             this.comboBoxMode.SelectedIndexChanged += new System.EventHandler(this.comboBoxMode_SelectedIndexChanged);
-            // 
-            // resultTabPage
-            // 
-            this.resultTabPage.Controls.Add(this.measureResultDataGridView1);
-            this.resultTabPage.Controls.Add(this.label8);
-            this.resultTabPage.Controls.Add(this.measResultsListComboBox);
-            this.resultTabPage.Location = new System.Drawing.Point(4, 22);
-            this.resultTabPage.Name = "resultTabPage";
-            this.resultTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.resultTabPage.Size = new System.Drawing.Size(775, 467);
-            this.resultTabPage.TabIndex = 1;
-            this.resultTabPage.Text = "Результаты";
-            this.resultTabPage.UseVisualStyleBackColor = true;
-            // 
-            // measureResultDataGridView1
-            // 
-            this.measureResultDataGridView1.AllowUserToAddRows = false;
-            this.measureResultDataGridView1.AllowUserToDeleteRows = false;
-            this.measureResultDataGridView1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.measureResultDataGridView1.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
-            this.measureResultDataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Menu;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.Format = "N2";
-            dataGridViewCellStyle1.NullValue = null;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.MenuHighlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.measureResultDataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.measureResultDataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.measureResultDataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.cycle_number,
-            this.stat_measure_number,
-            this.voltage,
-            this.result,
-            this.range,
-            this.first_measure,
-            this.last_measure,
-            this.time});
-            this.measureResultDataGridView1.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.measureResultDataGridView1.Location = new System.Drawing.Point(6, 95);
-            this.measureResultDataGridView1.Name = "measureResultDataGridView1";
-            this.measureResultDataGridView1.ReadOnly = true;
-            this.measureResultDataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.measureResultDataGridView1.Size = new System.Drawing.Size(763, 366);
-            this.measureResultDataGridView1.TabIndex = 2;
-            // 
-            // cycle_number
-            // 
-            this.cycle_number.HeaderText = "Цикл №";
-            this.cycle_number.Name = "cycle_number";
-            this.cycle_number.ReadOnly = true;
-            this.cycle_number.Width = 50;
-            // 
-            // stat_measure_number
-            // 
-            this.stat_measure_number.HeaderText = "Измерение №";
-            this.stat_measure_number.Name = "stat_measure_number";
-            this.stat_measure_number.ReadOnly = true;
-            this.stat_measure_number.Width = 50;
-            // 
-            // voltage
-            // 
-            this.voltage.HeaderText = "Напряжение, Вольт";
-            this.voltage.Name = "voltage";
-            this.voltage.ReadOnly = true;
-            // 
-            // result
-            // 
-            this.result.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.result.HeaderText = "Результат";
-            this.result.Name = "result";
-            this.result.ReadOnly = true;
-            // 
-            // range
-            // 
-            this.range.HeaderText = "Диапазон";
-            this.range.Name = "range";
-            this.range.ReadOnly = true;
-            this.range.Width = 50;
-            // 
-            // first_measure
-            // 
-            this.first_measure.HeaderText = "Начало";
-            this.first_measure.Name = "first_measure";
-            this.first_measure.ReadOnly = true;
-            this.first_measure.Width = 50;
-            // 
-            // last_measure
-            // 
-            this.last_measure.HeaderText = "Конец";
-            this.last_measure.Name = "last_measure";
-            this.last_measure.ReadOnly = true;
-            // 
-            // time
-            // 
-            this.time.HeaderText = "Время";
-            this.time.Name = "time";
-            this.time.ReadOnly = true;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 22);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(103, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "Список измерений";
-            // 
-            // measResultsListComboBox
-            // 
-            this.measResultsListComboBox.FormattingEnabled = true;
-            this.measResultsListComboBox.Location = new System.Drawing.Point(6, 41);
-            this.measResultsListComboBox.Name = "measResultsListComboBox";
-            this.measResultsListComboBox.Size = new System.Drawing.Size(233, 21);
-            this.measResultsListComboBox.TabIndex = 0;
-            this.measResultsListComboBox.SelectedIndexChanged += new System.EventHandler(this.measResultsListComboBox_SelectedIndexChanged);
             // 
             // selectEtalonMapLbl
             // 
@@ -985,23 +829,20 @@ namespace NormaMeasure.Teraohmmeter
             this.comboBoxResistance.TabIndex = 2;
             this.comboBoxResistance.SelectedIndexChanged += new System.EventHandler(this.comboBoxResistance_SelectedIndexChanged);
             // 
-            // showResultsButton
-            // 
-            this.showResultsButton.Location = new System.Drawing.Point(196, 424);
-            this.showResultsButton.Name = "showResultsButton";
-            this.showResultsButton.Size = new System.Drawing.Size(177, 23);
-            this.showResultsButton.TabIndex = 28;
-            this.showResultsButton.Text = "Показать результаты";
-            this.showResultsButton.UseVisualStyleBackColor = true;
-            this.showResultsButton.Click += new System.EventHandler(this.showResultsButton_Click);
-            // 
             // TeraForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(953, 508);
+            this.ClientSize = new System.Drawing.Size(959, 476);
+            this.Controls.Add(this.showResultsButton);
             this.Controls.Add(this.verificationCalibrationPanel);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.handMeasurePanel);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.measureSettingsGroup);
+            this.Controls.Add(this.comboBoxMode);
+            this.Controls.Add(this.isDegreeViewCheckBox);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.startHandMeasureBut);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "TeraForm";
@@ -1023,19 +864,14 @@ namespace NormaMeasure.Teraohmmeter
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.temperatureField)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.materialHeight)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.measureTabPage.ResumeLayout(false);
-            this.measureTabPage.PerformLayout();
             this.handMeasurePanel.ResumeLayout(false);
             this.handMeasurePanel.PerformLayout();
-            this.resultTabPage.ResumeLayout(false);
-            this.resultTabPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.measureResultDataGridView1)).EndInit();
             this.verificationCalibrationPanel.ResumeLayout(false);
             this.verificationCalibrationPanel.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1091,9 +927,6 @@ namespace NormaMeasure.Teraohmmeter
         private System.Windows.Forms.NumericUpDown materialHeight;
         private System.Windows.Forms.CheckBox isDegreeViewCheckBox;
         private System.Windows.Forms.Label measureStatus;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage measureTabPage;
-        private System.Windows.Forms.TabPage resultTabPage;
         private Timer MeasureTimer;
         private Label selectEtalonMapLbl;
         private ComboBox teraEtalonMapComboBox;
@@ -1101,9 +934,6 @@ namespace NormaMeasure.Teraohmmeter
         private ComboBox comboBoxMode;
         private Panel handMeasurePanel;
         private Panel verificationCalibrationPanel;
-        private DataGridView measureResultDataGridView1;
-        private Label label8;
-        private ComboBox measResultsListComboBox;
         private Label measureIdLabel;
         private TextBox MeasureTitle;
         private Label label10;
@@ -1113,14 +943,6 @@ namespace NormaMeasure.Teraohmmeter
         private Button saveCoeffButton;
         private Label corrCoeffLbl;
         private TextBox rangeCoeffTextBox;
-        private DataGridViewTextBoxColumn cycle_number;
-        private DataGridViewTextBoxColumn stat_measure_number;
-        private DataGridViewTextBoxColumn voltage;
-        private DataGridViewTextBoxColumn result;
-        private DataGridViewTextBoxColumn range;
-        private DataGridViewTextBoxColumn first_measure;
-        private DataGridViewTextBoxColumn last_measure;
-        private DataGridViewTextBoxColumn time;
         private Button showResultsButton;
     }
 }

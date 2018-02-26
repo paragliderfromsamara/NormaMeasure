@@ -612,72 +612,8 @@ namespace NormaMeasure.Teraohmmeter
                     fillEtalonMapComboBox();
                     break;
             }
-            resetResultPage();
         }
 
-        private void resetResultPage()
-        {
-            measResultsListComboBox.Items.Clear();
-            measureResultDataGridView1.Rows.Clear();
-            this.measureResultDataGridView1.Columns["range"].Visible = this.measureResultDataGridView1.Columns["time"].Visible = this.measureResultDataGridView1.Columns["last_measure"].Visible = this.measureResultDataGridView1.Columns["first_measure"].Visible = this.measure.Type == MEASURE_TYPE.CALIBRATION;
-        }
-        /*
-        private void refreshResultsPage()
-        {
-            foreach(MeasureResultCollection c in measure.ResultCollectionsList)
-            {
-                if (!measResultsListComboBox.Items.Contains(c.Name))
-                {
-                    measResultsListComboBox.Items.Add(c.Name);
-                }
-            }
-            if (measResultsListComboBox.SelectedIndex == -1 && measResultsListComboBox.Items.Count > 0) measResultsListComboBox.SelectedIndex = 0;
-            if (measResultsListComboBox.SelectedIndex == measResultsListComboBox.Items.Count-1)
-            {
-                if (measureResultDataGridView1.Rows.Count != measure.ResultCollectionsList.Last().Count)
-                {
-                    MeasureResultCollection col = measure.ResultCollectionsList.Last();
-                    if(col.Count < measureResultDataGridView1.Rows.Count)
-                    {
-                        measureResultDataGridView1.Rows.Clear();
-                    }
-                    int dif = col.Count - measureResultDataGridView1.Rows.Count;
-
-                    for (int i = dif; i > 0; i--)
-                    {
-                        MeasureResult mr = col.ResultsList[col.Count - i];
-                        addRowToDataGrid(mr);
-                    }
-                }
-            }
-        }
-        */
-
-        private void measResultsListComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ComboBox cb = sender as ComboBox;
-           // MessageBox.Show(String.Format("{0} {1}", cb.SelectedIndex, this.measure.ResultCollectionsList.Count));
-           // MeasureResultCollection col = this.measure.ResultCollectionsList[cb.SelectedIndex];
-           // measureResultDataGridView1.Rows.Clear();
-           // foreach (MeasureResult r in col.ResultsList)
-           // {
-           //     addRowToDataGrid(r);
-           // }
-        }
-
-        private void addRowToDataGrid(MeasureResult r)
-        {
-            MeasureResultTera mr = r as MeasureResultTera;
-            int num = measureResultDataGridView1.Rows.Add(1);
-            measureResultDataGridView1.Rows[num].Cells["cycle_number"].Value = mr.CycleNumber;
-            measureResultDataGridView1.Rows[num].Cells["stat_measure_number"].Value = mr.StatCycleNumber;
-            measureResultDataGridView1.Rows[num].Cells["voltage"].Value = mr.Voltage;
-            measureResultDataGridView1.Rows[num].Cells["result"].Value = mr.BringingResult;
-            measureResultDataGridView1.Rows[num].Cells["first_measure"].Value = mr.FirstMeasure;
-            measureResultDataGridView1.Rows[num].Cells["last_measure"].Value = mr.LastMeasure;
-            measureResultDataGridView1.Rows[num].Cells["time"].Value = mr.MeasureTime;
-            measureResultDataGridView1.Rows[num].Cells["range"].Value = mr.MeasureTime;
-        }
 
         private void teraEtalonMapComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
