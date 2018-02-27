@@ -71,6 +71,12 @@
     <Compile Include="Teraohmmeter\Forms\TeraResultsForm.Designer.cs">
       <DependentUpon>TeraResultsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Teraohmmeter\Forms\TeraCoeffsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Teraohmmeter\Forms\TeraCoeffsForm.Designer.cs">
+      <DependentUpon>TeraCoeffsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Teraohmmeter\TeraDevice.cs" />
     <Compile Include="Teraohmmeter\Forms\coeffsSynchronyzeStatus.cs">
       <SubType>Form</SubType>
@@ -127,6 +133,9 @@
     </Compile>
     <EmbeddedResource Include="Teraohmmeter\Forms\TeraResultsForm.resx">
       <DependentUpon>TeraResultsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Teraohmmeter\Forms\TeraCoeffsForm.resx">
+      <DependentUpon>TeraCoeffsForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="DBClasses\DBSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

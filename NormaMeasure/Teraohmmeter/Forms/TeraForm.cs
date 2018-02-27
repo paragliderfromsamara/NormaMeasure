@@ -21,6 +21,7 @@ namespace NormaMeasure.Teraohmmeter
     {
         private MainForm mainForm; 
         private NormaMeasure.Teraohmmeter.Forms.TeraResultsForm resultForm;
+        private Forms.TeraCoeffsForm coeffForm;
         double[][] isolationMaterialCoeffsArr;
         private bool measureIsActive = false;
         private string curEtalonMapId = String.Empty; 
@@ -44,9 +45,18 @@ namespace NormaMeasure.Teraohmmeter
             this.mainForm = f;
             this.teraDevice = tera_device;
             this.Text = teraDevice.NameWithSerial();
+            //ResultFormInit
             this.resultForm = new Forms.TeraResultsForm(this);
             this.resultForm.MdiParent = f;
             resultForm.Hide();
+            //
+            //CoeffFormInit
+            if (Properties.Settings.Default.AdminMode)
+            {
+                this.coeffForm = new Forms.TeraCoeffsForm(this.resultForm, this.teraDevice);
+                this.coeffForm.MdiParent = f;
+                this.coeffForm.Hide();
+            }
             fillTeraDS();
         }
 
@@ -460,6 +470,7 @@ namespace NormaMeasure.Teraohmmeter
             else
             {
                 rangeCoeffTextBox.Text = ((float)coeff).ToString();
+                this.coeffForm.UpdCoeff(this.measure.voltageId-1, this.comboBoxResistance.SelectedIndex, (float)coeff);
             }
         }
 
@@ -730,6 +741,12 @@ namespace NormaMeasure.Teraohmmeter
         {
             if (this.resultForm.Visible) this.resultForm.Hide();
             else this.resultForm.Show();
+        }
+
+        private void coeffUForm_Click(object sender, EventArgs e)
+        {
+            if (this.coeffForm.Visible) this.coeffForm.Hide();
+            else this.coeffForm.Show();
         }
     }
 }

@@ -637,17 +637,15 @@ namespace NormaMeasure.Teraohmmeter
             Thread.Sleep(500);
             if (this.CorrectionMode == MEASURE_TYPE.AUTO)
             {
-                if (this.Voltage == 10)
+                double coeff = 0;
+                foreach (MeasureResult r in this.ResultCollectionsList.ResultsList)
                 {
-                    double coeff = 0;
-                    foreach (MeasureResult r in this.ResultCollectionsList.ResultsList)
-                    {
-                        coeff += this.normaValue / (r.BringingResult * 1000);
-                    }
-                    coeff = Math.Round(coeff / this.ResultCollectionsList.Count, 7);
-                    this.teraDevice.rangeCoeffs[rangeId] = (float)coeff;
-                    this.teraDevice.DeviceForm.updateCoeffField(coeff);
+                    coeff += this.normaValue / (r.BringingResult * 1000);
                 }
+                coeff = Math.Round(coeff / this.ResultCollectionsList.Count, 7);
+                if (this.Voltage == 10) this.teraDevice.rangeCoeffs[rangeId] = (float)coeff;
+                this.teraDevice.DeviceForm.updateCoeffField(coeff);
+
                 if (this.MeasureStatus == MEASURE_STATUS.STOPED) return;
                 
                 if (this.Voltage == 10)
