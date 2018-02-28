@@ -20,8 +20,8 @@ namespace NormaMeasure.Teraohmmeter
 
         public uint checkSumFromDevice = 0; //проверочная сумма для коэффициентов коррекции из прибора
         public uint checkSumFromDB = 0; //Проверочная сумма из БД
-        public float[] rangeCoeffs = new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }; //коэффициенты коррекции по диапазону
-        public float[] voltageCoeffs = new float[] { 0.0f, 0.0f, 0.0f };     //коэффициенты коррекции по напряжению
+        public float[] rangeCoeffs = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f }; //коэффициенты коррекции по диапазону
+        public float[] voltageCoeffs = new float[] { 1.0f, 1.0f, 1.0f };     //коэффициенты коррекции по напряжению
         /// <summary>
         /// Массив интегрирующих емкостей. Адрес в массиве == номеру диапазона
         /// </summary>
@@ -147,13 +147,11 @@ namespace NormaMeasure.Teraohmmeter
 
         }
 
-
         private void deviceFormClosedEvent(object sender, System.Windows.Forms.FormClosedEventArgs arg)
         {
             if (IsConnected) this.disconnect();
             Thread.Sleep(600);
         }
-
 
         /// <summary>
         /// Синхронизирует коэффициенты с устройством. Если fromDevToPC == true то с устройства на ПК, если false то наоборот

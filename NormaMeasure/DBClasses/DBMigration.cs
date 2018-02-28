@@ -76,15 +76,15 @@ namespace NormaMeasure.DBClasses
                                     //при добавлении столбцов необходимо исправить строки запроса 
                                     "id INT UNSIGNED AUTO_INCREMENT NOT NULL", //0
                                     "serial_number TINYTEXT",                  //1
-                                    "zero_range_coeff FLOAT Default 0.0",      //2
-                                    "first_range_coeff FLOAT Default 0.0",     //3
-                                    "second_range_coeff FLOAT Default 0.0",    //4
-                                    "third_range_coeff FLOAT Default 0.0",     //5
-                                    "third_range_additional_coeff FLOAT Default 0.0", //6
-                                    "one_hundred_volts_coeff FLOAT Default 0.0",      //7
-                                    "five_hundred_volts_coeff FLOAT Default 0.0",     //8
-                                    "thousand_volts_coeff FLOAT Default 0.0",         //9
-                                    "coeffs_check_sum INT UNSIGNED Default 0.0", //10 контрольная сумма коэффициентов, для проверки изменились они, или нет
+                                    "zero_range_coeff FLOAT Default 1.0",      //2
+                                    "first_range_coeff FLOAT Default 1.0",     //3
+                                    "second_range_coeff FLOAT Default 1.0",    //4
+                                    "third_range_coeff FLOAT Default 1.0",     //5
+                                    "third_range_additional_coeff FLOAT Default 1.0", //6
+                                    "one_hundred_volts_coeff FLOAT Default 1.0",      //7
+                                    "five_hundred_volts_coeff FLOAT Default 1.0",     //8
+                                    "thousand_volts_coeff FLOAT Default 1.0",         //9
+                                    "coeffs_check_sum INT UNSIGNED Default 1.0", //10 контрольная сумма коэффициентов, для проверки изменились они, или нет
                                     "PRIMARY KEY (id)"
                                  };
             checkAndAddTable(tableName, colsArray);

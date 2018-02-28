@@ -45,19 +45,9 @@ namespace NormaMeasure.Teraohmmeter
             this.mainForm = f;
             this.teraDevice = tera_device;
             this.Text = teraDevice.NameWithSerial();
-            //ResultFormInit
-            this.resultForm = new Forms.TeraResultsForm(this);
-            this.resultForm.MdiParent = f;
-            resultForm.Hide();
-            //
-            //CoeffFormInit
-            if (Properties.Settings.Default.AdminMode)
-            {
-                this.coeffForm = new Forms.TeraCoeffsForm(this.resultForm, this.teraDevice);
-                this.coeffForm.MdiParent = f;
-                this.coeffForm.Hide();
-            }
             fillTeraDS();
+
+            
         }
 
         public void InitAndShow()
@@ -66,6 +56,18 @@ namespace NormaMeasure.Teraohmmeter
             verificationCalibrationPanel.Parent = handMeasurePanel.Parent;
             verificationCalibrationPanel.Location = handMeasurePanel.Location;
             comboBoxMode.SelectedIndex = 0;
+            //ResultFormInit
+            this.resultForm = new Forms.TeraResultsForm(this);
+            this.resultForm.MdiParent = this.mainForm;
+            resultForm.Hide();
+            //
+            //CoeffFormInit
+            if (Properties.Settings.Default.AdminMode)
+            {
+                this.coeffForm = new Forms.TeraCoeffsForm(this.resultForm, this.teraDevice);
+                this.coeffForm.MdiParent = this.mainForm;
+                this.coeffForm.Hide();
+            }
             //initHandMeasurePage();
             //initVerificationPage();
             this.Show();
@@ -535,6 +537,18 @@ namespace NormaMeasure.Teraohmmeter
             {
                 MessageBox.Show(String.Format("{0} находится в процессе измерений!!! \nЧтобы закрыть окно, необходимо завершить измерение.", this.teraDevice.NameWithSerial()), "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
+            }else
+            {
+                if (this.resultForm != null)
+                {
+                    this.resultForm.Close();
+                    this.resultForm.Dispose();
+                }
+                if (this.coeffForm != null)
+                {
+                    this.coeffForm.Close();
+                    this.coeffForm.Dispose();
+                }
             }
             
         }
