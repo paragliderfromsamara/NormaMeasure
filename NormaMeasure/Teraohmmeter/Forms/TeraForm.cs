@@ -471,7 +471,7 @@ namespace NormaMeasure.Teraohmmeter
             }
             else
             {
-                rangeCoeffTextBox.Text = ((float)coeff).ToString();
+                if(measure.CorrectionMode == MEASURE_TYPE.AUTO) rangeCoeffTextBox.Text = ((float)coeff).ToString();
                 this.coeffForm.UpdCoeff(this.measure.voltageId-1, this.comboBoxResistance.SelectedIndex, (float)coeff);
             }
         }
@@ -490,7 +490,7 @@ namespace NormaMeasure.Teraohmmeter
                 this.startHandMeasureBut.Enabled = !(status == MEASURE_STATUS.DISCHARGE);
                 this.measureIsActive = isActive;
                 this.measureSettingsGroup.Enabled = !isActive;
-                autoCorrCb.Enabled = this.comboBoxResistance.Enabled = saveCoeffButton.Enabled = this.teraEtalonMapComboBox.Enabled = this.comboBoxMode.Enabled = !isActive;
+                autoCorrCb.Enabled = this.comboBoxResistance.Enabled = this.teraEtalonMapComboBox.Enabled = this.comboBoxMode.Enabled = !isActive;
                 
                 startHandMeasureBut.Text = !isActive ? "ПУСК ИЗМЕРЕНИЯ" : "ОСТАНОВИТЬ ИЗМЕРЕНИЯ";
             }

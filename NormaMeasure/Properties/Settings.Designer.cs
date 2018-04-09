@@ -25,7 +25,7 @@ namespace NormaMeasure.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool IsTestApp {
             get {
                 return ((bool)(this["IsTestApp"]));

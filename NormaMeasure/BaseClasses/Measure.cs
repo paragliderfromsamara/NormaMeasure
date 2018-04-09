@@ -174,7 +174,7 @@ namespace NormaMeasure.BaseClasses
                     if (dr == DialogResult.OK) this.ResultCollectionsList.Clear();
                     else return false;
                 }
-                this.ResultCollectionsList.Name = newName;
+                this.ResultCollectionsList.Name = newName; 
                 switch (Type)
                 {
                     case MEASURE_TYPE.AUTO:

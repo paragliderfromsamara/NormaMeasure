@@ -36,10 +36,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.coeff_0_0 = new System.Windows.Forms.Label();
-            this.coeff_0_2 = new System.Windows.Forms.Label();
-            this.coeff_0_3 = new System.Windows.Forms.Label();
-            this.coeff_0_1 = new System.Windows.Forms.Label();
             this.coeff_1_3 = new System.Windows.Forms.Label();
             this.coeff_1_2 = new System.Windows.Forms.Label();
             this.coeff_1_1 = new System.Windows.Forms.Label();
@@ -68,6 +64,10 @@
             this.cur_2 = new System.Windows.Forms.TextBox();
             this.cur_3 = new System.Windows.Forms.TextBox();
             this.saveBut = new System.Windows.Forms.Button();
+            this.coeff_0_0 = new System.Windows.Forms.Label();
+            this.coeff_0_1 = new System.Windows.Forms.Label();
+            this.coeff_0_2 = new System.Windows.Forms.Label();
+            this.coeff_0_3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -141,42 +141,6 @@
             this.label8.Size = new System.Drawing.Size(71, 14);
             this.label8.TabIndex = 7;
             this.label8.Text = "Диапазон 4";
-            // 
-            // coeff_0_0
-            // 
-            this.coeff_0_0.AutoSize = true;
-            this.coeff_0_0.Location = new System.Drawing.Point(136, 199);
-            this.coeff_0_0.Name = "coeff_0_0";
-            this.coeff_0_0.Size = new System.Drawing.Size(13, 14);
-            this.coeff_0_0.TabIndex = 8;
-            this.coeff_0_0.Text = "х";
-            // 
-            // coeff_0_2
-            // 
-            this.coeff_0_2.AutoSize = true;
-            this.coeff_0_2.Location = new System.Drawing.Point(136, 129);
-            this.coeff_0_2.Name = "coeff_0_2";
-            this.coeff_0_2.Size = new System.Drawing.Size(13, 14);
-            this.coeff_0_2.TabIndex = 9;
-            this.coeff_0_2.Text = "х";
-            // 
-            // coeff_0_3
-            // 
-            this.coeff_0_3.AutoSize = true;
-            this.coeff_0_3.Location = new System.Drawing.Point(136, 92);
-            this.coeff_0_3.Name = "coeff_0_3";
-            this.coeff_0_3.Size = new System.Drawing.Size(13, 14);
-            this.coeff_0_3.TabIndex = 10;
-            this.coeff_0_3.Text = "х";
-            // 
-            // coeff_0_1
-            // 
-            this.coeff_0_1.AutoSize = true;
-            this.coeff_0_1.Location = new System.Drawing.Point(136, 165);
-            this.coeff_0_1.Name = "coeff_0_1";
-            this.coeff_0_1.Size = new System.Drawing.Size(13, 14);
-            this.coeff_0_1.TabIndex = 11;
-            this.coeff_0_1.Text = "х";
             // 
             // coeff_1_3
             // 
@@ -429,6 +393,42 @@
             this.saveBut.UseVisualStyleBackColor = true;
             this.saveBut.Click += new System.EventHandler(this.saveBut_Click);
             // 
+            // coeff_0_0
+            // 
+            this.coeff_0_0.AutoSize = true;
+            this.coeff_0_0.Location = new System.Drawing.Point(136, 199);
+            this.coeff_0_0.Name = "coeff_0_0";
+            this.coeff_0_0.Size = new System.Drawing.Size(13, 14);
+            this.coeff_0_0.TabIndex = 8;
+            this.coeff_0_0.Text = "х";
+            // 
+            // coeff_0_1
+            // 
+            this.coeff_0_1.AutoSize = true;
+            this.coeff_0_1.Location = new System.Drawing.Point(136, 165);
+            this.coeff_0_1.Name = "coeff_0_1";
+            this.coeff_0_1.Size = new System.Drawing.Size(13, 14);
+            this.coeff_0_1.TabIndex = 11;
+            this.coeff_0_1.Text = "х";
+            // 
+            // coeff_0_2
+            // 
+            this.coeff_0_2.AutoSize = true;
+            this.coeff_0_2.Location = new System.Drawing.Point(136, 129);
+            this.coeff_0_2.Name = "coeff_0_2";
+            this.coeff_0_2.Size = new System.Drawing.Size(13, 14);
+            this.coeff_0_2.TabIndex = 9;
+            this.coeff_0_2.Text = "х";
+            // 
+            // coeff_0_3
+            // 
+            this.coeff_0_3.AutoSize = true;
+            this.coeff_0_3.Location = new System.Drawing.Point(136, 92);
+            this.coeff_0_3.Name = "coeff_0_3";
+            this.coeff_0_3.Size = new System.Drawing.Size(13, 14);
+            this.coeff_0_3.TabIndex = 10;
+            this.coeff_0_3.Text = "х";
+            // 
             // TeraCoeffsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
@@ -495,10 +495,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label coeff_0_0;
-        private System.Windows.Forms.Label coeff_0_2;
-        private System.Windows.Forms.Label coeff_0_3;
-        private System.Windows.Forms.Label coeff_0_1;
         private System.Windows.Forms.Label coeff_1_3;
         private System.Windows.Forms.Label coeff_1_2;
         private System.Windows.Forms.Label coeff_1_1;
@@ -527,5 +523,9 @@
         private System.Windows.Forms.TextBox cur_2;
         private System.Windows.Forms.TextBox cur_3;
         private System.Windows.Forms.Button saveBut;
+        private System.Windows.Forms.Label coeff_0_0;
+        private System.Windows.Forms.Label coeff_0_1;
+        private System.Windows.Forms.Label coeff_0_2;
+        private System.Windows.Forms.Label coeff_0_3;
     }
 }

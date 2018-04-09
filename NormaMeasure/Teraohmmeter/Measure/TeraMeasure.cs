@@ -635,8 +635,19 @@ namespace NormaMeasure.Teraohmmeter
             measure();
             discharge();
             Thread.Sleep(500);
+
+            double coeff = 0;
+            foreach (MeasureResult r in this.ResultCollectionsList.ResultsList)
+            {
+                coeff += this.normaValue / (r.BringingResult * 1000);
+            }
+            coeff = Math.Round(coeff / this.ResultCollectionsList.Count, 7);
+            if (this.Voltage == 10) this.teraDevice.rangeCoeffs[rangeId] = (float)coeff;
+            this.teraDevice.DeviceForm.updateCoeffField(coeff);
+
             if (this.CorrectionMode == MEASURE_TYPE.AUTO)
             {
+                /*
                 double coeff = 0;
                 foreach (MeasureResult r in this.ResultCollectionsList.ResultsList)
                 {
@@ -645,7 +656,7 @@ namespace NormaMeasure.Teraohmmeter
                 coeff = Math.Round(coeff / this.ResultCollectionsList.Count, 7);
                 if (this.Voltage == 10) this.teraDevice.rangeCoeffs[rangeId] = (float)coeff;
                 this.teraDevice.DeviceForm.updateCoeffField(coeff);
-
+                */
                 if (this.MeasureStatus == MEASURE_STATUS.STOPED) return;
                 
                 if (this.Voltage == 10)
@@ -723,8 +734,7 @@ namespace NormaMeasure.Teraohmmeter
                     return "Остановлено";
                 case MEASURE_STATUS.NOT_STARTED:
                 default:
-                    return "Не начато";
-
+                    return "Не начато";  
             }
         }
 

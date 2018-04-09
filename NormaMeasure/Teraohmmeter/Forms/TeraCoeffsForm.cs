@@ -42,8 +42,17 @@ namespace NormaMeasure.Teraohmmeter.Forms
             Control[] ctrls = this.Controls.Find(String.Format("coeff_{0}_{1}", volt, range), false);
             if (ctrls.Length > 0)
             {
-                Label lb = ctrls[0] as Label;
-                lb.Text = coeffs[volt, range] > 0 ? coeffs[volt, range].ToString() : "x";
+                //if (volt == 0)
+                //{
+                //    TextBox lb = ctrls[0] as TextBox;
+                //    lb.Text = coeffs[volt, range] > 0 ? coeffs[volt, range].ToString() : "1";
+                //}
+                //else
+                //{
+                    Label lb = ctrls[0] as Label;
+                    lb.Text = coeffs[volt, range] > 0 ? coeffs[volt, range].ToString() : "x";
+                //}
+
             }
             if (volt > 0) fillAverageMeasuredVoltageCoeff(volt);
         }

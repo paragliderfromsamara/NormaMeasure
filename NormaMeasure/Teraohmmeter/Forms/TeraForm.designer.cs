@@ -93,13 +93,13 @@ namespace NormaMeasure.Teraohmmeter
             this.MeasureTimer = new System.Windows.Forms.Timer(this.components);
             this.verificationCalibrationPanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.autoCorrCb = new System.Windows.Forms.CheckBox();
-            this.saveCoeffButton = new System.Windows.Forms.Button();
             this.corrCoeffLbl = new System.Windows.Forms.Label();
             this.rangeCoeffTextBox = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.comboBoxResistance = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.saveCoeffButton = new System.Windows.Forms.Button();
             this.measureSettingsGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cycleTimes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.averagingTimes)).BeginInit();
@@ -657,7 +657,7 @@ namespace NormaMeasure.Teraohmmeter
             // 
             // showResultsButton
             // 
-            this.showResultsButton.Location = new System.Drawing.Point(202, 425);
+            this.showResultsButton.Location = new System.Drawing.Point(202, 439);
             this.showResultsButton.Name = "showResultsButton";
             this.showResultsButton.Size = new System.Drawing.Size(177, 23);
             this.showResultsButton.TabIndex = 28;
@@ -774,6 +774,16 @@ namespace NormaMeasure.Teraohmmeter
             this.panel2.Size = new System.Drawing.Size(161, 128);
             this.panel2.TabIndex = 4;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(4, 102);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(151, 21);
+            this.button1.TabIndex = 29;
+            this.button1.Text = "Подбор коэфф. U";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.coeffUForm_Click);
+            // 
             // autoCorrCb
             // 
             this.autoCorrCb.AutoSize = true;
@@ -784,16 +794,6 @@ namespace NormaMeasure.Teraohmmeter
             this.autoCorrCb.Text = "Автоматически";
             this.autoCorrCb.UseVisualStyleBackColor = true;
             this.autoCorrCb.CheckedChanged += new System.EventHandler(this.autoCorrCb_CheckedChanged);
-            // 
-            // saveCoeffButton
-            // 
-            this.saveCoeffButton.Location = new System.Drawing.Point(4, 73);
-            this.saveCoeffButton.Name = "saveCoeffButton";
-            this.saveCoeffButton.Size = new System.Drawing.Size(151, 23);
-            this.saveCoeffButton.TabIndex = 7;
-            this.saveCoeffButton.Text = "Сохранить";
-            this.saveCoeffButton.UseVisualStyleBackColor = true;
-            this.saveCoeffButton.Click += new System.EventHandler(this.saveCoeffButton_Click);
             // 
             // corrCoeffLbl
             // 
@@ -831,21 +831,21 @@ namespace NormaMeasure.Teraohmmeter
             this.comboBoxResistance.TabIndex = 2;
             this.comboBoxResistance.SelectedIndexChanged += new System.EventHandler(this.comboBoxResistance_SelectedIndexChanged);
             // 
-            // button1
+            // saveCoeffButton
             // 
-            this.button1.Location = new System.Drawing.Point(4, 102);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(151, 21);
-            this.button1.TabIndex = 29;
-            this.button1.Text = "Подбор коэфф. U";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.coeffUForm_Click);
+            this.saveCoeffButton.Location = new System.Drawing.Point(4, 73);
+            this.saveCoeffButton.Name = "saveCoeffButton";
+            this.saveCoeffButton.Size = new System.Drawing.Size(151, 23);
+            this.saveCoeffButton.TabIndex = 7;
+            this.saveCoeffButton.Text = "Сохранить";
+            this.saveCoeffButton.UseVisualStyleBackColor = true;
+            this.saveCoeffButton.Click += new System.EventHandler(this.saveCoeffButton_Click);
             // 
             // TeraForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(959, 476);
+            this.ClientSize = new System.Drawing.Size(954, 476);
             this.Controls.Add(this.showResultsButton);
             this.Controls.Add(this.verificationCalibrationPanel);
             this.Controls.Add(this.handMeasurePanel);
@@ -952,10 +952,10 @@ namespace NormaMeasure.Teraohmmeter
         private ComboBox comboBoxResistance;
         private Panel panel2;
         private CheckBox autoCorrCb;
-        private Button saveCoeffButton;
         private Label corrCoeffLbl;
         private TextBox rangeCoeffTextBox;
         private Button showResultsButton;
         private Button button1;
+        private Button saveCoeffButton;
     }
 }
